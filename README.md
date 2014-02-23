@@ -1,4 +1,4 @@
 Thunderware
 ===========
 
-Firmware for the Thunder Head Fflament extruder
+Firmware for the Thunder Head Filament extruder
