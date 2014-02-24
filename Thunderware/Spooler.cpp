@@ -12,7 +12,7 @@
 #include "Spooler.h"
 #include "config.h"
 
-Spooler::Spooler(StepperMotor *outfeed, int motor, int timer) : _motor(motor, timer)
+Spooler::Spooler(StepperMotor *outfeed, StepperMotor::Motor motor, int timer) : _motor(motor, timer)
 {
   _outfeed = outfeed;
 }

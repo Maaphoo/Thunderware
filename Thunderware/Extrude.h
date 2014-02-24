@@ -13,7 +13,7 @@ void printFtPerMin(int col, int row);
 //Extrude function
 void extrudeAutomatic(){
 
-  buzzer.setMsg(EXTRUDING);//Sound the buzzer that extrusion is beginning
+  buzzer.setMsg(Buzzer::EXTRUDING);//Sound the buzzer that extrusion is beginning
 
   barrelPID.SetTunings(consKp, consKi, consKd);
   now = millis();
@@ -39,7 +39,7 @@ void extrudeAutomatic(){
 //  outfeed.setRPM(0);
 //  spool.setRPM(0);
 
-  if (barrelTh.getTemp()<170 && augerRPM>0){//Cant run the auger if the barrel isn't hot;
+  if (app.barrelThermistor()->getTemp()<170 && augerRPM>0){//Cant run the auger if the barrel isn't hot;
     currentState = SELECT_PROFILE;
     return;
   }
@@ -299,10 +299,10 @@ void extrudeAutomatic(){
 
     //measure temp. One at a time for better temp measurement
     if (alternateThermistors){
-      barrelTh.sampleTemp();
+      app.barrelThermistor()->sampleTemp();
       alternateThermistors = !alternateThermistors;
     }else{
-      nozzleTh.sampleTemp();
+      app.nozzleThermistor()->sampleTemp();
       alternateThermistors = !alternateThermistors;
     }
 
@@ -316,8 +316,8 @@ void extrudeAutomatic(){
     if (now>=computeTime){
 
       //Get Temps and update temp controllers
-      barrelTemp = barrelTh.getTemp();
-      nozzleTemp = nozzleTh.getTemp();
+      barrelTemp = app.barrelThermistor()->getTemp();
+      nozzleTemp = app.nozzleThermistor()->getTemp();
 
       //compute outputs for the PID controllers.
       barrelPID.Compute();

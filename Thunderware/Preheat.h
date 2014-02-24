@@ -115,18 +115,18 @@ void preheat(){
     barrelHeater.activate();
 
     if (alternateThermistors){
-      barrelTh.sampleTemp();
+      app.barrelThermistor()->sampleTemp();
       alternateThermistors = !alternateThermistors;
     }else{
-      nozzleTh.sampleTemp();
+      app.nozzleThermistor()->sampleTemp();
       alternateThermistors = !alternateThermistors;
     }
 
     updateDiameter();
 
     if (now>=computeTime){
-      barrelTemp = barrelTh.getTemp();
-      nozzleTemp =nozzleTh.getTemp();
+      barrelTemp = app.barrelThermistor()->getTemp();
+      nozzleTemp = app.nozzleThermistor()->getTemp();
 
       if(barrelTemp>(barrelSetPoint-7) && initialRise){
         barrelPID.SetTunings(consKp, consKi, consKd);
@@ -167,7 +167,7 @@ void preheat(){
 }
 
 void soak(){
-  buzzer.setMsg(SOAKING);//Sound the buzzer to indicate the Soak Temperature has been reached
+  buzzer.setMsg(Buzzer::SOAKING);//Sound the buzzer to indicate the Soak Temperature has been reached
   now = millis();
   computeTime = now+2000L;
   reportTime = now+1000L;
@@ -332,10 +332,10 @@ void soak(){
     barrelHeater.activate();
 
     if (alternateThermistors){
-      barrelTh.sampleTemp();
+      app.barrelThermistor()->sampleTemp();
       alternateThermistors = !alternateThermistors;
     }else{
-      nozzleTh.sampleTemp();
+      app.nozzleThermistor()->sampleTemp();
       alternateThermistors = !alternateThermistors;
     }
 
@@ -344,8 +344,8 @@ void soak(){
 
     if (now>=computeTime){
 
-      barrelTemp = barrelTh.getTemp();
-      nozzleTemp =nozzleTh.getTemp();
+      barrelTemp = app.barrelThermistor()->getTemp();
+      nozzleTemp = app.nozzleThermistor()->getTemp();
 
       barrelPID.Compute();
       barrelHeater.setDutyCycle(barrelDutyCycle);

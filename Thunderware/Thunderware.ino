@@ -86,6 +86,7 @@ moved buzzer to pin 1
   #include "Thermistor.h"
   #include <stdio.h>
   #include <string.h>
+  #include "application.h"
   #include "config.h"
   #include "Buzzer.h"
   #include "NozzleHeater.h"
@@ -97,7 +98,7 @@ moved buzzer to pin 1
 //Finite State Machine for controlling the state of the extruder.
 
 //Names of States
-enum extruderState {
+enum ExtruderState {
   SELECT_PROFILE,
   CUSTOM_PROFILE,
   PREHEAT,
@@ -107,7 +108,9 @@ enum extruderState {
   EXTRUSION_COMPLETE,
   SAFETY_SHUTDOWN
 };
-extruderState currentState;
+ExtruderState currentState;
+
+Application app;
 
 
   //Stepper setup
@@ -178,8 +181,8 @@ extruderState currentState;
 
 
   //Temp Sensors
-  Thermistor nozzleTh(0,100000,25, 20,4092, 9890);
-  Thermistor barrelTh(1,100000,25, 20,4092, 9910);
+  // Thermistor nozzleTh(0,100000,25, 20,4092, 9890);
+  // Thermistor barrelTh(1,100000,25, 20,4092, 9910);
   boolean alternateThermistors; //Needed to keep analog sensor from heating
 
   double barrelTemp;
@@ -282,9 +285,9 @@ NozzleHeater nozzleHeater;
 BarrelHeater barrelHeater;
 
 //Initialize Stepper Motors
-StepperMotor auger(AUGER, 4);
-StepperMotor outfeed(OUTFEED, 1);
-StepperMotor spool(SPOOL, 2);
+StepperMotor auger(StepperMotor::AUGER, 4);
+StepperMotor outfeed(StepperMotor::OUTFEED, 1);
+StepperMotor spool(StepperMotor::SPOOL, 2);
 
 //Initialize FastPWM timers
 //FastPWM timer1(1);
