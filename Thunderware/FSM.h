@@ -1,4 +1,8 @@
-  #include "config.h";
+#ifndef FSM_h
+#define FSM_h
+
+#include "config.h"
+#include "StarveFeeder.h"
 
 char diameterString[6];
 char *diameterPtr;//pointer to char in diameterString.
@@ -15,8 +19,8 @@ void selectProfile(){
   lcd.write("2: No Auger");
   lcd.setCursor(0,3);
   lcd.write("3: No Heat");
-  
-  
+
+
   Serial.println("Select a profile.");
   Serial.println("1: 1.75ABS");
   Serial.println("2: No Auger");
@@ -30,7 +34,7 @@ void selectProfile(){
   if (Serial.available() > 0) {
     key = (char)Serial.read();
   }
-  
+
     if (key == '1' || key == '2' || key == '3'){
       invalid = false;
     }
@@ -48,13 +52,13 @@ void selectProfile(){
         soakTime = 7;
         setFeedRate(7.5);
         outfeedRPM = calcOutfeedRPM();
-        outfeed.setRPM(0);         
+        outfeed.setRPM(0);
         //Shift state to preheat.
         currentState = PREHEAT;
 
     }
       break;
-      
+
     case '2':
     {
     diaSetPoint = 1.75;
@@ -63,16 +67,16 @@ void selectProfile(){
     augerRPM = 0 ;
     outfeedRPM = 70;
     soakTime = 5;
-        
+
         setFeedRate(7.5);
 //        outfeedRPM = calcOutfeedRPM();
-        outfeed.setRPM(50);         
+        outfeed.setRPM(50);
 
-    currentState = EXTRUDE_AUTOMATIC;    
+    currentState = EXTRUDE_AUTOMATIC;
 
     }
       break;
-    
+
     case '3':
         //select 1.75 profile No Heat
         diaSetPoint = 1.75;
@@ -81,27 +85,27 @@ void selectProfile(){
         augerRPM = 38;
         outfeedRPM = 70;
         soakTime = 0;
-        
+
         setFeedRate(7.5);
         outfeedRPM = calcOutfeedRPM();
-        outfeed.setRPM(0);         
+        outfeed.setRPM(0);
 
- 
-        
+
+
         //Shift state to preheat.
-        currentState = EXTRUDE_AUTOMATIC;    
+        currentState = EXTRUDE_AUTOMATIC;
     break;
 
     }
-  }               
+  }
 
 void customProfile(){
-  
+
 }
 
 
 void extrudeManual(){
-  
+
 }
 
 
@@ -121,22 +125,22 @@ double getNumber(char *title, char *subTitle){
 //      lcd.write(subTitle);
 //      lcd.setCursor(0,3);
 //      lcd.write("(Esc press <-)");
-//      lcd.setCursor(0,2);          
-// 
+//      lcd.setCursor(0,2);
+//
 //      boolean invalid = true;
 //      diameterPtr = diameterString;// set pointer to first digit
-//      
+//
 //      while (invalid){
 //        key=kpd.waitForKey();//get user input
-//       
+//
 //        switch(key){
-// 
+//
 //          case 'D':
 //          //Check to see that a valid diameter was entered
-//          
+//
 //          //return number
 //          return atof(diameterString);
-//          
+//
 //          case 'A': //backspace was pressed so go back.
 //           if (diameterPtr > diameterString){
 //             lcd.setCursor(diameterPtr - diameterString - 1,2);
@@ -144,23 +148,23 @@ double getNumber(char *title, char *subTitle){
 //             lcd.setCursor(diameterPtr - diameterString - 1,2);
 //             diameterPtr--;
 //             if (*diameterPtr == '.'){
-//              noDecimal = true; 
+//              noDecimal = true;
 //             }
-//             
+//
 //           } else {//back space was pressed to exit Custom
-//            //keep state as selectProfile 
+//            //keep state as selectProfile
 //            return -1;
 //           }
 //
 //          case 'B'://invalid do nothing
 //           break;
-// 
+//
 //          case 'C'://invalid do nothing
 //           break;
-//           
+//
 //          case '#'://invalid do nothing
 //           break;
-//           
+//
 //          case '*'://decimal place
 //          if (diameterPtr - diameterString < 5 && noDecimal == true){ //Make sure that the diameterString isn't full
 //             *diameterPtr = '.';
@@ -178,7 +182,8 @@ double getNumber(char *title, char *subTitle){
 //          }
 //        }
 //      }
+  return 0.0;
 }
-
+#endif // FSM_h
 
 

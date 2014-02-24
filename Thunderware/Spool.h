@@ -6,12 +6,14 @@ unsigned long previousTime;//previous time length of filament was calculated
 
 float rss;//Radius of the spooled filament
 
+void calcFilamentExtruded();
+
 //Spooling Functions
 
 //Find Spool RPM
 void calcSpoolRPM(){
   calcFilamentExtruded();// First update the the mm of filament extruded.
-  
+
   rss = pow(c2*diaSetPoint*diaSetPoint*mmExtruded+c3,0.5);
 //  spoolSPS = sf*c1*1000000/(oStepInterval*rss);
 //  sStepInterval = 1000000/spoolSPS;//not needed
@@ -28,8 +30,8 @@ void calcFilamentExtruded(){
     previousTimeFE=nowFE;
     mmExtruded = 0;
     resetFE = false;
-  }          
-  mmExtruded += c4*(1000000.0/(double)oStepInterval)*(double)(nowFE-previousTimeFE)/1000.0;   
+  }
+  mmExtruded += c4*(1000000.0/(double)oStepInterval)*(double)(nowFE-previousTimeFE)/1000.0;
   previousTimeFE = nowFE;
 }
 

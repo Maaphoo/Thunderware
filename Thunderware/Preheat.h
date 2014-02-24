@@ -1,9 +1,20 @@
+#ifndef Preheat_h
+#define Preheat_h
+
+#include "Safety.h"
+#include "TestReporting.h"
+
+void displayPreheatScreen();
+void displaySoakScreen();
+void updateTemp(int col, int row);
+void updateTime(int col, int row);
+
 void preheat(){
   //delay(4000);//Wait for 12 power to come on line. Remove later.
   now = millis();
   computeTime = now+2000L;
   reportTime = now+1000L;
-  
+
 
   //Display info on LCD
   displayPreheatScreen();
@@ -19,18 +30,18 @@ void preheat(){
 // reportCurrentMeasurements();
 
   //While the temperature is more than three degrees away from the setpoint
-  while(barrelTemp < barrelSetPoint-3){  
-  
+  while(barrelTemp < barrelSetPoint-3){
+
   key = kpd.getKey();
-  
+
   //Allow for keyboard input as well
   if (Serial.available() > 0) {
     key = (char)Serial.read();
   }
-  
+
   switch(key){
     case 'B'://increase Tempature setpoint
-     { 
+     {
       lcd.clear();
       lcd.write("Increase temp to:");
       lcd.setCursor(0,1);
@@ -38,14 +49,14 @@ void preheat(){
       char tempSetPointString[10];
       dtostrf(barrelSetPoint, 1,2,tempSetPointString);
       lcd.write(tempSetPointString);
-              
+
       Serial.print("Increased barrelTemp set point to: ");
       Serial.println(barrelTemp);
-  
+
       break;
-     } 
+     }
     case 'C'://decrease temp set point
-     { 
+     {
       lcd.clear();
       lcd.write("Decrease temp to:");
       lcd.setCursor(0,1);
@@ -53,49 +64,49 @@ void preheat(){
       char tempSetPointString[10];
       dtostrf(barrelTemp, 1,2,tempSetPointString);
       lcd.write(tempSetPointString);
-  
+
       Serial.print("Decreased temp set point to: ");
       Serial.println(barrelTemp);
-  
+
       break;
-     } 
-   
+     }
+
      case '1'://Skip soaking period
       barrelSetPoint = barrelSetPoint+5;
       Serial.print("TempSetPoint increased to: ");
       Serial.println(barrelTemp);
-      
+
       break;
     case '4':
       barrelSetPoint = barrelSetPoint-5;
       Serial.print("TempSetPoint decreased to: ");
       Serial.println(barrelSetPoint);
       break;
-     
+
      case'8':
      consKp+=.1;
       Serial.print("Kp increased to: ");
       Serial.println(consKp);
       barrelPID.SetTunings(consKp,consKi,consKd);
       break;
-      
+
     case '0':
       consKp-=.1;
       Serial.print("Kp decreased to: ");
       Serial.println(consKp);
       barrelPID.SetTunings(consKp,consKi,consKd);
-      break;    
-  
+      break;
+
       case 'A':
       barrelHeater.off();
       nozzleHeater.off();
       currentState = SELECT_PROFILE;
       return;
-      
+
       case 'D':
       lcd.begin(20, 4);
       break;
-      
+
       case '*':
       currentState = SOAK;
       return;
@@ -111,17 +122,17 @@ void preheat(){
       alternateThermistors = !alternateThermistors;
     }
 
-    updateDiameter();    
-        
+    updateDiameter();
+
     if (now>=computeTime){
       barrelTemp = barrelTh.getTemp();
       nozzleTemp =nozzleTh.getTemp();
-     
+
       if(barrelTemp>(barrelSetPoint-7) && initialRise){
         barrelPID.SetTunings(consKp, consKi, consKd);
 //        barrelPID.SetMode(MANUAL);
 //        barrelDutyCycle=20;
-        barrelPID.SetMode(AUTOMATIC);        
+        barrelPID.SetMode(AUTOMATIC);
         Serial.println();
         initialRise = false;
       }
@@ -132,7 +143,7 @@ void preheat(){
 
       nozzleHeater.setPWM(nozzleDutyCycle);
 //      setNozzlePWM();
-      
+
       if (heaterError()) {return;}
 
       getMedianDia();
@@ -147,7 +158,7 @@ void preheat(){
     reportCurrentMeasurements();
     reportTime = now+1000L;
     displayPreheatScreen();
-    } 
+    }
   }
   barrelHeater.off();
   nozzleHeater.off();
@@ -160,7 +171,7 @@ void soak(){
   now = millis();
   computeTime = now+2000L;
   reportTime = now+1000L;
-  
+
 
 
   barrelPID.SetTunings(consKp, consKi, consKd);
@@ -169,7 +180,7 @@ void soak(){
   barrelPID.SetMode(AUTOMATIC);
 
   now=millis();
-  goTime=now + soakTime*60L*1000L; 
+  goTime=now + soakTime*60L*1000L;
 
   lcd.clear();
 
@@ -181,7 +192,7 @@ void soak(){
 
 
   while(now < goTime){
-  
+
     key = kpd.getKey();
 
     //Allow for keyboard input as well
@@ -194,9 +205,9 @@ void soak(){
          nozzleHeater.off();
          currentState = SELECT_PROFILE;
          return;
-         
+
       case 'B'://increase Tempature setpoint
-       { 
+       {
         lcd.clear();
         lcd.write("Increase temp to:");
         lcd.setCursor(0,1);
@@ -204,14 +215,14 @@ void soak(){
         char tempSetPointString[10];
         dtostrf(barrelSetPoint, 1,2,tempSetPointString);
         lcd.write(tempSetPointString);
-                
+
         Serial.print("Increased temp set point to: ");
         Serial.println(barrelSetPoint);
 
         break;
-       } 
+       }
       case 'C'://decrease temp set point
-       { 
+       {
         lcd.clear();
         lcd.write("Decrease temp to:");
         lcd.setCursor(0,1);
@@ -224,7 +235,7 @@ void soak(){
         Serial.println(barrelSetPoint);
 
         break;
-       } 
+       }
      case '*'://Skip soaking period
       {
         lcd.clear();
@@ -252,7 +263,7 @@ void soak(){
         Serial.println("Pressed * or D");
        break;
       }
-       
+
        case '1'://Increase soak time by 1 min
            lcd.clear();
            lcd.write("Increasing Time");
@@ -266,60 +277,60 @@ void soak(){
              return;
            lcd.clear();
            lcd.write("Decreasing Time");
-           } 
-       break; 
+           }
+       break;
 
        case '7':
-       
+
        if (barrelPID.GetMode() == MANUAL){
         barrelPID.SetMode(AUTOMATIC);
-        Serial.print("Barrel PID set to Automatic");       
+        Serial.print("Barrel PID set to Automatic");
        }else{
         barrelPID.SetMode(MANUAL);
-        Serial.print("Barrel PID set to Manual");       
+        Serial.print("Barrel PID set to Manual");
        }
-       
+
        break;
-       
+
        case'8':
         consKp+=.1;
         Serial.print("ConsKp increased to: ");
         Serial.println(consKp);
         barrelPID.SetTunings(consKp,consKi,consKd);
         break;
-        
+
       case '0':
         consKp-=.1;
         Serial.print("ConsKp decreased to: ");
         Serial.println(consKp);
         barrelPID.SetTunings(consKp,consKi,consKd);
         break;
-      
-           
+
+
        case'9':
         consKi+=.001;
         Serial.print("consKi increased to: ");
         Serial.println(consKi);
         barrelPID.SetTunings(consKp,consKi,consKd);
         break;
-        
+
       case '#':
         consKi-=.001;
         Serial.print("consKi decreased to: ");
         Serial.println(consKi);
         barrelPID.SetTunings(consKp,consKi,consKd);
         break;
-    
+
       case 'D':
       lcd.begin(20, 4);
-      break;    
-        
+      break;
+
 
     }
 
     now=millis();
     barrelHeater.activate();
-   
+
     if (alternateThermistors){
       barrelTh.sampleTemp();
       alternateThermistors = !alternateThermistors;
@@ -328,25 +339,25 @@ void soak(){
       alternateThermistors = !alternateThermistors;
     }
 
-    
+
     updateDiameter();
-    
+
     if (now>=computeTime){
-      
+
       barrelTemp = barrelTh.getTemp();
       nozzleTemp =nozzleTh.getTemp();
-      
+
       barrelPID.Compute();
       barrelHeater.setDutyCycle(barrelDutyCycle);
       nozzlePID.Compute();
       nozzleHeater.setPWM(nozzleDutyCycle);
 //      setNozzlePWM();
-      
+
       getMedianDia();
-      
+
       computeTime += 2000;
     }
-    
+
     //Reporting status during heat up
     if (now >= reportTime){
 
@@ -360,7 +371,7 @@ void soak(){
 
     }
   }
-  
+
   Serial.println("Finished Soaking");
   barrelHeater.off();
   nozzleHeater.off();
@@ -374,22 +385,22 @@ void displayPreheatScreen(){
     dtostrf(barrelSetPoint, 3,0,tempString);
     lcd.write("Preheating to ");
     lcd.write(tempString);
-    lcd.write(" C");  
+    lcd.write(" C");
 
     lcd.setCursor(0,2);
     lcd.write("Current temp: ");
     updateTemp(15,2);
     lcd.write(" C");
-} 
+}
 
-void updateTemp(int col, int row){
+void updateTemp(int col, int row) {
   lcd.setCursor(col,row);
   char tempInputString[10];
   dtostrf(barrelTemp, 3,0,tempInputString);
   lcd.write(tempInputString);
   }
 
-void  displaySoakScreen(){
+void displaySoakScreen() {
   lcd.clear();
   lcd.write("Soaking at ");
   char tempString[10];
@@ -403,7 +414,7 @@ void  displaySoakScreen(){
   lcd.write("Temp: ");
   updateTemp(6,2);
   }
-  
+
 void updateTime(int col, int row){
   int timeLeft = (goTime-now)/1000;
   int minutes = timeLeft/60;
@@ -417,10 +428,10 @@ void updateTime(int col, int row){
   lcd.write(":");
   if (seconds<10){
      secString[0] = '0';
-  }  
+  }
   lcd.write(secString);
 }
-  
+
 void getPreheatInput(){
 
 }
@@ -429,3 +440,4 @@ void getSoakInput(){
 
 }
 
+#endif // Preheat_h

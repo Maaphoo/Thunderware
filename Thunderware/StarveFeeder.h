@@ -1,5 +1,6 @@
 
-
+#ifndef StarveFeeder_h
+#define StarveFeeder_h
 
 boolean running;
 
@@ -7,6 +8,8 @@ float gramsPerMin = 7.5;
 float gramsPerSec = (gramsPerMin/60.0);
 unsigned long endTime;
 int stepInterval = 400;
+
+void stepMotor();
 
 
 void initializeStarveFeeder(){
@@ -16,14 +19,14 @@ void initializeStarveFeeder(){
  digitalWrite(directionPin, HIGH);
  digitalWrite(enablePin, HIGH);
 }
- 
+
 void runStarveFeeder(){
 //  if (millis()<endTime){
   stepMotor();
 //  } else {
 //    running = false;
-//    disableStepper(1); 
-//    disableStepper(2); 
+//    disableStepper(1);
+//    disableStepper(2);
 //    disableStepper(3);
 //    relayOff();
 //    nozzleOff();
@@ -33,7 +36,7 @@ void runStarveFeeder(){
 //  }
 }
 
- 
+
 void stepMotor(){
   static unsigned long now;
   static unsigned long stepTime = 0L;
@@ -71,14 +74,16 @@ void setFeedRate(float feedRate){
 }
 
 void increaseFeedRate(){
- stepInterval -= 10; 
+ stepInterval -= 10;
 }
 
 void decreaseFeedRate(){
- stepInterval += 10; 
+ stepInterval += 10;
 }
 
 
 float calcOutfeedRPM(){
  return (gramsPerMin*1.03*1000.0*2.0)/(PI*diaSetPoint*diaSetPoint*ro*PI);
 }
+
+#endif // StarveFeeder_h

@@ -1,4 +1,7 @@
+#ifndef Calipers_h
+#define Calipers_h
 
+void dataReceived();
 
 void initializeCalipers(){
   //initialize calipers
@@ -11,13 +14,13 @@ void initializeCalipers(){
 int bitCount;
 int bitCountPrev;
 
-void dataReceived() {  
+void dataReceived() {
  cli();
-  unsigned char data = (PINE & (1<<PE5)); // read DATA value as soon as possible 
+  unsigned char data = (PINE & (1<<PE5)); // read DATA value as soon as possible
   nowCal = millis();
   if((nowCal - lastInterrupt > 15)) {
     finalValue = value;
-    flag = true; 
+    flag = true;
    bitCountPrev = bitCount;
    bitCount=0;
   }
@@ -35,7 +38,7 @@ void updateDiameter(){
        // play arount with the 31 and 10 to see what values work best
       for (i = 31; i>=10;i--){
         bitWrite(finalValueGood, 31-i, bitRead(finalValue, i));
-      }      
+      }
       reportValue = finalValueGood;
 
       caliperReading = ((float)(finalValueGood)/3226.84);
@@ -45,12 +48,12 @@ void updateDiameter(){
 //      Serial.print(" Dia: ");
 //      Serial.print(caliperReading,3);
 //      Serial.print("  ");
-//      Serial.println(finalValueGood,BIN);      
+//      Serial.println(finalValueGood,BIN);
       if (caliperCount<7){
       *(diaMeasurements+caliperCount)=caliperReading;
       caliperCount++;
       }
-      
+
       caliperReadingInt =  (caliperReading * 1000L);
 
       finalValueGood = 0;
@@ -73,3 +76,4 @@ void getMedianDia(){
   caliperCount=0;
 }
 
+#endif // Calipers_h

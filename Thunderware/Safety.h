@@ -1,3 +1,6 @@
+#ifndef Safety_h
+#define Safety_h
+
 char safetyMsg[20];
 
 boolean heaterError(){
@@ -27,3 +30,4 @@ void safetyShutdown(){
         currentState = SELECT_PROFILE;
 
 }
+#endif // Safety_h

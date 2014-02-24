@@ -2,8 +2,8 @@
   Spooler.cpp - Library for controlling the spooling mechanism. A stepper
       motor turns the spool. Its speed is determined by the geometry
       of the spool, the distance from the center of the spool to the surface
-      of the filament and the rate at which filament is being extruded. 
-      
+      of the filament and the rate at which filament is being extruded.
+
   Created by Matthew P. Rogge, Februrary 12, 2014.
   Released into the public domain.
 */
@@ -17,7 +17,7 @@ Spooler::Spooler(StepperMotor *outfeed, int motor, int timer) : _motor(motor, ti
   _outfeed = outfeed;
 }
 
-
+/*
 
 void Spooler::setRPM()
 {
@@ -28,7 +28,8 @@ void Spooler::setRPM()
 
 void Spooler::calcLengthExtruded()
 {
-  
+
 }
 
 
+*/

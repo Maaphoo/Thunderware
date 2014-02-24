@@ -1,14 +1,26 @@
-//Extrude function  
+
+#ifndef Extrude_h
+#define Extrude_h
+
+#include "Preheat.h"
+#include "StarveFeeder.h"
+#include "TestReporting.h"
+
+void displayExtrudeScreen();
+void printDiameter(int col, int row);
+void printFtPerMin(int col, int row);
+
+//Extrude function
 void extrudeAutomatic(){
-  
+
   buzzer.setMsg(EXTRUDING);//Sound the buzzer that extrusion is beginning
-  
+
   barrelPID.SetTunings(consKp, consKi, consKd);
   now = millis();
   startExtrudingTime = now;
   computeTime = now+2000L;
   reportTime = now+1000L;
-  
+
   lcd.clear();
   displayExtrudeScreen();
 
@@ -22,9 +34,9 @@ void extrudeAutomatic(){
 //  timer1FastPWM(1000);
 //  timer2FastPWM(1000);
 //  timer4FastPWM(1000);
-  
+
 //  auger.setRPM(0);
-//  outfeed.setRPM(0);  
+//  outfeed.setRPM(0);
 //  spool.setRPM(0);
 
   if (barrelTh.getTemp()<170 && augerRPM>0){//Cant run the auger if the barrel isn't hot;
@@ -43,15 +55,15 @@ void extrudeAutomatic(){
       delay(5);
     }
   }
-  
+
   auger.enable();
   outfeed.enable();
   spool.enable();
-  
-  outfeedPID.SetMode(MANUAL);
-  
 
-  
+  outfeedPID.SetMode(MANUAL);
+
+
+
   boolean continueExtruding = true;
   feederOn();
   while(continueExtruding){
@@ -73,9 +85,9 @@ void extrudeAutomatic(){
           outfeedPID.SetMode(MANUAL);
         }
         break;
-      
+
       case '1'://increase Auger
-       { 
+       {
         auger.setRPM(auger.getRPM()+1);
         lcd.clear();
         lcd.write("Increase Auger to:");
@@ -83,16 +95,16 @@ void extrudeAutomatic(){
         char augerRPMString[10];
         dtostrf(augerRPM, 1,2,augerRPMString);
         lcd.write(augerRPMString);
-        
+
         //Serial.print("Increased Auger RPM to: ");
         //Serial.println(augerRPM);
 
         break;
        }
       case '4'://decrease Auger
-       { 
+       {
         auger.setRPM(auger.getRPM()-1);
-        
+
         //Notify on LCD
         lcd.clear();
         lcd.write("Decrease Auger to:");
@@ -107,12 +119,12 @@ void extrudeAutomatic(){
 
         break;
        }
-       
+
        case '2'://increase outfeed RPM
-       { 
-        outfeed.setRPM(outfeed.getRPM()+1); 
-         
-        //Notify on LCD 
+       {
+        outfeed.setRPM(outfeed.getRPM()+1);
+
+        //Notify on LCD
         lcd.clear();
         lcd.write("Increase outfeed to:");
         lcd.setCursor(0,1);
@@ -120,7 +132,7 @@ void extrudeAutomatic(){
         char outfeedRPMString[10];
         dtostrf(outfeedRPM, 1,2,outfeedRPMString);
         lcd.write(outfeedRPMString);
-        
+
         //Notify on Computer screen
         //Serial.print("Increased outfeed RPM to: ");
         //Serial.println(outfeedRPM);
@@ -128,9 +140,9 @@ void extrudeAutomatic(){
         break;
        }
       case '5'://decrease outfeed RPM
-       { 
-        outfeed.setRPM(outfeed.getRPM()-1); 
-        
+       {
+        outfeed.setRPM(outfeed.getRPM()-1);
+
         //Notify on LCD
         lcd.clear();
         lcd.write("Decrease outfeed to:");
@@ -139,7 +151,7 @@ void extrudeAutomatic(){
         char outfeedRPMString[10];
         dtostrf(outfeedRPM, 1,2,outfeedRPMString);
         lcd.write(outfeedRPMString);
-        
+
         //Notify on computer
         //Serial.print("Decreased outfeed RPM to: ");
         //Serial.println(outfeedRPM);
@@ -148,29 +160,29 @@ void extrudeAutomatic(){
        }
 
        case '3'://increase spool scale factor
-       { 
+       {
 //        setFeedRate(getFeedRate()+0.5);
           increaseFeedRate();
- 
+
         break;
        }
       case '6'://decrease outfeed RPM
-       { 
+       {
 //        setFeedRate(getFeedRate()-0.5);
           decreaseFeedRate();
         break;
-       }        
+       }
         //Notify on Computer screen
         //Serial.print("Decreased spool Scale Factor to: ");
         //Serial.println(sf);
         break;
-        
+
        case '7':
-       
+
         //Sets the outfeedRPM at the theoretical correct speed to match the pellet input
 //        outfeedRPM = calcOutfeedRPM();
-        outfeed.setRPM(0); 
-       
+        outfeed.setRPM(0);
+
        break;
 
        case'8':
@@ -179,28 +191,28 @@ void extrudeAutomatic(){
         Serial.println(diaKp);
         outfeedPID.SetTunings(diaKp,diaKi,diaKd);
         break;
-     
+
        case '0':
         diaKp-=.1;
         Serial.print("diaKp decreased to: ");
         Serial.println(diaKp);
         outfeedPID.SetTunings(diaKp,diaKi,diaKd);
         break;
-      
-           
+
+
        case'9':
         diaKi+=.1;
         Serial.print("diaKi increased to: ");
         Serial.println(diaKi);
         outfeedPID.SetTunings(diaKp,diaKi,diaKd);
         break;
-  
+
       case '#':
         diaKi-=.1;
         Serial.print("diaKi decreased to: ");
         Serial.println(diaKi);
         outfeedPID.SetTunings(diaKp,diaKi,diaKd);
-        break;   
+        break;
 
       case 'A'://Stop!!!
       {
@@ -214,7 +226,7 @@ void extrudeAutomatic(){
         boolean waitForResponse = true;
         while(waitForResponse){
           key = kpd.getKey();
-          
+
           //Allow for keyboard input as well
           if (Serial.available() > 0) {
             key = (char)Serial.read();
@@ -237,10 +249,10 @@ void extrudeAutomatic(){
         }
         break;
       }
-        
-            
+
+
       case 'B'://increase Tempature setpoint
-       { 
+       {
         lcd.clear();
         lcd.write("Increase temp to:");
         lcd.setCursor(0,1);
@@ -248,15 +260,15 @@ void extrudeAutomatic(){
         char tempSetPointString[10];
         dtostrf(*tempSetPoint, 1,2,tempSetPointString);
         lcd.write(tempSetPointString);
-                
+
         //Serial.print("Increased temp set point to: ");
         //Serial.println(*tempSetPoint);
 
         break;
-       } 
-       
+       }
+
       case 'C'://decrease temp set point
-       { 
+       {
         lcd.clear();
         lcd.write("Decrease temp to:");
         lcd.setCursor(0,1);
@@ -269,19 +281,19 @@ void extrudeAutomatic(){
         //Serial.println(*tempSetPoint);
 
         break;
-       } 
-        
+       }
+
         case 'D':
         if (getFeederState()){
           feederOff();
         }else{
           feederOn();
         }
-        break;  
+        break;
     }
-    
+
     now = millis();
-   
+
     //turn relay on or off (or neither)
     barrelHeater.activate();
 
@@ -293,48 +305,48 @@ void extrudeAutomatic(){
       nozzleTh.sampleTemp();
       alternateThermistors = !alternateThermistors;
     }
-    
+
     //If another diameter measurement is ready, get it
     updateDiameter();
-    
+
     //get lumps from starve feeder if needed
 //    runStarveFeeder();
-    
+
     //computations that get done once every 2 seconds
     if (now>=computeTime){
-      
+
       //Get Temps and update temp controllers
       barrelTemp = barrelTh.getTemp();
       nozzleTemp = nozzleTh.getTemp();
-      
+
       //compute outputs for the PID controllers.
       barrelPID.Compute();
       barrelHeater.setDutyCycle(barrelDutyCycle);
-      
+
       nozzlePID.Compute();
-      
+
       //Set the PWM that heats the nozzle of the extruder
       nozzleHeater.setPWM(nozzleDutyCycle);
 //      setNozzlePWM();
-      
+
       //Get Diameter and update outfeed controller
       getMedianDia();
-      outfeedPID.Compute(); 
+      outfeedPID.Compute();
       outfeed.setRPM(0);
-      spool.setRPM(0);      
-      
+      spool.setRPM(0);
+
       //Get ready for next compute time
       computeTime += 2000;
     }
-    
+
     //report sensor data
     if (now >= reportTime){
 
       //Safety check
      // if (heaterError()) {return;}
-    
+
       displayExtrudeScreen();
-      
+
      reportCurrentMeasurements();
 
       reportTime += 1000;
@@ -346,22 +358,22 @@ void displayExtrudeScreen(){
 //  lcd.clear();
   lcd.setCursor(0,0);
   lcd.write("Extruding");
-  
+
   lcd.setCursor(0,1);
   lcd.write("Temp: ");
   updateTemp(6,1);
-  lcd.write(" C");  
-  
+  lcd.write(" C");
+
   lcd.setCursor(0,2);
   lcd.write("Dia: ");
   printDiameter(6,2);
   lcd.write(" mm");
-  
+
   lcd.setCursor(0,3);
   lcd.write("Rate: ");
   printFtPerMin(6,3);
   lcd.write("ft/min");
-  
+
 //  if (outfeedPID.GetMode() == MANUAL){
 //    lcd.write("Press * for AUTO  ");
 //  } else {
@@ -375,12 +387,14 @@ void printDiameter(int col, int row){
     lcd.setCursor(col,row);
     char diaInputString[10];
     dtostrf(medianDia, 1,2,diaInputString);
-    lcd.write(diaInputString);      
+    lcd.write(diaInputString);
 }
 
 void printFtPerMin(int col, int row){
     lcd.setCursor(col,row);
     char rateInputString[10];
     dtostrf(outfeedRPM*2.0*PI*ro*0.0032808, 1,2,rateInputString);
-    lcd.write(rateInputString);      
+    lcd.write(rateInputString);
 }
+
+#endif // Extrude_h

@@ -1,4 +1,5 @@
-
+#ifndef config_h
+#define config_h
 
 #define timeBase  2000
 
@@ -38,7 +39,6 @@
 
 //StarveFeeder
 
-#define gearRatio 3
 #define stepMode 16.0
 
 #define enablePin 48
@@ -46,3 +46,4 @@
 #define directionPin 44
 
 
+#endif // config_h
