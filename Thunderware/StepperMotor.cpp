@@ -13,12 +13,12 @@
 #include "StepperMotor.h"
 #include "config.h"
 
-StepperMotor::StepperMotor(Motor motor, int timerNumber) : _timer(timerNumber)
+StepperMotor::StepperMotor(PinSet pinSet, int timerNumber) : _timer(timerNumber)
 {
-  _motor = motor;
+  _pinSet = pinSet;
   //Set Direction, Step and Enable pins to output
-  switch (_motor){
-    case AUGER:
+  switch (_pinSet){
+    case SET_3_14_8:
       _ratio = augerStepMode*gearRatio;
 
       DDRJ |= B00000010; //Direction, Pin 14 to output
@@ -34,7 +34,7 @@ StepperMotor::StepperMotor(Motor motor, int timerNumber) : _timer(timerNumber)
 
       break;
 
-    case OUTFEED:
+    case SET_11_15_12:
       _ratio = outfeedStepMode;
 
       DDRJ |= B00000001; //Direction, pin 15 to output
@@ -50,7 +50,7 @@ StepperMotor::StepperMotor(Motor motor, int timerNumber) : _timer(timerNumber)
 
       break;
 
-    case SPOOL:
+    case SET_10_16_9:
         _ratio = spoolStepMode;
 
       DDRH |= B00000010; //Direction, pin 16 to output
@@ -84,20 +84,20 @@ float StepperMotor::getRPM(){return _rpm;}
 //   calcSpoolRPM();
 
 void StepperMotor::enable() {
-  switch (_motor){
-    case AUGER:
+  switch (_pinSet){
+    case SET_3_14_8:
       //Auger Stepper pin 8
       //disable is backwards for the KL stepper driver being used. Set HIGH
       PORTH &= B11011111;
       break;
 
-    case OUTFEED:
+    case SET_11_15_12:
       //Outfeed Stepper pin 12
       //disable outfeed stepper by setting the enable pin Low
       PORTB |= B01000000;
       break;
 
-    case SPOOL:
+    case SET_10_16_9:
        //Spool Stepper pin 9
        //disable Spool stepper by setting the enable pin low
        PORTH |= B01000000;
@@ -106,20 +106,20 @@ void StepperMotor::enable() {
 }
 
 void StepperMotor::disable() {
-  switch (_motor){
-    case AUGER:
+  switch (_pinSet){
+    case SET_3_14_8:
       //Auger Stepper pin 8
       //disable is backwards for the KL stepper driver being used. Set HIGH
       PORTH |= B00100000;
       break;
 
-    case OUTFEED:
+    case SET_11_15_12:
       //Outfeed Stepper pin 12
       //disable outfeed stepper by setting the enable pin Low
       PORTB &= B10111111;
       break;
 
-    case SPOOL:
+    case SET_10_16_9:
        //Spool Stepper pin 9
        //disable Spool stepper by setting the enable pin low
        PORTH &= B10111111;

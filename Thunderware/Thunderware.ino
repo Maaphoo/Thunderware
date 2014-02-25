@@ -285,9 +285,9 @@ NozzleHeater nozzleHeater;
 BarrelHeater barrelHeater;
 
 //Initialize Stepper Motors
-StepperMotor auger(StepperMotor::AUGER, 4);
-StepperMotor outfeed(StepperMotor::OUTFEED, 1);
-StepperMotor spool(StepperMotor::SPOOL, 2);
+StepperMotor auger(StepperMotor::SET_3_14_8, 4);
+StepperMotor outfeed(StepperMotor::SET_11_15_12, 1);
+StepperMotor spool(StepperMotor::SET_10_16_9, 2);
 
 //Initialize FastPWM timers
 //FastPWM timer1(1);
