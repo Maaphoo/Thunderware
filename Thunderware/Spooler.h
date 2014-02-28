@@ -12,21 +12,29 @@
 
 #include "Arduino.h"
 #include "StepperMotor.h"
+#include "Outfeed.h"
 
 class StepperMotor;
+class Outfeed;
 
 class Spooler
 {
   public:
 
-    Spooler(StepperMotor *outfeed, StepperMotor::PinSet pinSet, int timer);//constructor
+    Spooler(Outfeed& outfeed, StepperMotor::PinSet pinSet, int timer);//constructor
     void setRPM();
+    void setRPM(float rpm);
+    void enable();
+    void disable(); 
+    Outfeed _outfeed;
+    
   private:
-    StepperMotor _motor;
-    StepperMotor *_outfeed;
-    float _mmExtruded;
+    float _motorRPM;
+    float _diaSetPoint;
     float _filamentSurfaceRaduis;
-    void calcLengthExtruded();
+    StepperMotor _motor;
+
+
 };
 
 #endif

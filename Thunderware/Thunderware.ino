@@ -106,7 +106,8 @@ enum ExtruderState {
   EXTRUDE_MANUAL,
   EXTRUDE_AUTOMATIC,
   EXTRUSION_COMPLETE,
-  SAFETY_SHUTDOWN
+  SAFETY_SHUTDOWN,
+  TEST
 };
 ExtruderState currentState;
 
@@ -239,6 +240,7 @@ void extrudeManual();
 void extrudeAutomatic();
 void extrudeComplete();
 void safetyShutdown();
+void test();
 
 //Pointers to State functios
 void (*state_table[])()={
@@ -249,7 +251,8 @@ void (*state_table[])()={
   extrudeManual,
   extrudeAutomatic,
   extrudeComplete,
-  safetyShutdown
+  safetyShutdown,
+  test
 };
 
 //initialize library with LCD interface pins
@@ -286,8 +289,9 @@ BarrelHeater barrelHeater;
 
 //Initialize Stepper Motors
 StepperMotor auger(StepperMotor::SET_3_14_8, 4);
-StepperMotor outfeed(StepperMotor::SET_11_15_12, 1);
-StepperMotor spool(StepperMotor::SET_10_16_9, 2);
+
+Outfeed outfeed(StepperMotor::SET_11_15_12, 1);
+Spooler spool(outfeed, StepperMotor::SET_10_16_9, 2);
 
 //Initialize FastPWM timers
 //FastPWM timer1(1);
@@ -299,10 +303,9 @@ StepperMotor spool(StepperMotor::SET_10_16_9, 2);
 #include "FSM.h"
 #include "Preheat.h"
 #include "Safety.h"
-#include "Spool.h"
 #include "StarveFeeder.h"
-#include "StepInput.h"
 #include "TestReporting.h"
+#include "test.h"
 
 
 void setup()
@@ -334,7 +337,8 @@ void setup()
   outfeedPID.SetMode(MANUAL);
   outfeedPID.SetOutputLimits(0,200);
 
-  currentState = SELECT_PROFILE;
+//  currentState = SELECT_PROFILE;
+  currentState = TEST;
 //  currentState = EXTRUDE_AUTOMATIC;
 }
 

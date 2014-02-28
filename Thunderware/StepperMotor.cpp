@@ -55,7 +55,7 @@ StepperMotor::StepperMotor(PinSet pinSet, int timerNumber) : _timer(timerNumber)
 
       DDRH |= B00000010; //Direction, pin 16 to output
       DDRH |= B01000000; //Enable, pin 9 to output
-      DDRH |= B00010000;//Step, pin 10 to output
+      DDRB |= B00010000;//Step, pin 10 to output
 
       //set spool Stepper direction pin (pin 16)
       if (spoolDir){
@@ -70,7 +70,6 @@ StepperMotor::StepperMotor(PinSet pinSet, int timerNumber) : _timer(timerNumber)
 
 void StepperMotor::setRPM(double RPM){
   _rpm = RPM;
-  //use timer4
   float freq = RPM/60.0*200.0*(float)_ratio;
   _timer.setFrequency(freq);
 }

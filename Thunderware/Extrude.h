@@ -333,7 +333,7 @@ void extrudeAutomatic(){
       getMedianDia();
       outfeedPID.Compute();
       outfeed.setRPM(0);
-      spool.setRPM(0);
+      spool.setRPM();
 
       //Get ready for next compute time
       computeTime += 2000;
