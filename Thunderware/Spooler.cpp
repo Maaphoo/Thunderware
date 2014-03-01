@@ -12,8 +12,9 @@
 #include "Spooler.h"
 #include "config.h"
 
-Spooler::Spooler( Outfeed& outfeed, StepperMotor::PinSet pinSet, int timer) : _outfeed(outfeed), _motor(pinSet, timer)
+Spooler::Spooler( Outfeed* outfeed, StepperMotor::PinSet pinSet, int timer) :   _motor(pinSet, timer)
 {
+  _outfeed = outfeed;
   _diaSetPoint = 1.75;
 }
 
@@ -22,11 +23,11 @@ Spooler::Spooler( Outfeed& outfeed, StepperMotor::PinSet pinSet, int timer) : _o
 void Spooler::setRPM()
 {
 
-  _filamentSurfaceRaduis = pow(c2*_diaSetPoint*_diaSetPoint*_outfeed.getMmExtruded()+c3,0.5);
-  _motorRPM = ro*rsc1/(_filamentSurfaceRaduis*rsm)*_outfeed.getRPM();
+  _filamentSurfaceRaduis = pow(c2*_diaSetPoint*_diaSetPoint*_outfeed->getMmExtruded()+c3,0.5);
+  _motorRPM = ro*rsc1/(_filamentSurfaceRaduis*rsm)*_outfeed->getRPM();
   _motor.setRPM(_motorRPM);
   Serial.print("Spool's outfeed RPM: ");
-  Serial.println(_outfeed.getRPM());
+  Serial.println(_outfeed->getRPM());
   Serial.print("Spool RPM: ");
   Serial.println(_motorRPM);
 

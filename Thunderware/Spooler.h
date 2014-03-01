@@ -21,12 +21,12 @@ class Spooler
 {
   public:
 
-    Spooler(Outfeed& outfeed, StepperMotor::PinSet pinSet, int timer);//constructor
+    Spooler(Outfeed* outfeed, StepperMotor::PinSet pinSet, int timer);//constructor
     void setRPM();
     void setRPM(float rpm);
     void enable();
     void disable(); 
-    Outfeed _outfeed;
+    Outfeed* _outfeed;
     
   private:
     float _motorRPM;

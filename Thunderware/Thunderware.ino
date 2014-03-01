@@ -87,6 +87,7 @@ moved buzzer to pin 1
   #include <stdio.h>
   #include <string.h>
   #include "application.h"
+  #include "Configuration.h"
   #include "config.h"
   #include "Buzzer.h"
   #include "NozzleHeater.h"
@@ -112,6 +113,7 @@ enum ExtruderState {
 ExtruderState currentState;
 
 Application app;
+Configuration configuration;
 
 
   //Stepper setup
@@ -291,7 +293,7 @@ BarrelHeater barrelHeater;
 StepperMotor auger(StepperMotor::SET_3_14_8, 4);
 
 Outfeed outfeed(StepperMotor::SET_11_15_12, 1);
-Spooler spool(outfeed, StepperMotor::SET_10_16_9, 2);
+Spooler spool(&outfeed, StepperMotor::SET_10_16_9, 2);
 
 //Initialize FastPWM timers
 //FastPWM timer1(1);
