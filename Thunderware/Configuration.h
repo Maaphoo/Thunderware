@@ -45,8 +45,12 @@ public:
 
     //nozzle
     float nozzleTemp;
-  } currentProfile;
+  } profile, tempProfile;
 
+
+  /*The physicalConfig struct holds information describing *
+   *the physical setup of the extruder.                    */
+   
   struct PhysicalConfig{
     //variables that help with storage
     boolean configStored;
@@ -100,7 +104,7 @@ public:
     //Diameter Sensor
     float slope;
     float yIntercept;
-  }currentConfig;
+  }physical;
 
 
   Configuration();//constructor
@@ -108,15 +112,17 @@ public:
   void saveConfig();
   void deleteConfig();
   boolean loadConfig();//returns true if successfull
-  
+  void loadDefaultConfig();
+
   //Profile is left empty unless one is selected or default is used. 
   boolean saveProfile();//Saves profile in first available position. Returns true on success. 
-  boolean saveProfile(int profileNum);//Saves profile in designated position. Returns true on success
+  void saveProfile(int profileNum);//Saves profile in designated position.
   boolean loadProfile(int profileNum);
+  void loadDefaultProfile();
   void deleteProfile(int profileNum);
   
-  //returns a pointer to the title of the indicated profile
-  char *getTitle(int profileNum);
+  //returns a pointer to the name of the indicated profile
+  char *getName(int profileNum);
   
 
 private:

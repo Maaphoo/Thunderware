@@ -25,24 +25,40 @@ void test()
   //  spool.setRPM();
   // delay(10000); 
   // }
-  delay(5000);
-  EEPROM_readAnything(0,configuration.currentConfig.configStored);
-  if (configuration.currentConfig.configStored){
-    Serial.println("The config file is stored");
-    Serial.println(configuration.currentConfig.nozzleTBCoefficient);
-    Serial.println("The config file is being deleted");
-    configuration.deleteConfig();
-  } 
-  else {
-    Serial.println("The config file is not stored");
-    Serial.println(configuration.currentConfig.nozzleTBCoefficient);
-    Serial.println("Changing nozzleTBCoefficient");
-    configuration.currentConfig.nozzleTBCoefficient= 67;
-    configuration.saveConfig();
-  }
 
   delay(5000);
-//  configuration.currentConfig.nozzleTBCoefficient = 55;
+    Serial.println("Saving new name to profile 1: Prof1Name");
+    configuration.loadProfile(1);
+    strcpy(configuration.profile.name, "Prof1Name");
+    configuration.saveProfile(1);
+    delay(200);
+  Serial.println("Deleting Profile 2");
+  configuration.deleteProfile(2);
+  Serial.println();
+  delay(2000);  
+  Serial.println("Attempting to load profile 2");
+  if (configuration.loadProfile(2)){
+    Serial.println("Able to load profile 2");
+  } else {
+    Serial.println("Unable to load profile 2");
+  }
+  delay(2000);  
+  Serial.println("loading Profile 1");
+  configuration.loadProfile(1);
+  Serial.print("It's name is: ");
+  Serial.println(configuration.profile.name);
+  Serial.println();
+  Serial.println("Done with test");
+  delay(1000000);
+    
+
+
+//      Serial.print("Getting Just the name: ");
+//      Serial.println(configuration.getName(1));
+//    }else{
+//      Serial.println("loading Unsuccessful");
+//    } 
+//  configuration.physical.nozzleTBCoefficient = 55;
 //  configuration.saveConfig();
 }
 

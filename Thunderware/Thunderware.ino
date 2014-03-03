@@ -95,6 +95,7 @@ moved buzzer to pin 1
   #include "StepperMotor.h"
   #include "FastPWM.h"
   #include "Spooler.h"
+  #include "OMMenuMgr.h"
 
 //Finite State Machine for controlling the state of the extruder.
 
@@ -257,27 +258,39 @@ void (*state_table[])()={
   test
 };
 
+    // lcd pins
+const byte LCD_RS  = 22;
+const byte LCD_EN  = 24;
+const byte LCD_D4  = 26;
+const byte LCD_D5  = 28;
+const byte LCD_D6  = 30;
+const byte LCD_D7  = 32;
+
+
+const byte LCD_ROWS = 4;
+const byte LCD_COLS = 20;
+
 //initialize library with LCD interface pins
-LiquidCrystal lcd(26,24,22,37,35,33,31,29,27,25,23);
+LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
 
-//Keypad Rows and Columns
-const byte ROWS=4;
-const byte COLS=4;
-
-//initialize keypad pins
-byte rowPins[ROWS]={45,43,41,39};
-byte colPins[COLS]={53,51,49,47};
-
-//Keymap
-char keys[ROWS][COLS]={
-    {'1','4','7','*'},
-    {'2','5','8','0'},
-    {'3','6','9','#'},
-    {'A','B','C','D'}
-};
-
-//Initialize Keypad
+ //Keypad Rows and Columns
+ const byte ROWS=4;
+ const byte COLS=4;
+ 
+ //initialize keypad pins
+ byte rowPins[ROWS]={47, 49, 51, 53};
+ byte colPins[COLS]={39, 41, 43, 45};
+ 
+ //Keymap
+ char keys[ROWS][COLS]={
+ {'1','2','3','A'},
+ {'4','5','6','B'},
+ {'7','8','9','C'},
+ {'*','0','#','D'}
+ };
+ 
 Keypad kpd = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS);
+
 char key;//The key that is pressed
 
 //initialize buzzer
@@ -295,6 +308,19 @@ StepperMotor auger(StepperMotor::SET_3_14_8, 4);
 Outfeed outfeed(StepperMotor::SET_11_15_12, 1);
 Spooler spool(&outfeed, StepperMotor::SET_10_16_9, 2);
 
+MenuKeyMap menuKeys = { 
+   { 'A', 'B', 'C', 'D', '#' },
+   {BUTTON_BACK, BUTTON_INCREASE, BUTTON_DECREASE, BUTTON_SELECT, BUTTON_FORWARD}
+};
+
+ //        List of items in menu level
+MENU_LIST root_list[]   = {  };
+
+MENU_ITEM menu_root     = { {"Root"},        ITEM_MENU,   MENU_SIZE(root_list),    MENU_TARGET(&root_list) };
+
+
+OMMenuMgr Menu(&menu_root, MENU_KEYPAD);
+
 //Initialize FastPWM timers
 //FastPWM timer1(1);
 //FastPWM timer2(2);
@@ -309,6 +335,7 @@ Spooler spool(&outfeed, StepperMotor::SET_10_16_9, 2);
 #include "TestReporting.h"
 #include "test.h"
 
+                  // Root item is always created last, so we can add all other items to it
 
 void setup()
 {
@@ -342,12 +369,58 @@ void setup()
 //  currentState = SELECT_PROFILE;
   currentState = TEST;
 //  currentState = EXTRUDE_AUTOMATIC;
+  Menu.setDrawHandler(uiDraw);
+  Menu.setExitHandler(uiClear);
+  Menu.setKeypadInput(&kpd, &menuKeys);
+  Menu.enable(true); 
 }
 
   void loop(){
    state_table[currentState]();
  }
 
+void testAction() {
+  Serial.println("Action");
+ digitalWrite(13, !digitalRead(13)); 
+}
+
+void uiDraw(char* p_text, int p_row, int p_col, int len) {
+  
+  p_row ++;
+  lcd.setCursor(p_col, p_row);
+  
+  for( int i = 0; i < len; i++ ) {
+    if( p_text[i] < '!' || p_text[i] > '~' )
+      lcd.write(' ');
+    else  
+      lcd.write(p_text[i]);
+  }
+}
+
+
+void uiClear() {
+  
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Enter for Menu");
+}
+
+
+void uiQwkScreen() {
+  lcd.clear();
+  Menu.enable(false);
+  
+  lcd.print("Action!");
+  lcd.setCursor(0, 1);
+  lcd.print("Enter 2 return");
+  
+  while( Menu.checkInput() != BUTTON_SELECT ) {
+    ; // wait!
+  }
+  
+  Menu.enable(true);
+  lcd.clear();
+}  
 
 
 
