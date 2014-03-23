@@ -12,7 +12,7 @@
 #include "Spooler.h"
 #include "config.h"
 
-Spooler::Spooler( Outfeed* outfeed, StepperMotor::PinSet pinSet, int timer) :   _motor(pinSet, timer)
+Spooler::Spooler(Configuration* configuration, Outfeed* outfeed) :   _motor(configuration, configuration->physical.spoolerPinSet)
 {
   _outfeed = outfeed;
   _diaSetPoint = 1.75;

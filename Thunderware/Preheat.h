@@ -19,10 +19,10 @@ void preheat(){
   //Display info on LCD
   displayPreheatScreen();
 
-  barrelPID.SetMode(MANUAL);
-  barrelHeater.setDutyCycle(80);//go full bore until close to the set temperature
+//  barrelPID.SetMode(MANUAL);
+  barrel.setDutyCycle(80);//go full bore until close to the set temperature
 
-  barrelPID.SetTunings(consKp, consKi, consKd);
+//  barrelPID.SetTunings(consKp, consKi, consKd);
 
  boolean initialRise=true;
 
@@ -84,22 +84,22 @@ void preheat(){
       break;
 
      case'8':
-     consKp+=.1;
-      Serial.print("Kp increased to: ");
-      Serial.println(consKp);
-      barrelPID.SetTunings(consKp,consKi,consKd);
+//     consKp+=.1;
+//      Serial.print("Kp increased to: ");
+//      Serial.println(consKp);
+//      barrelPID.SetTunings(consKp,consKi,consKd);
       break;
 
     case '0':
-      consKp-=.1;
-      Serial.print("Kp decreased to: ");
-      Serial.println(consKp);
-      barrelPID.SetTunings(consKp,consKi,consKd);
+//      consKp-=.1;
+//      Serial.print("Kp decreased to: ");
+//      Serial.println(consKp);
+//      barrelPID.SetTunings(consKp,consKi,consKd);
       break;
 
       case 'A':
-      barrelHeater.off();
-      nozzleHeater.off();
+      barrel.off();
+      nozzle.off();
       currentState = SELECT_PROFILE;
       return;
 
@@ -112,7 +112,7 @@ void preheat(){
       return;
   }
     now = millis();
-    barrelHeater.activate();
+    barrel.activate();
 
     if (alternateThermistors){
       app.barrelThermistor()->sampleTemp();
@@ -122,31 +122,31 @@ void preheat(){
       alternateThermistors = !alternateThermistors;
     }
 
-    updateDiameter();
+    caliper.sample();
 
     if (now>=computeTime){
       barrelTemp = app.barrelThermistor()->getTemp();
       nozzleTemp = app.nozzleThermistor()->getTemp();
 
       if(barrelTemp>(barrelSetPoint-7) && initialRise){
-        barrelPID.SetTunings(consKp, consKi, consKd);
-//        barrelPID.SetMode(MANUAL);
-//        barrelDutyCycle=20;
-        barrelPID.SetMode(AUTOMATIC);
+//        barrelPID.SetTunings(consKp, consKi, consKd);
+////        barrelPID.SetMode(MANUAL);
+////        barrelDutyCycle=20;
+//        barrelPID.SetMode(AUTOMATIC);
         Serial.println();
         initialRise = false;
       }
 
-      barrelPID.Compute();
-      barrelHeater.setDutyCycle(barrelDutyCycle);
-      nozzlePID.Compute();
+//      barrelPID.Compute();
+      barrel.setDutyCycle(barrelDutyCycle);
 
-      nozzleHeater.setPWM(nozzleDutyCycle);
+
+
 //      setNozzlePWM();
 
       if (heaterError()) {return;}
 
-      getMedianDia();
+      outfeed.sample();
 
       computeTime += 2000;
     }
@@ -160,8 +160,8 @@ void preheat(){
     displayPreheatScreen();
     }
   }
-  barrelHeater.off();
-  nozzleHeater.off();
+  barrel.off();
+  nozzle.off();
 //  atTempSetPointSound();
   currentState = SOAK;
 }
@@ -174,10 +174,10 @@ void soak(){
 
 
 
-  barrelPID.SetTunings(consKp, consKi, consKd);
-  barrelPID.SetMode(MANUAL);
-  barrelDutyCycle = 30;
-  barrelPID.SetMode(AUTOMATIC);
+//  barrelPID.SetTunings(consKp, consKi, consKd);
+//  barrelPID.SetMode(MANUAL);
+//  barrelDutyCycle = 30;
+//  barrelPID.SetMode(AUTOMATIC);
 
   now=millis();
   goTime=now + soakTime*60L*1000L;
@@ -201,8 +201,8 @@ void soak(){
     }
     switch(key){
       case 'A':
-         barrelHeater.off();
-         nozzleHeater.off();
+         barrel.off();
+         nozzle.off();
          currentState = SELECT_PROFILE;
          return;
 
@@ -246,7 +246,7 @@ void soak(){
         lcd.write("Press D to continue");
         boolean noInput = true;
         while (noInput){
-          barrelHeater.activate();
+          barrel.activate();
           key = kpd.getKey();
           //Allow for keyboard input as well
           if (Serial.available() > 0) {
@@ -282,43 +282,43 @@ void soak(){
 
        case '7':
 
-       if (barrelPID.GetMode() == MANUAL){
-        barrelPID.SetMode(AUTOMATIC);
-        Serial.print("Barrel PID set to Automatic");
-       }else{
-        barrelPID.SetMode(MANUAL);
-        Serial.print("Barrel PID set to Manual");
-       }
+//       if (barrelPID.GetMode() == MANUAL){
+//        barrelPID.SetMode(AUTOMATIC);
+//        Serial.print("Barrel PID set to Automatic");
+//       }else{
+//        barrelPID.SetMode(MANUAL);
+//        Serial.print("Barrel PID set to Manual");
+//       }
 
        break;
 
        case'8':
-        consKp+=.1;
-        Serial.print("ConsKp increased to: ");
-        Serial.println(consKp);
-        barrelPID.SetTunings(consKp,consKi,consKd);
+//        consKp+=.1;
+//        Serial.print("ConsKp increased to: ");
+//        Serial.println(consKp);
+//        barrelPID.SetTunings(consKp,consKi,consKd);
         break;
 
       case '0':
-        consKp-=.1;
-        Serial.print("ConsKp decreased to: ");
-        Serial.println(consKp);
-        barrelPID.SetTunings(consKp,consKi,consKd);
+//        consKp-=.1;
+//        Serial.print("ConsKp decreased to: ");
+//        Serial.println(consKp);
+//        barrelPID.SetTunings(consKp,consKi,consKd);
         break;
 
 
        case'9':
-        consKi+=.001;
-        Serial.print("consKi increased to: ");
-        Serial.println(consKi);
-        barrelPID.SetTunings(consKp,consKi,consKd);
+//        consKi+=.001;
+//        Serial.print("consKi increased to: ");
+//        Serial.println(consKi);
+//        barrelPID.SetTunings(consKp,consKi,consKd);
         break;
 
       case '#':
-        consKi-=.001;
-        Serial.print("consKi decreased to: ");
-        Serial.println(consKi);
-        barrelPID.SetTunings(consKp,consKi,consKd);
+//        consKi-=.001;
+//        Serial.print("consKi decreased to: ");
+//        Serial.println(consKi);
+//        barrelPID.SetTunings(consKp,consKi,consKd);
         break;
 
       case 'D':
@@ -329,7 +329,7 @@ void soak(){
     }
 
     now=millis();
-    barrelHeater.activate();
+    barrel.activate();
 
     if (alternateThermistors){
       app.barrelThermistor()->sampleTemp();
@@ -340,20 +340,20 @@ void soak(){
     }
 
 
-    updateDiameter();
+    outfeed.sample();
 
     if (now>=computeTime){
 
       barrelTemp = app.barrelThermistor()->getTemp();
       nozzleTemp = app.nozzleThermistor()->getTemp();
 
-      barrelPID.Compute();
-      barrelHeater.setDutyCycle(barrelDutyCycle);
-      nozzlePID.Compute();
-      nozzleHeater.setPWM(nozzleDutyCycle);
+//      barrelPID.Compute();
+      barrel.setDutyCycle(barrelDutyCycle);
+
+
 //      setNozzlePWM();
 
-      getMedianDia();
+      outfeed.update();
 
       computeTime += 2000;
     }
@@ -373,8 +373,8 @@ void soak(){
   }
 
   Serial.println("Finished Soaking");
-  barrelHeater.off();
-  nozzleHeater.off();
+  barrel.off();
+  nozzle.off();
 //  soakCompleteSound();
   currentState = EXTRUDE_AUTOMATIC;
 }

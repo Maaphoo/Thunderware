@@ -60,7 +60,7 @@ Jan_12 updated starve feeder for the new starve feeder design.
 
 12/7 - had a melt plug due to ground up pellets caused by over feeding. ground out top of barrel
        and recalibrated feeder while attached as normal. This way any noise is taken into account.
-       ß
+       
 12/6 rewrote/calibrated Starve feeder. Works differently now. DEC_6_2works well still trying to improve
 
 
@@ -82,6 +82,7 @@ moved buzzer to pin 1
   #include <Keypad.h>
   #include <PID_v1.h>
   #include <EEPROM.h>
+  #include <Wire.h>
   #include "EEPROMAnything.h"
   #include "Thermistor.h"
   #include <stdio.h>
@@ -90,11 +91,13 @@ moved buzzer to pin 1
   #include "Configuration.h"
   #include "config.h"
   #include "Buzzer.h"
-  #include "NozzleHeater.h"
-  #include "BarrelHeater.h"
+  #include "Nozzle.h"
+  #include "Barrel.h"
   #include "StepperMotor.h"
   #include "FastPWM.h"
   #include "Spooler.h"
+  #include "StarveFeeder.h"
+  #include "Caliper.h"
   #include "OMMenuMgr.h"
 
 //Finite State Machine for controlling the state of the extruder.
@@ -224,8 +227,8 @@ Configuration configuration;
   int maxNozDutyCycle = 250;
 
   //Setup PID for heater
-  PID barrelPID(&barrelTemp, &barrelDutyCycle, &barrelSetPoint, consKp, consKi, consKd, DIRECT);
-  PID nozzlePID(&nozzleTemp, &nozzleDutyCycle, &nozzleSetPoint, nozKp, nozKi, nozKd, DIRECT);
+//  PID barrelPID(&barrelTemp, &barrelDutyCycle, &barrelSetPoint, consKp, consKi, consKd, DIRECT);
+//  PID nozzlePID(&nozzleTemp, &nozzleDutyCycle, &nozzleSetPoint, nozKp, nozKi, nozKd, DIRECT);
 
 
   //Setup PID for outfeed motor
@@ -278,8 +281,9 @@ LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
  const byte COLS=4;
  
  //initialize keypad pins
- byte rowPins[ROWS]={47, 49, 51, 53};
- byte colPins[COLS]={39, 41, 43, 45};
+
+ byte rowPins[ROWS]={23,25,27,29};
+ byte colPins[COLS]={31,33,35,37};
  
  //Keymap
  char keys[ROWS][COLS]={
@@ -293,20 +297,22 @@ Keypad kpd = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
 char key;//The key that is pressed
 
-//initialize buzzer
+//Initialize objects
 Buzzer buzzer;
 
-//Initialize nozzle heater
-NozzleHeater nozzleHeater;
+Nozzle nozzle(&configuration);
 
-//Initialize Barrel heater
-BarrelHeater barrelHeater;
+Barrel barrel(&configuration);
 
-//Initialize Stepper Motors
-StepperMotor auger(StepperMotor::SET_3_14_8, 4);
+StarveFeeder starveFeeder(&configuration);
 
-Outfeed outfeed(StepperMotor::SET_11_15_12, 1);
-Spooler spool(&outfeed, StepperMotor::SET_10_16_9, 2);
+StepperMotor auger(&configuration, configuration.physical.augerPinSet);
+
+Outfeed outfeed(&configuration);
+
+Spooler spool(&configuration, &outfeed);
+
+Caliper caliper(&configuration);
 
 MenuKeyMap menuKeys = { 
    { 'A', 'B', 'C', 'D', '#' },
@@ -326,12 +332,11 @@ OMMenuMgr Menu(&menu_root, MENU_KEYPAD);
 //FastPWM timer2(2);
 //FastPWM timer4(4);
 
-#include "Calipers.h"
 #include "Extrude.h"
 #include "FSM.h"
 #include "Preheat.h"
 #include "Safety.h"
-#include "StarveFeeder.h"
+//#include "StarveFeeder.h"
 #include "TestReporting.h"
 #include "test.h"
 
@@ -340,25 +345,8 @@ OMMenuMgr Menu(&menu_root, MENU_KEYPAD);
 void setup()
 {
   Serial.begin(115200);
-//  buzzer.setMsg(2);
-//  for (int i=0;i<20000;i++){
-//    delay(10);
-//    buzzer.activate();
-//  }
-  initializeCalipers();
-  initializeStarveFeeder();
+  Wire.begin();
   lcd.begin(20, 4); //Start up LCD
-
- //turn the PID on
-  barrelPID.SetSampleTime(2000);
-  barrelPID.SetTunings(consKp, consKi, consKd);
-  barrelPID.SetOutputLimits(minDutyCycle, maxDutyCycle);
-  barrelPID.SetMode(AUTOMATIC);
-
-  nozzlePID.SetSampleTime(2000);
-  nozzlePID.SetTunings(nozKp, nozKi, nozKd);
-  nozzlePID.SetOutputLimits(minNozDutyCycle, maxNozDutyCycle);
-  nozzlePID.SetMode(AUTOMATIC);
 
   //put the outfeed PID is in manual
   outfeedPID.SetSampleTime(2000);
@@ -369,6 +357,7 @@ void setup()
 //  currentState = SELECT_PROFILE;
   currentState = TEST;
 //  currentState = EXTRUDE_AUTOMATIC;
+
   Menu.setDrawHandler(uiDraw);
   Menu.setExitHandler(uiClear);
   Menu.setKeypadInput(&kpd, &menuKeys);

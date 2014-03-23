@@ -14,8 +14,14 @@
 class FastPWM
 {
   public:
+//    enum PinSet {
+//      SET_3_14_8 = 0,// wired to auger motor, pins: step->3, dir->14, enable->8 
+//      SET_11_15_12,//wired to outfeed motor, pins: step->11, dir->15, enable->12
+//      SET_10_16_9,//wired to spool motor, pins: step->10, dir->16, enable->9
+//      //STARVE_FEEDER,
+//    };
 
-    FastPWM(int timerNumber);
+    FastPWM(int pinSet);
     void setFrequency(float frequency);
     float getFrequency();
     void off();// sets mode to normal.
@@ -23,6 +29,7 @@ class FastPWM
   private:
     int _timerNumber;
     float _frequency;
+    int _pinSet;
 };
 
 #endif

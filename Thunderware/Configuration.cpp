@@ -19,10 +19,11 @@ void Configuration::loadDefaultProfile()
     strcpy(profile.name, "(Default) 1.75 ABS");
     profile.diaSetPoint = 1.75;
     profile.tolerance = 0.05;
-
+    
     //Starve Feeder
-    profile.feedRate = 7.5;
-
+    profile.starveFeederRPM = 20;
+    profile.starveFeederTargetFeedRate = 7.5;
+    
     //Auger
     profile.augerRPM = 40.0;
 
@@ -32,17 +33,17 @@ void Configuration::loadDefaultProfile()
     profile.outfeedKd = 0.0;
     profile.outfeedMaxRPM = 200.0;
     profile.outfeedMinRPM = 0.0;
-    profile.outfeedSampleTime = 2000;
+    profile.outfeedComputeInterval = 2000;
     
 
     //buzzer
     profile.buzzerActive = true;
 
     //Barrel
-    profile.barrelTemp = 220.0;
+    profile.barrelTemp = 65.0;
 
     //nozzle
-    profile.nozzleTemp = 220.0;
+    profile.nozzleTemp = 60.0;
 }
 
 
@@ -50,19 +51,28 @@ void Configuration::loadDefaultConfig()
 {
       
   //load the physical with the default parameters.
+
+  //StarveFeeder
+  physical.starveFeederPinSet = 3;
+  physical.starveFeederStepMode = 16;
+  physical.starveFeederDirection = 1;
+
   //auger
+  physical.augerPinSet = 0;
   physical.augerStepMode = 32;
-  physical.augerDirection = 0;
+  physical.augerDirection = 1;
   physical.augerGearRatio = 3.0;
   
   //Outfeed
+  physical.outfeedPinSet = 1;
   physical.outfeedStepMode = 16;
-  physical.outfeedDirection = 1;
+  physical.outfeedDirection = 0;
   physical.outfeedRollerRadius = 5.9769; // Efective radius of outfeed roller32;
   physical.outfeedMaxRPM = 200.0;
   physical.outfeedMinRPM = 0.0;
   
   //Spooler
+  physical.spoolerPinSet = 2; 
   physical.spoolerStepMode = 16;
   physical.spoolerDirection = 1;
   physical.rsc1 = 72.85; // Inner radius of spool core
@@ -70,16 +80,14 @@ void Configuration::loadDefaultConfig()
   physical.rsm = 9.19; // radius of spool stepper motor roller
   physical.ts = 56.0; // Traverse Length in mm
 
-  //StarveFeeder
-  physical.starveFeederStepMode = 16;
   
-  //Barrel 
+  //Barrel
   physical.timeBase = 2000;//Time base in milliseconds
-  physical.barrelMaxDS = 80;//The max dutyCycle for the barrel
-  physical.barrelMinDs = 0;//The min dutyCycle for the barrel
+  physical.barrelMax = 80;//The max dutyCycle for the barrel
+  physical.barrelMin = 0;//The min dutyCycle for the barrel
   physical.barrelKp = 3.4; 
   physical.barrelKi = 0.15;
-  physical.barrelkd = 0.0;
+  physical.barrelKd = 0.0;
   physical.barrelTRNom = 100000;
   physical.barrelTTNom = 25;
   physical.barrelTNumSamples = 20;
@@ -87,18 +95,19 @@ void Configuration::loadDefaultConfig()
   physical.barrelTSeriesResistor = 9890;
 
   //nozzle
-  physical.nozzleMaxDS = 255;//The max dutyCycle for the nozzle
-  physical.nozzleMinDs = 0;//The min dutyCycle for the nozzle
+  physical.nozzlePin = 4;
+  physical.nozzleMax = 200;//The max dutyCycle for the nozzle
+  physical.nozzleMin = 0;//The min dutyCycle for the nozzle
   physical.nozzleKp = 3.5;
   physical.nozzleKi = 0.15;
-  physical.nozzlekd = 0.0;
-  physical.nozzleSampleTime = 1000;
+  physical.nozzleKd = 0.0;
+  physical.nozzleSampleTime = 2000;
   physical.nozzleTRNom = 100000;
   physical.nozzleTTNom = 25;
   physical.nozzleTNumSamples = 20;
   physical.nozzleTBCoefficient = 4092;
   physical.nozzleTSeriesResistor = 9910;
-  
+    
   //Diameter Sensor
   physical.slope = 0.00045405 ;
   physical.yIntercept = 1.5635;
@@ -106,25 +115,32 @@ void Configuration::loadDefaultConfig()
 
 Configuration::Configuration()
 {
-  EEPROM_readAnything(0,physical.configStored);
-  if (physical.configStored){
-    //Read the stored profile from the EEPROM
-    EEPROM_readAnything(0,physical);
-  } else {
+//  EEPROM_readAnything(0,physical.configStored);
+//  if (physical.configStored){
+//    //Read the stored profile from the EEPROM
+//    EEPROM_readAnything(0,physical);
+//  } else {
+//    loadDefaultConfig();
+//  }
     loadDefaultConfig();
-  }
+loadDefaultProfile();
+//Serial.println(physical.starveFeederPinSet);
 }
+
 
 void Configuration::saveConfig()
 {
   physical.configStored = true;//Make sure that the config is marked as stored
   EEPROM_writeAnything(0,physical);//Write to EEPROM
 }
+
+
 void Configuration::deleteConfig()
 {
   physical.configStored = false;//Mark config as not stored
   EEPROM_writeAnything(0,physical.configStored);//Just update the configStored variable the rest is irrelevant
 }
+
 
 boolean Configuration::loadConfig()
 {

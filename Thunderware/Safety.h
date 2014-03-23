@@ -5,8 +5,8 @@ char safetyMsg[20];
 
 boolean heaterError(){
   if (*tempInput > maxExtruderTemp){
-    barrelHeater.off();
-    nozzleHeater.off();
+    barrel.off();
+    nozzle.off();
     auger.disable();
     outfeed.disable();
     spool.disable();

@@ -56,11 +56,11 @@ void reportCurrentMeasurements(){
    Serial.print(spoolRPM);
 
 
-   Serial.print(", ");
-   Serial.print(getFeedRate());
+//   Serial.print(", ");
+//   Serial.print(getFeedRate());
 
-   Serial.print(", ");
-   Serial.print(getFeederState());
+//   Serial.print(", ");
+//   Serial.print(getFeederState());
 
    Serial.println();
 }

@@ -35,7 +35,7 @@ void selectProfile(){
     key = (char)Serial.read();
   }
 
-    if (key == '1' || key == '2' || key == '3'){
+    if (key == '1' || key == '2' || key == '3' || key == 'D'){
       invalid = false;
     }
   }
@@ -50,8 +50,8 @@ void selectProfile(){
         augerRPM = 40;
 //        outfeedRPM = 70;
         soakTime = 7;
-        setFeedRate(7.5);
-        outfeedRPM = calcOutfeedRPM();
+//        setFeedRate(7.5);
+//        outfeedRPM = calcOutfeedRPM();
         outfeed.setRPM(0);
         //Shift state to preheat.
         currentState = PREHEAT;
@@ -68,7 +68,7 @@ void selectProfile(){
     outfeedRPM = 70;
     soakTime = 5;
 
-        setFeedRate(7.5);
+//        setFeedRate(7.5);
 //        outfeedRPM = calcOutfeedRPM();
         outfeed.setRPM(50);
 
@@ -86,8 +86,8 @@ void selectProfile(){
         outfeedRPM = 70;
         soakTime = 0;
 
-        setFeedRate(7.5);
-        outfeedRPM = calcOutfeedRPM();
+//        setFeedRate(7.5);
+//        outfeedRPM = calcOutfeedRPM();
         outfeed.setRPM(0);
 
 
@@ -95,7 +95,9 @@ void selectProfile(){
         //Shift state to preheat.
         currentState = EXTRUDE_AUTOMATIC;
     break;
-
+    case 'D':
+        currentState = TEST;
+        break;
     }
   }
 
@@ -184,6 +186,76 @@ double getNumber(char *title, char *subTitle){
 //      }
   return 0.0;
 }
+
+/*  
+//Below are functions used during the calibration of the Calipers
+//They should be incorporated into a CalibrateCalipers State.
+void calibrate(){
+  float sampleADCs[10];
+  float sampleDias[10];
+  int samplesTaken = 0;
+  boolean finished = false;
+  
+  Serial.println("Enter the diameter of the standard and press <enter>.");
+  Serial.println("When finished press 'f' <enter>.");
+  
+  while (samplesTaken<10){    
+    if (Serial.available() > 0) {
+      if ((char)Serial.peek() == 'f'){//Check to see if sampeling is finished
+        Serial.read();//remove the character from the serial buffer.
+        break;
+      }
+      sampleDias[samplesTaken] = Serial.parseFloat();
+      sampleADCs[samplesTaken] = sampleADC();
+      Serial.println("Sample Recorded");
+      samplesTaken++;
+    }    
+  }
+  
+  if (samplesTaken==0){return;}
+  linReg(&slope, &yIntercept, sampleADCs, sampleDias, &samplesTaken);
+  
+  //Store calibration in EEPROM
+  EEPROM_writeAnything(0,slope);
+  EEPROM_writeAnything(sizeof(slope), yIntercept);
+}
+
+  
+void linReg(float *slope, float *yIntercept, float *xVals, float *yVals, int *n){
+  //Variables
+  float sumX = 0.0, sumY=0.0, sumXY=0.0, sumXX=0.0, sumYY=0.0;
+  float sXY, sXX;
+  
+  //Find Sums
+  for (int i=0; i<*n; i++) {   
+    sumX = sumX + *(xVals + i);
+    sumY = sumY + *(yVals + i);
+    sumXY = sumXY + *(xVals + i)* *(yVals + i);
+    sumXX = sumXX + *(xVals + i)* *(xVals + i);
+    sumYY = sumYY + *(yVals + i)* *(yVals + i);
+  }
+  
+  //Debug  
+//  Serial.println(sumX);
+//  Serial.println(sumY);
+//  Serial.println(sumXY);
+//  Serial.println(sumXX);  
+//  Serial.println(sumYY);  
+  
+  //Compute slope and intercept
+  sXY = sumXY-sumX*sumY / *n;
+  sXX = sumXX-sumX*sumX / *n;
+  *slope = sXY/sXX;
+  *yIntercept = sumY/ *n - *slope*sumX / *n;
+
+  
+  //Debug
+//  Serial.println(sXY);
+//  Serial.println(sXX);
+//  Serial.println(*slope,6);
+//  Serial.println(*yIntercept,6);  
+}
+*/
 #endif // FSM_h
 
 

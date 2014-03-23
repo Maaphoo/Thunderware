@@ -12,15 +12,21 @@
 
 #include "Arduino.h"
 #include "config.h"
+#include "Configuration.h"
 #include "StepperMotor.h"
+#include "Caliper.h"
+#include <PID_v1.h>
 
+class Configuration;
 class StepperMotor;
+class Caliper;
+class PID;
 
 class Outfeed
 {
   public:
 
-    Outfeed(StepperMotor::PinSet pinSet, int timer);//constructor
+    Outfeed(Configuration* configuration);//constructor
     float getRPM();
     void setRPM(float rpm);
     void disable();
@@ -28,9 +34,15 @@ class Outfeed
     void reset();
     float getMmExtruded();
     void update();
+    void sample();
     
   private:
     StepperMotor _motor;
+    Caliper _caliper;
+    PID _pid;
+    double _rpm;
+    int* _computeInterval;
+    unsigned long _computeTime;
     float _mmExtruded;
     unsigned long _now;
     unsigned long _previousTime;

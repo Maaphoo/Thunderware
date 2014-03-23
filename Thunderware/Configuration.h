@@ -15,15 +15,23 @@
 class Configuration
 {
 public:
+//    enum PinSet {
+//      SET_3_14_8 = 0,// wired to auger motor, pins: step->3, dir->14, enable->8 
+//      SET_11_15_12,//wired to outfeed motor, pins: step->11, dir->15, enable->12
+//      SET_10_16_9,//wired to spool motor, pins: step->10, dir->16, enable->9
+//      //STARVE_FEEDER,
+//    };
+  
   struct Profile {
     //General
     boolean isStored;
     char name[20];
-    float diaSetPoint;
+    double diaSetPoint;
     float tolerance;
 
     //Starve Feeder
-    float feedRate;
+    double starveFeederRPM;
+    float starveFeederTargetFeedRate;
 
     //Auger
     float augerRPM;
@@ -34,17 +42,17 @@ public:
     double outfeedKd;
     double outfeedMaxRPM;
     double outfeedMinRPM;
-    double outfeedSampleTime;
+    int outfeedComputeInterval;
     
 
     //buzzer
     boolean buzzerActive;
 
     //Barrel
-    float barrelTemp;
+    double barrelTemp;
 
     //nozzle
-    float nozzleTemp;
+    double nozzleTemp;
   } profile, tempProfile;
 
 
@@ -55,12 +63,20 @@ public:
     //variables that help with storage
     boolean configStored;
     
+    //StarveFeeder
+    int starveFeederPinSet;
+    int starveFeederStepMode;
+    boolean starveFeederDirection;
+
+    
     //Auger
+    int augerPinSet;
     int augerStepMode;
     boolean augerDirection;
     float augerGearRatio;
 
     //Outfeed
+    int outfeedPinSet;
     int outfeedStepMode;
     boolean outfeedDirection;
     float outfeedRollerRadius;
@@ -69,6 +85,7 @@ public:
 
 
     //Spooler
+    int spoolerPinSet;
     int spoolerStepMode;
     boolean spoolerDirection;
     float rsc1; // Inner radius of spool core
@@ -76,26 +93,25 @@ public:
     float rsm; // radius of spool stepper motor roller
     float ts; // Traverse Length in mm 
 
-    //StarveFeeder
-    int starveFeederStepMode;
 
     //Barrel
     int timeBase;//Time base in milliseconds
-    double barrelMaxDS;//The max dutyCycle for the barrel
-    double barrelMinDs;//The min dutyCycle for the barrel
-    double barrelKp, barrelKi, barrelkd;
-    int barrelTRNom;
+    double barrelMax;//The max dutyCycle for the barrel
+    double barrelMin;//The min dutyCycle for the barrel
+    double barrelKp, barrelKi, barrelKd;
+    long barrelTRNom;
     int barrelTTNom;
     int barrelTNumSamples;
     int barrelTBCoefficient;
     int barrelTSeriesResistor;
 
     //nozzle
-    double nozzleMaxDS;//The max dutyCycle for the nozzle
-    double nozzleMinDs;//The min dutyCycle for the nozzle
-    double nozzleKp, nozzleKi, nozzlekd;
+    int nozzlePin;
+    double nozzleMax;//The max dutyCycle for the nozzle
+    double nozzleMin;//The min dutyCycle for the nozzle
+    double nozzleKp, nozzleKi, nozzleKd;
     int nozzleSampleTime;
-    int nozzleTRNom;
+    long nozzleTRNom;
     int nozzleTTNom;
     int nozzleTNumSamples;
     int nozzleTBCoefficient;

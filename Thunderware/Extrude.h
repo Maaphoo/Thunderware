@@ -15,7 +15,7 @@ void extrudeAutomatic(){
 
   buzzer.setMsg(Buzzer::EXTRUDING);//Sound the buzzer that extrusion is beginning
 
-  barrelPID.SetTunings(consKp, consKi, consKd);
+//  barrelPID.SetTunings(consKp, consKi, consKd);
   now = millis();
   startExtrudingTime = now;
   computeTime = now+2000L;
@@ -49,7 +49,7 @@ void extrudeAutomatic(){
       //Accelerate Auger
       float augerRPMTmp = augerRPM;
     for (int i=1;i<401;i++){
-      barrelHeater.activate();
+      barrel.activate();
 //      ActivateRelay();
       auger.setRPM(augerRPMTmp/400.0*(double)i);
       delay(5);
@@ -65,7 +65,7 @@ void extrudeAutomatic(){
 
 
   boolean continueExtruding = true;
-  feederOn();
+//  feederOn();
   while(continueExtruding){
       key = kpd.getKey();
 
@@ -162,14 +162,14 @@ void extrudeAutomatic(){
        case '3'://increase spool scale factor
        {
 //        setFeedRate(getFeedRate()+0.5);
-          increaseFeedRate();
+//          increaseFeedRate();
 
         break;
        }
       case '6'://decrease outfeed RPM
        {
 //        setFeedRate(getFeedRate()-0.5);
-          decreaseFeedRate();
+//          decreaseFeedRate();
         break;
        }
         //Notify on Computer screen
@@ -240,9 +240,9 @@ void extrudeAutomatic(){
             auger.disable();
             outfeed.disable();
             spool.disable();
-            barrelHeater.off();
-            nozzleHeater.off();
-            feederOff();
+            barrel.off();
+            nozzle.off();
+            starveFeeder.disable();
             currentState = SELECT_PROFILE;
             return;
           }
@@ -284,10 +284,10 @@ void extrudeAutomatic(){
        }
 
         case 'D':
-        if (getFeederState()){
-          feederOff();
+        if (starveFeeder.getState()){
+          starveFeeder.disable();
         }else{
-          feederOn();
+          starveFeeder.enable();
         }
         break;
     }
@@ -295,7 +295,7 @@ void extrudeAutomatic(){
     now = millis();
 
     //turn relay on or off (or neither)
-    barrelHeater.activate();
+    barrel.activate();
 
     //measure temp. One at a time for better temp measurement
     if (alternateThermistors){
@@ -307,7 +307,7 @@ void extrudeAutomatic(){
     }
 
     //If another diameter measurement is ready, get it
-    updateDiameter();
+    outfeed.sample();
 
     //get lumps from starve feeder if needed
 //    runStarveFeeder();
@@ -320,17 +320,17 @@ void extrudeAutomatic(){
       nozzleTemp = app.nozzleThermistor()->getTemp();
 
       //compute outputs for the PID controllers.
-      barrelPID.Compute();
-      barrelHeater.setDutyCycle(barrelDutyCycle);
+//      barrelPID.Compute();
+      barrel.setDutyCycle(barrelDutyCycle);
 
-      nozzlePID.Compute();
+
 
       //Set the PWM that heats the nozzle of the extruder
-      nozzleHeater.setPWM(nozzleDutyCycle);
+
 //      setNozzlePWM();
 
       //Get Diameter and update outfeed controller
-      getMedianDia();
+      outfeed.update();
       outfeedPID.Compute();
       outfeed.setRPM(0);
       spool.setRPM();
