@@ -42,10 +42,10 @@ void Configuration::loadDefaultProfile()
 
     //Barrel
     profile.soakTime = 7.0;// minutes for barrel to remain at setpoint before extruding
-    profile.barrelTemp = 65.0;
+    profile.barrelTemp = 220.0;
 
     //nozzle
-    profile.nozzleTemp = 60.0;
+    profile.nozzleTemp = 220.0;
 }
 
 
@@ -111,8 +111,8 @@ void Configuration::loadDefaultConfig()
   physical.nozzleTSeriesResistor = 9910;
     
   //Diameter Sensor
-  physical.slope = 0.00045405 ;
-  physical.yIntercept = 1.5635;
+  physical.slope = 0.0005471 ;
+  physical.yIntercept = 1.5322;
 }
 
 Configuration::Configuration()

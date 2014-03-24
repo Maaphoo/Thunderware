@@ -32,16 +32,23 @@ void test()
 //starveFeeder.setRPM(100);
 //delay(100000);
 
-static boolean flag;
-if (!flag){
+//static boolean flag;
+//if (!flag){
+//auger.enable();
+//auger.setRPM(40);
+//outfeed.enable();
+//outfeed.setRPM(50);
+//spool.enable();
+//spool.setRPM();
+//flag = true;
+//}
+
 auger.enable();
-auger.setRPM(40);
-outfeed.enable();
-outfeed.setRPM(50);
-spool.enable();
-spool.setRPM();
-flag = true;
-}
+auger.setRPM(10);
+delay (5000);
+auger.disable();
+delay (1000);
+
 
 //Serial.println(caliper.getRawADC());
 //delay (1000);

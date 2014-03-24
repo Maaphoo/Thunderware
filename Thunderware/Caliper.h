@@ -21,9 +21,9 @@ public:
   void sample();
   float getRawADC();
   double dia;
-
-private:
   void linReg(float* slope, float *yIntercept, float *xVals, float *yVals, int *n);
+  
+private:
   
   union RawADC {byte _byte[4]; float _float;} _rawADC;
   int _pin;

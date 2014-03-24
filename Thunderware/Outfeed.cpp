@@ -31,6 +31,11 @@ Outfeed::Outfeed(Configuration* configuration)
 float Outfeed::getRPM(){ return _motor.getRPM();}
 
 double Outfeed::getDia(){ return _caliper.dia;}
+double Outfeed::getRawADC(){return _caliper.getRawADC();}
+void Outfeed::linReg(float *slope, float *yIntercept, float *xVals, float *yVals, int *n)
+{
+ _caliper.linReg(slope, yIntercept, xVals, yVals, n);
+}
 
 void Outfeed::setRPM(float rpm)
 {

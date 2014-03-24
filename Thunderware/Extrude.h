@@ -12,13 +12,15 @@ void printFtPerMin(int col, int row);
 
 //setup for extruding
 void beginExtrude(){
-  static boolean accelerating;
-
-  if (!accelerating){
-
+  static boolean startFlag = true;
+  static unsigned long accelerateTime;
+  static float augerRPMTmp;
+  static int i;
+  
+  if (startFlag){
+    augerRPMTmp = configuration.profile.augerRPM;
+    i = 1;
     lcd.clear();
-    displayExtrudeScreen();
-
     // Reset the outfeed mmExtruded and Spool quanitiy
     outfeed.reset();
 
@@ -28,54 +30,73 @@ void beginExtrude(){
     //if the auger will me rotating, check the temp before accelerating
     //if it isn't going to rotate skip straight to extrude
     if (configuration.profile.augerRPM > 0.0){
-      if (barrel.getTemp()<170 && auger.getRPM()>0){//Cant run the auger if the barrel isn't hot;
+      if (barrel.getTemp()<10){//Cant run the auger if the barrel isn't hot;
+        startFlag = true;
         currentState = SELECT_PROFILE;
         return;
-      }
-      else{
+      }else{
         auger.enable();
-        accelerating = true;
+        startFlag = false;
+        accelerateTime = millis()+5;
+        lcd.clear();
+        lcd.write("Starting to Extrude");
       }
-    }
-    else{
+    }else{
+      outfeed.setRPM(configuration.profile.outfeedRPM);
       outfeed.enable();
       spool.enable();
+      startFlag = true;
+       extrudeStartTime = millis();
       currentState = EXTRUDE;
       return;
     }
   }
-
-  //Accelerate Auger
-  static float augerRPMTmp = configuration.profile.augerRPM;
-  static int i = 1;
-
-  barrel.activate();
-  nozzle.activate();
-
-  auger.setRPM(augerRPMTmp/400.0*(double)i);
-  i++;
+  
+  if (millis() >= accelerateTime){
+    //Accelerate Auger
+  
+    barrel.activate();
+    nozzle.activate();
+  
+    auger.setRPM(augerRPMTmp/400.0*(double)i);
+    i++;
+    accelerateTime +=5;
+  }
+  
   if (i>400){
     outfeed.setRPM(configuration.profile.outfeedRPM);
     outfeed.enable();
     spool.enable();
     outfeed.setMode(MANUAL);
+    startFlag = true;
+    extrudeStartTime = millis();
     currentState = EXTRUDE;
-    accelerating = false;//reset for a potential restart
   }
 }
+
+
+
+
+
+
+
+
+
 
 //Extrude function
 void extrude(){
   static unsigned long now;
   static unsigned long reportTime;
-  static unsigned long startExtrudingTime;
+  static unsigned long startTime;
   static boolean redrawLCD = true;
   static boolean startFlag = true;//marks first time soak is run
 
   now = millis();
 
   if (startFlag){
-    startExtrudingTime = now;
+    reportTime = now;
+    startTime = now;
+    redrawLCD = true;
     startFlag = false;
   }
 
@@ -100,9 +121,8 @@ void extrude(){
     writeDouble(nozzle.getTemp(),0, 7,1);
     writeDouble(outfeed.getDia(),2, 7,2);
     writeDouble(outfeed.getMPerMin(),2, 7,3);
-    Serial.println(outfeed.getMPerMin());
 
-//    reportCurrentMeasurements();
+    reportCurrentMeasurements();
 
     reportTime += 1000;
   }
@@ -291,6 +311,7 @@ void extrude(){
           barrel.off();
           nozzle.off();
           starveFeeder.disable();
+          startFlag = true;//reset start flag so that vars are re initialized if extrude is re entered.
           currentState = SELECT_PROFILE;
           return;
         }
@@ -341,6 +362,7 @@ void extrude(){
     break;
   }
 }
+
 
 void displayExtrudeScreen(){
   lcd.clear();

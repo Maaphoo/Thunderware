@@ -123,7 +123,7 @@ void (*state_table[])()={
   calibrateCalipers
 };
 
-
+unsigned long extrudeStartTime;
 // lcd pins
 const byte LCD_RS  = 22;
 const byte LCD_EN  = 24;

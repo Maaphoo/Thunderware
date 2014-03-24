@@ -26,7 +26,7 @@ StepperMotor::StepperMotor(Configuration* configuration, int pinSet) : _timer(pi
       _ratio = _configuration->physical.augerStepMode*_configuration->physical.augerGearRatio;
 
       DDRJ |= B00000010; //Direction, Pin 14 to output
-      DDRH |= B00001000; // Enable pin 8 to output
+      DDRH |= B00001000; // Enable pin 6 to output
       DDRH |= B00010000;//Step pin 3 to output
 
       //set Auger Stepper direction (pin 14)
@@ -107,7 +107,7 @@ void StepperMotor::enable() {
     case 0://SET_3_14_8
       //Auger Stepper pin 8
       //disable is backwards for the KL stepper driver being used. Set LOW
-      PORTH &= B11011111;
+      PORTH |= B00100000;
       break;
 
     case 1://SET_11_15_12
@@ -134,7 +134,7 @@ void StepperMotor::disable() {
     case 0://SET_3_14_8
       //Auger Stepper pin 8
       //disable is backwards for the KL stepper driver being used. Set HIGH
-      PORTH |= B00100000;
+      PORTH &= B11011111;
       break;
 
     case 1://SET_11_15_12
