@@ -29,14 +29,21 @@ class Outfeed
     Outfeed(Configuration* configuration);//constructor
     float getRPM();
     void setRPM(float rpm);
+    void setMode(int mode);
+    int getMode();
+    void setTunings();
     void disable();
     void enable();
     void reset();
     float getMmExtruded();
+    double getMPerMin();
+    double getFtPerMin();
+    double getDia();
     void update();
     void sample();
     
   private:
+    Configuration* _configuration;
     StepperMotor _motor;
     Caliper _caliper;
     PID _pid;

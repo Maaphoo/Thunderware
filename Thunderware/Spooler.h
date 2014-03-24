@@ -23,6 +23,7 @@ class Spooler
 
     Spooler(Configuration* configuration, Outfeed* outfeed);//constructor
     void setRPM();
+    float  getRPM();
     void setRPM(float rpm);
     void enable();
     void disable(); 

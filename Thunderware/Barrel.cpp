@@ -60,12 +60,7 @@ void Barrel::activate()
    _startTime = _now;
    _temp = &_thermistor.temp;
    _pid.Compute();
-   Serial.print("Barrel Temp in Barrel: ");
-   Serial.println(*_temp);
-   Serial.print("Barrel Temp in Barrel Th: ");
-   Serial.println(_thermistor.temp);   
-   Serial.print("DutyCycle: ");
-   Serial.println(_dutyCycle);   
+   
    // Determine the length of time that the relay should be on
    _durration = ((*_timeBase*_dutyCycle)/100L);
    
@@ -88,12 +83,19 @@ void Barrel::sampleTemp()
 
 void Barrel::setDutyCycle(float dutyCycle)
 {
+  if (_pid.GetMode() == AUTOMATIC){// if in Automatic switch to manual
+    _pid.SetMode(MANUAL);
+  }
   //Validate the duty cycle
   if (dutyCycle<0){dutyCycle = 0.0;}
   if (dutyCycle>100){dutyCycle = 100.0;}
   
   _dutyCycle = dutyCycle;
 }
+
+double Barrel::getDutyCycle(){return _dutyCycle;}
+
+
 void Barrel::off()
 {
   PORTH = PORTH & B11101111;//turn the relay off

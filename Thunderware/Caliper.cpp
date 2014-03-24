@@ -52,6 +52,40 @@ float Caliper::getRawADC()
   return _rawADC._float;
 }
 
+void Caliper::linReg(float *slope, float *yIntercept, float *xVals, float *yVals, int *n){
+  //Variables
+  float sumX = 0.0, sumY=0.0, sumXY=0.0, sumXX=0.0, sumYY=0.0;
+  float sXY, sXX;
+  
+  //Find Sums
+  for (int i=0; i<*n; i++) {   
+    sumX = sumX + *(xVals + i);
+    sumY = sumY + *(yVals + i);
+    sumXY = sumXY + *(xVals + i)* *(yVals + i);
+    sumXX = sumXX + *(xVals + i)* *(xVals + i);
+    sumYY = sumYY + *(yVals + i)* *(yVals + i);
+  }
+  
+  //Debug  
+//  Serial.println(sumX);
+//  Serial.println(sumY);
+//  Serial.println(sumXY);
+//  Serial.println(sumXX);  
+//  Serial.println(sumYY);  
+  
+  //Compute slope and intercept
+  sXY = sumXY-sumX*sumY / *n;
+  sXX = sumXX-sumX*sumX / *n;
+  *slope = sXY/sXX;
+  *yIntercept = sumY/ *n - *slope*sumX / *n;
+
+  
+  //Debug
+//  Serial.println(sXY);
+//  Serial.println(sXX);
+//  Serial.println(*slope,6);
+//  Serial.println(*yIntercept,6);  
+}
 
   
 

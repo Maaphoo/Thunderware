@@ -28,6 +28,7 @@ void Configuration::loadDefaultProfile()
     profile.augerRPM = 40.0;
 
     //Outfeed
+    profile.outfeedRPM = 50.0;
     profile.outfeedKi = 3.0;
     profile.outfeedKp = 0.0;
     profile.outfeedKd = 0.0;
@@ -40,6 +41,7 @@ void Configuration::loadDefaultProfile()
     profile.buzzerActive = true;
 
     //Barrel
+    profile.soakTime = 7.0;// minutes for barrel to remain at setpoint before extruding
     profile.barrelTemp = 65.0;
 
     //nozzle

@@ -37,6 +37,7 @@ public:
     float augerRPM;
 
     //Outfeed
+    double outfeedRPM;
     double outfeedKi;
     double outfeedKp;
     double outfeedKd;
@@ -49,6 +50,7 @@ public:
     boolean buzzerActive;
 
     //Barrel
+    double soakTime;
     double barrelTemp;
 
     //nozzle

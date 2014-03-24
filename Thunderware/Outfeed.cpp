@@ -22,6 +22,7 @@ Outfeed::Outfeed(Configuration* configuration)
                 REVERSE)
     
 {
+  _configuration = configuration;
   _computeInterval = &configuration->profile.outfeedComputeInterval;
  }
 
@@ -29,11 +30,21 @@ Outfeed::Outfeed(Configuration* configuration)
 //revise so that the outfeed reports mm/s
 float Outfeed::getRPM(){ return _motor.getRPM();}
 
+double Outfeed::getDia(){ return _caliper.dia;}
+
 void Outfeed::setRPM(float rpm)
 {
   update();
   _motor.setRPM(rpm);
 } 
+
+void Outfeed::setMode(int mode){ _pid.SetMode(mode);}
+
+int Outfeed::getMode(){ return _pid.GetMode();}
+
+void Outfeed::setTunings(){ _pid.SetTunings(_configuration->profile.outfeedKp,
+                                           _configuration->profile.outfeedKi,
+                                           _configuration->profile.outfeedKd);}
 
 void Outfeed::disable(){  _motor.disable();}
 void Outfeed::enable(){  _motor.enable();}
@@ -41,6 +52,16 @@ float Outfeed::getMmExtruded()
 { 
   update();
   return _mmExtruded;
+}
+
+double Outfeed::getMPerMin()
+{
+  return getRPM()*2.0*PI*_configuration->physical.outfeedRollerRadius*0.001;
+}
+
+double Outfeed::getFtPerMin()
+{
+  return getRPM()*2.0*PI*_configuration->physical.outfeedRollerRadius*0.00328;
 }
 
 void Outfeed::reset()

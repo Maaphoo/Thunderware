@@ -26,6 +26,8 @@ public:
   void activate();
   void sampleTemp();
   void setDutyCycle(float dutyCycle);
+  void setMode(int mode);
+  int getMode();
   double getDutyCycle();
   void off();
   float getTemp();

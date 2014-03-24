@@ -102,7 +102,6 @@ float StepperMotor::getRPM(){return _rpm;}
 //   calcSpoolRPM();
 
 void StepperMotor::enable() {
-         Serial.println(_pinSet);
 
   switch (_pinSet){
     case 0://SET_3_14_8

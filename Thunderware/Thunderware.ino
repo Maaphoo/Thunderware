@@ -49,34 +49,6 @@
 
 */
 
-/*Change log:
-FEB 12 Began documentation/organization of code.
-      Currently the nozzleHeater is using a global variable to pass around the pwm value, perhaps this should be changed.
-
-Jan_12 updated starve feeder for the new starve feeder design.
-
-       added sei() to pellet interrupt because he lcd had started freaking out w/ strange symbols all over the place.
-       Interrupts causing it?
-
-12/7 - had a melt plug due to ground up pellets caused by over feeding. ground out top of barrel
-       and recalibrated feeder while attached as normal. This way any noise is taken into account.
-       
-12/6 rewrote/calibrated Starve feeder. Works differently now. DEC_6_2works well still trying to improve
-
-
-12/5 - Re calibrated starve feeder.
-
-
-12/3
-added lcd.begin() in 'D' for soak and preheat in '*' for extrude. looks like there are interrupt problems?
-
-
-12/2
-Added control over starve feeder feed rate.
-Added independent heater at nozzle pin 5 PWM
-moved buzzer to pin 1
-
-*/
 
   #include <LiquidCrystal.h>
   #include <Keypad.h>
@@ -105,136 +77,27 @@ moved buzzer to pin 1
 //Names of States
 enum ExtruderState {
   SELECT_PROFILE,
-  CUSTOM_PROFILE,
   PREHEAT,
   SOAK,
-  EXTRUDE_MANUAL,
-  EXTRUDE_AUTOMATIC,
-  EXTRUSION_COMPLETE,
+  BEGIN_EXTRUDE,
+  EXTRUDE,
   SAFETY_SHUTDOWN,
-  TEST
+  TEST,
+  CALIBRATE_CALIPERS
 };
 ExtruderState currentState;
 
 Application app;
 Configuration configuration;
 
-
-  //Stepper setup
-
-  //Auger Stepper Setup
-  float augerRPM;
-  unsigned long augerSPS = augerRPM*gearRatio*augerStepMode*200L/60L;
-  unsigned long aStepInterval = 1000000/augerSPS;//microseconds per step
+//Menu Keys for menu mannager
+MenuKeyMap menuKeys = { 
+   { 'A', 'B', 'C', 'D', '#' },
+   {BUTTON_BACK, BUTTON_INCREASE, BUTTON_DECREASE, BUTTON_SELECT, BUTTON_FORWARD}
+};
 
 
-  //outfeed stepper
-  double outfeedRPM = 100;
-  unsigned long outfeedSPS = outfeedRPM*outfeedStepMode*200L/60L;
-  double oStepInterval = 1000000L/outfeedSPS;//microseconds per step
-
-  //Spool Stepper
-  unsigned long sStepInterval;//microseconds per step
-  float sf = 1;
-  float spoolRPM;
-
-
-  float spoolSPS;
-
-
-  //calipers
-  int flag;
-  double diaMeasurements[7];
-  double maxDia;
-  double minDia;
-  double avgDia;
-  double diaSum;
-  int diaCount;
-  double calVariation = 0.15;
-  double medianDia;
-
-  //Filament Parameters
-  double diaSetPoint = 1.75;//Diameter of filament
-  double mmExtruded;//length of filament extruded
-  boolean resetFE = true;
-
-
-  //general variables
-  int i;
-  int k;
-  unsigned long caliperReadingInt;
-  double caliperReading;
-  int caliperCount = 0;
-  volatile unsigned long value;
-  long finalValue;
-  long finalValueGood;
-  long previousValue;
-  unsigned long nowCal;
-  unsigned long lastInterrupt;
-  unsigned long reportValue;
-  unsigned long finalValueReport;
-  double array[180];
-
-  //Timing
-  unsigned long goTime;
-  unsigned long now;
-  unsigned long durration;
-  unsigned long startTime;
-  unsigned long stepTime;
-  unsigned long reportTime;
-  unsigned long computeTime;
-  unsigned long startExtrudingTime;
-
-
-
-  //Temp Sensors
-  // Thermistor nozzleTh(0,100000,25, 20,4092, 9890);
-  // Thermistor barrelTh(1,100000,25, 20,4092, 9910);
-  boolean alternateThermistors; //Needed to keep analog sensor from heating
-
-  double barrelTemp;
-  double barrelSetPoint;
-
-  double nozzleTemp;
-  double nozzleSetPoint;
-
-   //barrel Heater
-  double barrelDutyCycle;
-  unsigned long soakTime;//Time to wait once the extruder has reached temp.
-
-   //nozzle Heater
-   double nozzleDutyCycle;
-
-
-
-  //Define Variables we'll be connecting to
-  double *tempInput;
-  double *tempSetPoint;
-
-  //Define the barrel's Tuning Parameters
-  double agrKp=10.8, agrKi=.3, agrKd = 20;
-  double consKp=3.4, consKi=.15, consKd=0;
-
-  double nozKp=3.5, nozKi=.15, nozKd=0;
-
-
-  //Barrel Output limits
-  int minDutyCycle = 0;
-  int maxDutyCycle = 80;
-
-  //nozzle Output limits
-  int minNozDutyCycle = 0;
-  int maxNozDutyCycle = 250;
-
-  //Setup PID for heater
-//  PID barrelPID(&barrelTemp, &barrelDutyCycle, &barrelSetPoint, consKp, consKi, consKd, DIRECT);
-//  PID nozzlePID(&nozzleTemp, &nozzleDutyCycle, &nozzleSetPoint, nozKp, nozKi, nozKd, DIRECT);
-
-
-  //Setup PID for outfeed motor
-  double diaKp=3, diaKi=0, diaKd=0;
-  PID outfeedPID(&medianDia, &outfeedRPM, &diaSetPoint, diaKp, diaKi, diaKd, REVERSE);
-
+//boolean alternateThermistors; //Needed to keep analog sensor from heating
 
 //Setup Finite State Machine
 
@@ -242,26 +105,26 @@ void selectProfile();
 void customProfile();
 void preheat();
 void soak();
-void extrudeManual();
-void extrudeAutomatic();
-void extrudeComplete();
+void beginExtrude();
+void extrude();
 void safetyShutdown();
 void test();
+void calibrateCalipers();
 
 //Pointers to State functios
 void (*state_table[])()={
   selectProfile,
-  customProfile,
   preheat,
   soak,
-  extrudeManual,
-  extrudeAutomatic,
-  extrudeComplete,
+  beginExtrude,
+  extrude,
   safetyShutdown,
-  test
+  test,
+  calibrateCalipers
 };
 
-    // lcd pins
+
+// lcd pins
 const byte LCD_RS  = 22;
 const byte LCD_EN  = 24;
 const byte LCD_D4  = 26;
@@ -280,10 +143,23 @@ LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
  const byte ROWS=4;
  const byte COLS=4;
  
- //initialize keypad pins
+// //Membrane Kpd initialize keypad pins
+//
+//  byte rowPins[ROWS]={23,25,27,29};
+// byte colPins[COLS]={31,33,35,37};
+// 
+// //Keymap
+// char keys[ROWS][COLS]={
+// {'1','2','3','A'},
+// {'4','5','6','B'},
+// {'7','8','9','C'},
+// {'*','0','#','D'}
+// };
+ 
+  //Black Kpd initialize keypad pins
 
- byte rowPins[ROWS]={23,25,27,29};
- byte colPins[COLS]={31,33,35,37};
+ byte colPins[ROWS]={23,25,27,29};
+ byte rowPins[COLS]={31,33,35,37};
  
  //Keymap
  char keys[ROWS][COLS]={
@@ -312,35 +188,17 @@ Outfeed outfeed(&configuration);
 
 Spooler spool(&configuration, &outfeed);
 
-Caliper caliper(&configuration);
-
-MenuKeyMap menuKeys = { 
-   { 'A', 'B', 'C', 'D', '#' },
-   {BUTTON_BACK, BUTTON_INCREASE, BUTTON_DECREASE, BUTTON_SELECT, BUTTON_FORWARD}
-};
-
- //        List of items in menu level
-MENU_LIST root_list[]   = {  };
-
-MENU_ITEM menu_root     = { {"Root"},        ITEM_MENU,   MENU_SIZE(root_list),    MENU_TARGET(&root_list) };
+//Caliper caliper(&configuration);
 
 
-OMMenuMgr Menu(&menu_root, MENU_KEYPAD);
-
-//Initialize FastPWM timers
-//FastPWM timer1(1);
-//FastPWM timer2(2);
-//FastPWM timer4(4);
 
 #include "Extrude.h"
 #include "FSM.h"
 #include "Preheat.h"
 #include "Safety.h"
-//#include "StarveFeeder.h"
 #include "TestReporting.h"
 #include "test.h"
 
-                  // Root item is always created last, so we can add all other items to it
 
 void setup()
 {
@@ -348,75 +206,155 @@ void setup()
   Wire.begin();
   lcd.begin(20, 4); //Start up LCD
 
-  //put the outfeed PID is in manual
-  outfeedPID.SetSampleTime(2000);
-  outfeedPID.SetTunings(diaKp, diaKi, diaKd);
-  outfeedPID.SetMode(MANUAL);
-  outfeedPID.SetOutputLimits(0,200);
-
-//  currentState = SELECT_PROFILE;
-  currentState = TEST;
+  currentState = SELECT_PROFILE;
+//  currentState = TEST;
 //  currentState = EXTRUDE_AUTOMATIC;
 
-  Menu.setDrawHandler(uiDraw);
-  Menu.setExitHandler(uiClear);
-  Menu.setKeypadInput(&kpd, &menuKeys);
-  Menu.enable(true); 
+
 }
 
   void loop(){
    state_table[currentState]();
  }
+ 
+ 
+ 
+// Place in setup
+//  Menu.setDrawHandler(uiDraw);
+//  Menu.setExitHandler(uiClear);
+//  Menu.setKeypadInput(&kpd, &menuKeys);
+//  Menu.enable(true); 
 
-void testAction() {
-  Serial.println("Action");
- digitalWrite(13, !digitalRead(13)); 
-}
-
-void uiDraw(char* p_text, int p_row, int p_col, int len) {
-  
-  p_row ++;
-  lcd.setCursor(p_col, p_row);
-  
-  for( int i = 0; i < len; i++ ) {
-    if( p_text[i] < '!' || p_text[i] > '~' )
-      lcd.write(' ');
-    else  
-      lcd.write(p_text[i]);
-  }
-}
+// Menu.checkInput(); //Place in loop
 
 
-void uiClear() {
-  
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Enter for Menu");
-}
-
-
-void uiQwkScreen() {
-  lcd.clear();
-  Menu.enable(false);
-  
-  lcd.print("Action!");
-  lcd.setCursor(0, 1);
-  lcd.print("Enter 2 return");
-  
-  while( Menu.checkInput() != BUTTON_SELECT ) {
-    ; // wait!
-  }
-  
-  Menu.enable(true);
-  lcd.clear();
-}  
-
-
-
-
-
-
-
+////Profile 1 Menu
+////variables
+//double p1Dia = 1.75;
+//double p1AugerSpeed = 40.0;
+//
+////Profile 1 values to use
+//MENU_VALUE p1Dia_Value = {TYPE_FLOAT_100, 4.0, 1.0, MENU_TARGET(&p1Dia)};
+//MENU_VALUE p1AugerSpeed_Value = {TYPE_FLOAT, 100.0, 0.0, MENU_TARGET(&p1AugerSpeed)};
+//
+//MENU_ITEM p1i1 = {{"Profile1 Dia"}, ITEM_VALUE, 0, MENU_TARGET(&p1Dia_Value)};
+//MENU_ITEM p1i2 = {{"Profile1 ASpeed"}, ITEM_VALUE, 0, MENU_TARGET(&p1AugerSpeed_Value)};
+//
+//MENU_LIST p1List[]   = { &p1i1, &p1i2};
+//
+//MENU_ITEM p1Menu     = { {"Profile 1"},        ITEM_MENU,   MENU_SIZE(p1List),    MENU_TARGET(&p1List) };
+//
+////Profile 2 Menu
+////variables
+//double p2Dia = 3.0;
+//double p2AugerSpeed = 38.0;
+//
+////Profile 1 values to use
+//MENU_VALUE p2Dia_Value = {TYPE_FLOAT_100, 4.0, 1.0, MENU_TARGET(&p2Dia)};
+//MENU_VALUE p2AugerSpeed_Value = {TYPE_FLOAT, 100.0, 0.0, MENU_TARGET(&p2AugerSpeed)};
+//
+//MENU_ITEM p2i1 = {{"Profile1 Dia"}, ITEM_VALUE, 0, MENU_TARGET(&p2Dia_Value)};
+//MENU_ITEM p2i2 = {{"Profile2 ASpeed"}, ITEM_VALUE, 0, MENU_TARGET(&p2AugerSpeed_Value)};
+//
+//MENU_LIST p2List[]   = { &p2i1, &p2i2};
+//
+//MENU_ITEM p2Menu     = { {"Profile 2"},        ITEM_MENU,   MENU_SIZE(p2List),    MENU_TARGET(&p2List) };
+//
+////DefaultProfile Menu
+////variables
+//double pDDia = 3.0;
+//double pDAugerSpeed = 38.0;
+//
+////Profile Default values to use
+//MENU_VALUE pDDia_Value = {TYPE_FLOAT_10, 4.0, 1.0, MENU_TARGET(&pDDia)};
+//MENU_VALUE pDAugerSpeed_Value = {TYPE_FLOAT_10, 100.0, 0.0, MENU_TARGET(&pDAugerSpeed)};
+//
+//MENU_ITEM pDi1 = {{"Default Dia"}, ITEM_VALUE, 0, MENU_TARGET(&pDDia_Value)};
+//MENU_ITEM pDi2 = {{"Default Speed"}, ITEM_VALUE, 0, MENU_TARGET(&pDAugerSpeed_Value)};
+//
+//MENU_LIST pDList[]   = { &pDi1, &pDi2};
+//
+//MENU_ITEM pDMenu     = { {"Profile 2"},        ITEM_MENU,   MENU_SIZE(pDList),    MENU_TARGET(&pDList) };
+//
+////Edit Config Menu
+////variables
+//int eCDir = 1;
+//double eCKi = 0.03;
+//
+////Profile Default values to use
+//MENU_VALUE eCDir_Value = {TYPE_INT, 1, 0, MENU_TARGET(&eCDir)};
+//MENU_VALUE eCKi_Value = {TYPE_FLOAT_100, 100.0, 0.0, MENU_TARGET(&eCKi)};
+//
+//MENU_ITEM eCi1 = {{"Direction"}, ITEM_VALUE, 0, MENU_TARGET(&eCDir_Value)};
+//MENU_ITEM eCi2 = {{"Ki"}, ITEM_VALUE, 0, MENU_TARGET(&eCKi_Value)};
+//
+//MENU_LIST eCList[]   = { &eCi1, &eCi2};
+//
+//MENU_ITEM eCMenu     = { {"Edit Config"},        ITEM_MENU,   MENU_SIZE(eCList),    MENU_TARGET(&eCList) };
+//
+////Make the main Menu
+//                    //        LABEL           TYPE        LENGTH    TARGET
+//MENU_ITEM profile1        = { {"1.75mm ABS"},         ITEM_MENU,   0,        MENU_TARGET(&p1List) };
+//MENU_ITEM profile2        = { {"3mm ABS"},            ITEM_MENU,   0,        MENU_TARGET(&p2List) };
+//MENU_ITEM defaultProfile  = { {"Default Profile"},    ITEM_MENU,   0,        MENU_TARGET(&pDList) };
+//MENU_ITEM editConfig      = { {"Edit Configs"},       ITEM_MENU,   0,        MENU_TARGET(&eCList) };
+//MENU_ITEM calibrateCaliper= { {"Calibrate Calipers"}, ITEM_ACTION, 0,        MENU_TARGET(setStateToCalibrateCalipers) };
+// 
+// //        List of items in menu level
+//MENU_LIST root_list[]   = {&profile1, &profile2, &defaultProfile, &editConfig, &calibrateCaliper};
+//
+//// Root item is always created last, so we can add all other items to it
+//
+//MENU_ITEM menu_root     = { {"Root"},        ITEM_MENU,   MENU_SIZE(root_list),    MENU_TARGET(&root_list) };
+//
+//OMMenuMgr Menu(&menu_root, MENU_KEYPAD);
+//void testAction() {
+//  Serial.println("Action");
+// digitalWrite(13, !digitalRead(13)); 
+//}
+//
+//void uiDraw(char* p_text, int p_row, int p_col, int len) {
+//  
+//  p_row ++;
+//  lcd.setCursor(p_col, p_row);
+//  
+//  for( int i = 0; i < len; i++ ) {
+//    if( p_text[i] < '!' || p_text[i] > '~' )
+//      lcd.write(' ');
+//    else  
+//      lcd.write(p_text[i]);
+//  }
+//}
+//
+//
+//void uiClear() {
+//  
+//  lcd.clear();
+//  lcd.setCursor(0, 0);
+//  lcd.print("Enter for Menu");
+//}
+//
+//
+//void uiQwkScreen() {
+//  lcd.clear();
+//  Menu.enable(false);
+//  
+//  lcd.print("Action!");
+//  lcd.setCursor(0, 1);
+//  lcd.print("Enter 2 return");
+//  
+//  while( Menu.checkInput() != BUTTON_SELECT ) {
+//    ; // wait!
+//  }
+//  
+//  Menu.enable(true);
+//  lcd.clear();
+//}  
+//
+//void setStateToCalibrateCalipers(){
+//  currentState = CALIBRATE_CALIPERS;
+//}
+//
 
 
 

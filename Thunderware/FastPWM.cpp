@@ -112,7 +112,6 @@ int prescaler;
       TCCR3A = (outModeA << 6) | (outModeB << 4) | (mode & 3) ;
       TCCR3B = (captureMode << 6) | ((mode & 0xC) << 1) | clockMode ;
       OCR3A = (short)(16000000.0/(2*frequency * prescaler));//OCR3A because signal will be on pin 5 PE3
-      Serial.println("HEre in Set Freq");
       break;
 
     case 4:
@@ -126,7 +125,6 @@ int prescaler;
       TCCR4A = (outModeA << 6) | (outModeB << 4) | (mode & 3);
       TCCR4B = (captureMode << 6) | ((mode & 0xC) << 1) | clockMode;
       OCR4A = (short)(16000000.0/(2*frequency * prescaler));//OCR4A because signal will be on pin 6 PH3 
-      Serial.println("here");
       break;
     }
   }

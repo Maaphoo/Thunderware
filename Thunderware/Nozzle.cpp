@@ -69,12 +69,18 @@ void Nozzle::sampleTemp()
 
 void Nozzle::setDutyCycle(float dutyCycle)
 {
+  if (_pid.GetMode() == AUTOMATIC){
+    _pid.SetMode(MANUAL);
+  }
   //Validate the duty cycle
   if (dutyCycle<0){dutyCycle = 0.0;}
   if (dutyCycle>100){dutyCycle = 100.0;}
   
   _dutyCycle = dutyCycle;
 }
+
+void Nozzle::setMode(int mode){ _pid.SetMode(mode);}
+int Nozzle::getMode(){return _pid.GetMode();}
 
 void Nozzle::off()
 {

@@ -26,12 +26,9 @@ void Spooler::setRPM()
   _filamentSurfaceRaduis = pow(c2*_diaSetPoint*_diaSetPoint*_outfeed->getMmExtruded()+c3,0.5);
   _motorRPM = ro*rsc1/(_filamentSurfaceRaduis*rsm)*_outfeed->getRPM();
   _motor.setRPM(_motorRPM);
-  Serial.print("Spool's outfeed RPM: ");
-  Serial.println(_outfeed->getRPM());
-  Serial.print("Spool RPM: ");
-  Serial.println(_motorRPM);
-
 }
+
+float Spooler::getRPM(){return _motor.getRPM();}
 
 void Spooler::setRPM(float rpm)
 {

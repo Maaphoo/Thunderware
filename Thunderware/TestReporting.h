@@ -26,34 +26,34 @@ void reportCurrentMeasurementTitles(){
 void reportCurrentMeasurements(){
 
   //Serial.println("Barrel_Temp Nozzle_Temp Duty_Cycle Diameter");
-   Serial.print((now-startExtrudingTime)/1000);
+//   Serial.print((now-startExtrudingTime)/1000);
 
 //   Serial.print(", ");
 //   Serial.print(mmExtruded/(25.4*12));//feet bc that's what my tape measure is.
 
    Serial.print(", ");
-   Serial.print(medianDia,3);
+   Serial.print(outfeed.getDia(),3);
 
    Serial.print(", ");
-   Serial.print(barrelTemp,2);
+   Serial.print(barrel.getTemp(),2);
 
    Serial.print(", ");
-   Serial.print(barrelDutyCycle);
+   Serial.print(barrel.getDutyCycle());
 
    Serial.print(", ");
-   Serial.print(nozzleTemp,2);
+   Serial.print(nozzle.getTemp(),2);
 
    Serial.print(", ");
-   Serial.print(nozzleDutyCycle);
+   Serial.print(nozzle.getDutyCycle());
 
    Serial.print(", ");
-   Serial.print(augerRPM);
+   Serial.print(auger.getRPM());
 
    Serial.print(", ");
-   Serial.print(outfeedRPM);
+   Serial.print(outfeed.getRPM());
 
    Serial.print(", ");
-   Serial.print(spoolRPM);
+   Serial.print(spool.getRPM());
 
 
 //   Serial.print(", ");

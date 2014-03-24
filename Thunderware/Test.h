@@ -43,8 +43,8 @@ spool.setRPM();
 flag = true;
 }
 
-Serial.println(caliper.getRawADC());
-delay (1000);
+//Serial.println(caliper.getRawADC());
+//delay (1000);
 
 
 

@@ -26,6 +26,7 @@ public:
   Barrel(Configuration* configuration);//constructor
   void activate();
   void setDutyCycle(float dutyCycle);
+  double getDutyCycle(); 
   void sampleTemp();
   float getTemp();
   void off();

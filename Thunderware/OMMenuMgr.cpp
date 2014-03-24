@@ -176,15 +176,6 @@ void OMMenuMgr::setKeypadInput(Keypad* keypad, MenuKeyMap* keyMap) {
     m_kpd->setHoldTime(0);
     m_menuKeys = keyMap;
     
-//    for(uint8_t i = 0; i < 5; i++ ) {
-//        m_butVals[i][0] = p_values[i][0];
-//        m_butVals[i][1] = p_values[i][1];
-//
-//        pinMode(m_butVals[i][0], INPUT);
-//        digitalWrite(m_butVals[i][0], HIGH);
-//
-//    }
-
 }
 
 /** Set Draw Handler Callback
@@ -276,7 +267,6 @@ uint8_t OMMenuMgr::checkInput() {
     }
     
     if( key != lastKey ) {
-//        if (key != BUTTON_NONE){Serial.println(key);}
             // did not have two reads in the row with same key,
             // thus de-bouncing is not possible
         lastKey   = key;
@@ -452,7 +442,7 @@ int OMMenuMgr::_checkKeypad() {
     char keyPressed = m_kpd->getKey();
     if (keyPressed) holdKey = keyPressed;
          
-    // If the key is being held, keep sending it's value.
+    // check to see which analog button was read
     if (m_kpd->getState() == HOLD){ 
       for (int i=0;i<5;i++){
          if (holdKey == m_menuKeys->character[i]){
