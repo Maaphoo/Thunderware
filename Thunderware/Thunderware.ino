@@ -143,23 +143,10 @@ LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
  const byte ROWS=4;
  const byte COLS=4;
  
-// //Membrane Kpd initialize keypad pins
-//
-//  byte rowPins[ROWS]={23,25,27,29};
-// byte colPins[COLS]={31,33,35,37};
-// 
-// //Keymap
-// char keys[ROWS][COLS]={
-// {'1','2','3','A'},
-// {'4','5','6','B'},
-// {'7','8','9','C'},
-// {'*','0','#','D'}
-// };
- 
-  //Black Kpd initialize keypad pins
+ //Membrane Kpd initialize keypad pins
 
- byte colPins[ROWS]={23,25,27,29};
- byte rowPins[COLS]={31,33,35,37};
+  byte rowPins[ROWS]={23,25,27,29};
+ byte colPins[COLS]={31,33,35,37};
  
  //Keymap
  char keys[ROWS][COLS]={
@@ -168,6 +155,19 @@ LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
  {'7','8','9','C'},
  {'*','0','#','D'}
  };
+ 
+//  //Black Kpd initialize keypad pins
+//
+// byte colPins[ROWS]={23,25,27,29};
+// byte rowPins[COLS]={31,33,35,37};
+// 
+// //Keymap
+// char keys[ROWS][COLS]={
+// {'1','2','3','A'},
+// {'4','5','6','B'},
+// {'7','8','9','C'},
+// {'*','0','#','D'}
+// };
  
 Keypad kpd = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 

@@ -30,8 +30,16 @@ void StarveFeeder::setRPM(double rpm)
 
 double StarveFeeder::getRPM(){return *_rpm;}
 
-void StarveFeeder::disable(){_motor.disable();}
+void StarveFeeder::disable()
+{
+  _motor.disable();
+  _running = false;
+}
 
-void StarveFeeder::enable(){_motor.enable();}
+void StarveFeeder::enable()
+{
+  _motor.enable();
+  _running = true;
+}
 
 boolean StarveFeeder::getState(){return _running;}

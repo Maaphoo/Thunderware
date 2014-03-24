@@ -18,7 +18,7 @@ class Caliper
 public:
 
   Caliper(Configuration* configuration);//constructor
-  void sample();
+  void update();
   float getRawADC();
   double dia;
   void linReg(float* slope, float *yIntercept, float *xVals, float *yVals, int *n);
@@ -34,9 +34,7 @@ private:
   unsigned long _minTimeInterval;
   unsigned long _now;
   unsigned int _sampleNum;
-  unsigned int _sampleSum;
-  float _dia;
-  
+  unsigned int _sampleSum;  
 
 };
 

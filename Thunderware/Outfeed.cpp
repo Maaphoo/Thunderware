@@ -31,7 +31,9 @@ Outfeed::Outfeed(Configuration* configuration)
 float Outfeed::getRPM(){ return _motor.getRPM();}
 
 double Outfeed::getDia(){ return _caliper.dia;}
+
 double Outfeed::getRawADC(){return _caliper.getRawADC();}
+
 void Outfeed::linReg(float *slope, float *yIntercept, float *xVals, float *yVals, int *n)
 {
  _caliper.linReg(slope, yIntercept, xVals, yVals, n);
@@ -39,7 +41,7 @@ void Outfeed::linReg(float *slope, float *yIntercept, float *xVals, float *yVals
 
 void Outfeed::setRPM(float rpm)
 {
-  update();
+  activate();
   _motor.setRPM(rpm);
 } 
 
@@ -52,10 +54,11 @@ void Outfeed::setTunings(){ _pid.SetTunings(_configuration->profile.outfeedKp,
                                            _configuration->profile.outfeedKd);}
 
 void Outfeed::disable(){  _motor.disable();}
+
 void Outfeed::enable(){  _motor.enable();}
+
 float Outfeed::getMmExtruded()
 { 
-  update();
   return _mmExtruded;
 }
 
@@ -77,18 +80,18 @@ void Outfeed::reset()
 
 //Idea: set update to call sample until a sample is ready. Reset sampleNum after the pid is computed
 // put the mmExtruded into the compute time part. So then update can be called as rapidly as possible
-void Outfeed::update()
+void Outfeed::activate()
 {
   _now = millis();
   _mmExtruded += ro*_motor.getRPM()*2.0*PI/60.0*(_now-_previousTime)/1000.0;
   
-  if (_now >= _computeTime && _pid.GetMode() == AUTOMATIC){
+  if (_now >= _computeTime){
+    _caliper.update();
     _pid.Compute();
-    _motor.setRPM(_rpm);
+    if (_pid.GetMode() == AUTOMATIC) {_motor.setRPM(_rpm);}
     _computeTime = _now + (long)*_computeInterval;
   }
   _previousTime = _now;
 }
 
-void Outfeed::sample(){ _caliper.sample();}
 

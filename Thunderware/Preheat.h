@@ -184,7 +184,6 @@ void soak(){
 
   barrel.activate();
   nozzle.activate();
-  outfeed.sample();
 
   //Reporting status during heat up
   if (now >= reportTime){

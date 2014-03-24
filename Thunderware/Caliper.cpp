@@ -19,20 +19,8 @@ Caliper::Caliper(Configuration* configuration)
 // _pin = 2;//Analog pin 2
 }
 
-void Caliper::sample(){
-  _now = micros();
-  if (_now>_previousTime+_minTimeInterval){
-      _sampleSum += analogRead(_pin);
-      _sampleNum++;
-      _previousTime = _now;
-  }
-  
-  if (_sampleNum==*_numSamplesToTake-1){
-    _dia = *_slope*((float)_sampleSum/(float)*_numSamplesToTake)+ *_yIntercept;
-    dia = _dia;
-    _sampleSum = 0;
-    _sampleNum =0;
-  }
+void Caliper::update(){
+    dia = *_slope * (getRawADC()) + *_yIntercept;
 }
 
 /* 

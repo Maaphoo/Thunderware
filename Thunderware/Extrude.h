@@ -66,8 +66,9 @@ void beginExtrude(){
   if (i>400){
     outfeed.setRPM(configuration.profile.outfeedRPM);
     outfeed.enable();
-    spool.enable();
     outfeed.setMode(MANUAL);
+    spool.enable();
+    starveFeeder.setRPM(configuration.profile.starveFeederRPM);
     startFlag = true;
     extrudeStartTime = millis();
     currentState = EXTRUDE;
@@ -103,7 +104,7 @@ void extrude(){
   //turn relay on or off (or neither)
   barrel.activate();
   nozzle.activate();
-  outfeed.sample();
+  outfeed.activate();
 
   //report sensor data
   if (now >= reportTime){

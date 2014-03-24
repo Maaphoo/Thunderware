@@ -22,12 +22,12 @@ StepperMotor::StepperMotor(Configuration* configuration, int pinSet) : _timer(pi
   _configuration = configuration;
   //Set Direction, Step and Enable pins to output
   switch (_pinSet){
-    case 0://SET_3_14_8
+    case 0://SET_6_14_8
       _ratio = _configuration->physical.augerStepMode*_configuration->physical.augerGearRatio;
 
       DDRJ |= B00000010; //Direction, Pin 14 to output
-      DDRH |= B00001000; // Enable pin 6 to output
-      DDRH |= B00010000;//Step pin 3 to output
+      DDRH |= B00001000; // Step pin 6 to output
+      DDRH |= B00100000;//Enable pin 3 to output
 
       //set Auger Stepper direction (pin 14)
       if (_configuration->physical.augerDirection){

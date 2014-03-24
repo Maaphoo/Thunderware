@@ -41,8 +41,7 @@ class Outfeed
     double getDia();
     double getRawADC();
     void linReg(float *slope, float *yIntercept, float *xVals, float *yVals, int *n);
-    void update();
-    void sample();
+    void activate();
     
   private:
     Configuration* _configuration;
