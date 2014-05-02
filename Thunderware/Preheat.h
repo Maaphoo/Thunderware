@@ -12,6 +12,7 @@ void updateTime(unsigned long milliseconds, int col, int row);
 void preheat(){
   static unsigned long now;
   static unsigned long reportTime;
+  static unsigned long redrawTime;
   static boolean startFlag = true;//marks first time soak is run
   static boolean msgSet = false;//indicates that the preheat finished buzzer message has been set
   static boolean redrawLCD;
@@ -22,8 +23,8 @@ void preheat(){
     lcd.clear();
 
     //start from full power state
-    barrel.setDutyCycle(80);
-    nozzle.setDutyCycle(250);
+    barrel.setDutyCycle(90);
+    nozzle.setDutyCycle(255);
 
     //Then set heater PIDs to automatic
     barrel.setMode(AUTOMATIC);
@@ -31,7 +32,7 @@ void preheat(){
     redrawLCD = true;
     startFlag = false;
   }
-
+  buzzer.activate();
   barrel.activate();
   nozzle.activate();
 
@@ -39,7 +40,11 @@ void preheat(){
 
     //Safety check
     reportCurrentMeasurements();
-
+    if (now>=redrawTime){
+      lcd.begin(20,4);
+      redrawLCD = true;
+      redrawTime += 10000;
+    }
     if (redrawLCD){
       displayPreheatScreen();
       redrawLCD = false;
@@ -167,6 +172,7 @@ void soak(){
   static unsigned long startTime;
   static unsigned long extrudeTime;
   static unsigned long reportTime;  
+  static unsigned long redrawTime;  
   static boolean startFlag = true;//marks first time soak is run
   static boolean redrawLCD;
   static boolean msgSet = false;//indicates that the end soak buzzer message has been set
@@ -181,7 +187,7 @@ void soak(){
     startFlag = false;    
   }
 
-
+  buzzer.activate();
   barrel.activate();
   nozzle.activate();
 
@@ -196,6 +202,11 @@ void soak(){
     //reportHeaterStatus1();
     reportCurrentMeasurements();
     reportTime = now+1000L;
+    if (now>=redrawTime){
+      lcd.begin(20,4);
+      redrawLCD = true;
+      redrawTime += 10000;
+    }
     if (redrawLCD){
       displaySoakScreen();
       redrawLCD = false;

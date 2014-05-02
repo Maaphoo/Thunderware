@@ -31,7 +31,6 @@ public:
     
 private:
     StepperMotor _motor;
-    double* _rpm;
     boolean _running;
     float* _gramsPerMin;
     float _gramsPerSec;

@@ -56,7 +56,7 @@ void selectProfile(){
       configuration.profile.barrelTemp = 0;
       configuration.profile.nozzleTemp = 0;
       configuration.profile.augerRPM = 0 ;
-      configuration.profile.outfeedRPM = 70;
+      configuration.profile.outfeedRPM = 72.42;
       configuration.profile.soakTime = 0;
 
       currentState = BEGIN_EXTRUDE;
@@ -94,6 +94,7 @@ void selectProfile(){
 void calibrateCalipers(){
   lcd.clear();
   lcd.write("Caliper Calibration");
+  Serial.println("Caliper Calibration");
   delay (4000);
 
   lcd.clear();
@@ -103,9 +104,17 @@ void calibrateCalipers(){
   lcd.write("with target Diameter");
   lcd.setCursor(0,3);
   lcd.write("Press <enter>");
+  Serial.println("Step 1: Load filament with target diameter.");
+  
   char key;
   while (1){
     key = kpd.getKey();
+  
+  //Allow for keyboard input as well
+  if (Serial.available() > 0) {
+    key = (char)Serial.read();
+  }
+
     if(key == 'D'){ 
       break;
     }
@@ -122,6 +131,8 @@ void calibrateCalipers(){
   lcd.write("between 450 and 550.");
   lcd.setCursor(0,3);
   lcd.write("Then press <enter>.");
+  Serial.println("Step2: Adjust the sensor until it is between 450 and 550.");
+  Serial.println("Then Press <enter>");
   delay(4000);
   lcd.clear();
 
@@ -132,6 +143,8 @@ void calibrateCalipers(){
     rawADC = outfeed.getRawADC();
     lcd.setCursor(7,1);
     writeDouble(rawADC,0,7,1);
+    Serial.println(rawADC);
+    delay(1000);
 
     if (rawADC < 550.0 && rawADC > 450.0){
       lcd.setCursor(0,3);
@@ -139,6 +152,10 @@ void calibrateCalipers(){
     }
 
     key = kpd.getKey();
+    //Allow for keyboard input as well
+    if (Serial.available() > 0) {
+      key = (char)Serial.read();
+    }
     if( key == 'D' /*&& rawADC < 550.0 && rawADC > 450.0*/  ){ 
       break;
     }
@@ -156,6 +173,7 @@ void calibrateCalipers(){
   lcd.write("Minimum of 3");
   lcd.setCursor(0,3);
   lcd.write("Then record Diameter");
+  Serial.println("Step 3: Load samples with known Diameter. Minimum of 3. Then Record Diameter.");
   delay(4000);
 
   key = 0;
@@ -173,9 +191,15 @@ void calibrateCalipers(){
     
     lcd.setCursor(0,3);
     lcd.write("Press 'C' when done");
-    
+    Serial.println("Load sample then poress 'D'. Press 'C' when Done.");
     while (1){ 
       key = kpd.getKey();
+
+      //Allow for keyboard input as well
+      if (Serial.available() > 0) {
+      key = (char)Serial.read();
+      }
+
       if(key == 'D'){ 
         break;
       }
@@ -248,7 +272,12 @@ double getNumber(char *title, char *subTitle){
 
   while (invalid){
     key=kpd.waitForKey();//get user input
-
+    
+    //Allow for keyboard input as well
+    if (Serial.available() > 0) {
+      key = (char)Serial.read();
+    }
+    
     switch(key){
 
     case 'D':
@@ -286,6 +315,7 @@ double getNumber(char *title, char *subTitle){
       break;
 
     case '*'://decimal place
+    case '.'://decimal place
       if (diameterPtr - diameterString < 5 && noDecimal == true){ //Make sure that the diameterString isn't full
         *diameterPtr = '.';
         lcd.write('.');

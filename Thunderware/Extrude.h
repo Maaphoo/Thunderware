@@ -9,14 +9,14 @@
 void displayExtrudeScreen();
 void printDiameter(int col, int row);
 void printFtPerMin(int col, int row);
-
+void stopExtruding();
 //setup for extruding
 void beginExtrude(){
   static boolean startFlag = true;
   static unsigned long accelerateTime;
   static float augerRPMTmp;
   static int i;
-  
+
   if (startFlag){
     augerRPMTmp = configuration.profile.augerRPM;
     i = 1;
@@ -30,39 +30,43 @@ void beginExtrude(){
     //if the auger will me rotating, check the temp before accelerating
     //if it isn't going to rotate skip straight to extrude
     if (configuration.profile.augerRPM > 0.0){
-      if (barrel.getTemp()<10){//Cant run the auger if the barrel isn't hot;
+      if (barrel.getTemp()<170){//Cant run the auger if the barrel isn't hot;
         startFlag = true;
         currentState = SELECT_PROFILE;
         return;
-      }else{
+      }
+      else{
         auger.enable();
         startFlag = false;
         accelerateTime = millis()+5;
         lcd.clear();
         lcd.write("Starting to Extrude");
       }
-    }else{
+    }
+    else{
       outfeed.setRPM(configuration.profile.outfeedRPM);
       outfeed.enable();
       spool.enable();
+      starveFeeder.setRPM(configuration.profile.starveFeederRPM);
+      starveFeeder.enable();
       startFlag = true;
-       extrudeStartTime = millis();
+      extrudeStartTime = millis();
       currentState = EXTRUDE;
       return;
     }
   }
-  
+
   if (millis() >= accelerateTime){
     //Accelerate Auger
-  
+
     barrel.activate();
     nozzle.activate();
-  
+
     auger.setRPM(augerRPMTmp/400.0*(double)i);
     i++;
     accelerateTime +=5;
   }
-  
+
   if (i>400){
     outfeed.setRPM(configuration.profile.outfeedRPM);
     outfeed.enable();
@@ -88,6 +92,7 @@ void beginExtrude(){
 void extrude(){
   static unsigned long now;
   static unsigned long reportTime;
+  static unsigned long redrawTime;
   static unsigned long startTime;
   static boolean redrawLCD = true;
   static boolean startFlag = true;//marks first time soak is run
@@ -100,7 +105,11 @@ void extrude(){
     redrawLCD = true;
     startFlag = false;
   }
-
+//  if (now-startTime >=60000){
+//    stopExtruding();
+//    startFlag = true;
+//    currentState = SELECT_PROFILE;  
+//  }
   //turn relay on or off (or neither)
   barrel.activate();
   nozzle.activate();
@@ -112,7 +121,11 @@ void extrude(){
     //Safety check
     // if (heaterError()) {return;}
     spool.setRPM();
-
+    if (now>=redrawTime){
+      lcd.begin(20,4);
+      redrawLCD = true;
+      redrawTime += 10000;
+    }
     if (redrawLCD){
       displayExtrudeScreen();
       redrawLCD = false;
@@ -138,11 +151,13 @@ void extrude(){
   if (Serial.available() > 0) {
     key = (char)Serial.read();
   }
-  
-  if (key){redrawLCD = true;}
-  
+
+  if (key){
+    redrawLCD = true;
+  }
+
   switch(key){
-  case '*':
+  case '*':// Automatic or manual
     if (outfeed.getMode() == MANUAL){
       lcd.setCursor(0,3);
       lcd.write("Press * for AUTO  ");
@@ -228,16 +243,16 @@ void extrude(){
       break;
     }
 
-  case '3'://increase spool scale factor
+  case '3'://increase starveFeeder RPM
     {
-      //        setFeedRate(getFeedRate()+0.5);
-      //          increaseFeedRate();
-
+      starveFeeder.setRPM(starveFeeder.getRPM()+1.0);
+      Serial.println(starveFeeder.getRPM());
       break;
     }
   case '6'://decrease outfeed RPM
     {
-      //        setFeedRate(getFeedRate()-0.5);
+      starveFeeder.setRPM(starveFeeder.getRPM()-1.0);
+      Serial.println(starveFeeder.getRPM());
       //          decreaseFeedRate();
       break;
     }
@@ -256,30 +271,30 @@ void extrude(){
 
   case'8':
     configuration.profile.outfeedKp+=.1;
-//    Serial.print("diaKp increased to: ");
-//    Serial.println(configuration.profile.outfeedKp);
+    //    Serial.print("diaKp increased to: ");
+    //    Serial.println(configuration.profile.outfeedKp);
     outfeed.setTunings();
     break;
 
   case '0':
     configuration.profile.outfeedKp-=.1;
-//    Serial.print("diaKp increased to: ");
-//    Serial.println(configuration.profile.outfeedKp);
+    //    Serial.print("diaKp increased to: ");
+    //    Serial.println(configuration.profile.outfeedKp);
     outfeed.setTunings();
     break;
 
 
   case'9':
     configuration.profile.outfeedKi+=.1;
-//    Serial.print("diaKp increased to: ");
-//    Serial.println(configuration.profile.outfeedKi);
+    //    Serial.print("diaKp increased to: ");
+    //    Serial.println(configuration.profile.outfeedKi);
     outfeed.setTunings();
     break;
 
   case '#':
     configuration.profile.outfeedKi-=.1;
-//    Serial.print("diaKp increased to: ");
-//    Serial.println(configuration.profile.outfeedKi);
+    //    Serial.print("diaKp increased to: ");
+    //    Serial.println(configuration.profile.outfeedKi);
     outfeed.setTunings();
     break;
 
@@ -393,6 +408,16 @@ void displayExtrudeScreen(){
 
 }
 
+void stopExtruding(){
+  auger.disable();
+  outfeed.disable();
+  spool.disable();
+  barrel.off();
+  nozzle.off();
+  starveFeeder.disable();
+}
+
 
 #endif // Extrude_h
+
 

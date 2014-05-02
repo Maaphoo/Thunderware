@@ -28,7 +28,7 @@ void Configuration::loadDefaultProfile()
     profile.augerRPM = 40.0;
 
     //Outfeed
-    profile.outfeedRPM = 50.0;
+    profile.outfeedRPM = 73;
     profile.outfeedKi = 3.0;
     profile.outfeedKp = 0.0;
     profile.outfeedKd = 0.0;
@@ -41,11 +41,11 @@ void Configuration::loadDefaultProfile()
     profile.buzzerActive = true;
 
     //Barrel
-    profile.soakTime = 7.0;// minutes for barrel to remain at setpoint before extruding
-    profile.barrelTemp = 220.0;
+    profile.soakTime = 8.0;// minutes for barrel to remain at setpoint before extruding
+    profile.barrelTemp = 190.0;
 
     //nozzle
-    profile.nozzleTemp = 220.0;
+    profile.nozzleTemp = 190.0;
 }
 
 
@@ -56,8 +56,8 @@ void Configuration::loadDefaultConfig()
 
   //StarveFeeder
   physical.starveFeederPinSet = 3;
-  physical.starveFeederStepMode = 16;
-  physical.starveFeederDirection = 1;
+  physical.starveFeederStepMode = 32;//Something is wrong somewhere b/c this should be 16
+  physical.starveFeederDirection = 0;
 
   //auger
   physical.augerPinSet = 0;
@@ -85,7 +85,7 @@ void Configuration::loadDefaultConfig()
   
   //Barrel
   physical.timeBase = 2000;//Time base in milliseconds
-  physical.barrelMax = 80;//The max dutyCycle for the barrel
+  physical.barrelMax = 100;//The max dutyCycle for the barrel
   physical.barrelMin = 0;//The min dutyCycle for the barrel
   physical.barrelKp = 3.4; 
   physical.barrelKi = 0.15;
@@ -98,7 +98,7 @@ void Configuration::loadDefaultConfig()
 
   //nozzle
   physical.nozzlePin = 4;
-  physical.nozzleMax = 200;//The max dutyCycle for the nozzle
+  physical.nozzleMax = 255;//The max dutyCycle for the nozzle
   physical.nozzleMin = 0;//The min dutyCycle for the nozzle
   physical.nozzleKp = 3.5;
   physical.nozzleKi = 0.15;
@@ -111,8 +111,8 @@ void Configuration::loadDefaultConfig()
   physical.nozzleTSeriesResistor = 9910;
     
   //Diameter Sensor
-  physical.slope = 0.0005471 ;
-  physical.yIntercept = 1.5322;
+  physical.slope = 0.0007846 ;
+  physical.yIntercept = 1.3648;
 }
 
 Configuration::Configuration()

@@ -14,7 +14,7 @@ Outfeed::Outfeed(Configuration* configuration)
         :  _motor(configuration, configuration->physical.outfeedPinSet),
            _caliper(configuration),
            _pid(&_caliper.dia, 
-                &_rpm,
+                &_rpm, // I think that the outfeed PID problem is here. Should be _motor.r
                 &configuration->profile.diaSetPoint,
                 configuration->profile.outfeedKp,
                 configuration->profile.outfeedKi,

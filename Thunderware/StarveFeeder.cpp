@@ -15,7 +15,6 @@ StarveFeeder::StarveFeeder(Configuration* configuration)
              : _motor(configuration, configuration->physical.starveFeederPinSet)
         
 {
-    _rpm = &configuration->profile.starveFeederRPM;
     _gramsPerMin = &configuration->profile.starveFeederTargetFeedRate;
     _gramsPerSec = (*_gramsPerMin/60.0);
     _running = false;
@@ -28,7 +27,7 @@ void StarveFeeder::setRPM(double rpm)
   _motor.setRPM(rpm);
 }
 
-double StarveFeeder::getRPM(){return *_rpm;}
+double StarveFeeder::getRPM(){return _motor.getRPM();}
 
 void StarveFeeder::disable()
 {
