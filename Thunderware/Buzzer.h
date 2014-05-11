@@ -17,8 +17,8 @@ class Buzzer
 
     enum Message {
       NO_MSG = 0, // no message
-      SOAKING, // The soak period is starting
-      EXTRUDING, // The machine is extruding
+      PREHEAT_FINISHED, // The soak period is starting
+      SOAK_FINISHED, // The machine is extruding
       OUT_OF_TOL, // The filament is out of tolerance
       SAFETY // A safety shutdown has been triggered
     };

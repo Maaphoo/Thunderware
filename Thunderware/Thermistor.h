@@ -11,14 +11,15 @@ class Thermistor
 {
 
 public:
-    Thermistor(int tPin, long tNominal, int tTempNominal, int numSamples, int bCoefficient, int seriesResistor);
+    Thermistor(int tPin, long rNominal, int tTempNominal, int numSamples, int bCoefficient, int seriesResistor);
     void sampleTemp();
     float getTemp();
+    double temp;
 
 protected:
     int _tPin;
     int _numSamples;
-    long _tNominal; 
+    long _rNominal; 
     long _sampleSum;
     int _tTempNominal;
     int _sampleCounter;

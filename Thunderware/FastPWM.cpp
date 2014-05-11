@@ -11,9 +11,22 @@
 #include "FastPWM.h"
 
 
-FastPWM::FastPWM(int timerNumber)
+FastPWM::FastPWM(int pinSet)
 {
- _timerNumber = timerNumber;
+ _pinSet = pinSet;
+ switch (_pinSet){
+   case 0://SET_3_14_8
+     _timerNumber = 4;
+     break;
+   case 1://SET_11_15_12
+     _timerNumber = 1;
+     break;
+   case 2://SET_10_16_9
+     _timerNumber = 2;
+     break;
+   case 3://Set 46_48_5
+     _timerNumber = 3;
+ }
  
  }
 
@@ -58,7 +71,7 @@ int prescaler;
   
   TCCR2A = (outModeA << 6) | (outModeB << 4) | (mode & 3) ;
   TCCR2B = (captureMode << 6) | ((mode & B00000100) << 1) | clockMode;
-  OCR2A = (byte)(16000000.0/(2*frequency * prescaler));//OCR2A because we are working with pin OC2B (pin 10)
+  OCR2A = (byte)(16000000.0/(2*frequency * prescaler));//OCR2A because we are working with pin OC2As (pin 10)
   
 } else { //Timer 1, 3 or 4
   
@@ -93,16 +106,12 @@ int prescaler;
       TCCR1A = (outModeA << 6) | (outModeB << 4) | (mode & 3) ;
       TCCR1B = (captureMode << 6) | ((mode & 0xC) << 1) | clockMode ;
       OCR1A = (short)(16000000.0/(2*frequency * prescaler));//OCR1A because signal will be on pin OC1A (pin 11)
-  Serial.println("Here");
-  Serial.println(TCCR1A, BIN);
-  Serial.println(TCCR1B, BIN);
-  Serial.println(OCR1A, BIN);
       break;
     
     case 3:
       TCCR3A = (outModeA << 6) | (outModeB << 4) | (mode & 3) ;
       TCCR3B = (captureMode << 6) | ((mode & 0xC) << 1) | clockMode ;
-      OCR3A = (short)(16000000.0/(2*frequency * prescaler));//OCR3A because signal will be on pin 2 PE4
+      OCR3A = (short)(16000000.0/(2*frequency * prescaler));//OCR3A because signal will be on pin 5 PE3
       break;
 
     case 4:

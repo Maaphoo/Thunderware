@@ -4,14 +4,14 @@
 char safetyMsg[20];
 
 boolean heaterError(){
-  if (*tempInput > maxExtruderTemp){
-    barrelHeater.off();
-    nozzleHeater.off();
+  if (barrel.getTemp() > maxExtruderTemp){
+    barrel.off();
+    nozzle.off();
     auger.disable();
     outfeed.disable();
     spool.disable();
     strcpy(safetyMsg, "Barrel over temp.");
-    Serial.println(barrelTemp);
+    Serial.println(barrel.getTemp());
     currentState = SAFETY_SHUTDOWN;
     return true;
   }

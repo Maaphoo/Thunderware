@@ -12,24 +12,35 @@
 #include "Spooler.h"
 #include "config.h"
 
-Spooler::Spooler(StepperMotor *outfeed, StepperMotor::Motor motor, int timer) : _motor(motor, timer)
+Spooler::Spooler(Configuration* configuration, Outfeed* outfeed) :   _motor(configuration, configuration->physical.spoolerPinSet)
 {
   _outfeed = outfeed;
+  _diaSetPoint = 1.75;
 }
 
-/*
+
 
 void Spooler::setRPM()
 {
-  calcLengthExtruded();// First update the the mm of filament extruded.
-  _filamentSurfaceRaduis = pow(c2*diaSetPoint*diaSetPoint*mmExtruded+c3,0.5);
-  spoolRPM = ro*rsc1/(rss*rsm)*outfeedRPM;
+
+  _filamentSurfaceRaduis = pow(c2*_diaSetPoint*_diaSetPoint*_outfeed->getMmExtruded()+c3,0.5);
+  _motorRPM = ro*rsc1/(_filamentSurfaceRaduis*rsm)*_outfeed->getRPM();
+  _motor.setRPM(_motorRPM);
 }
 
-void Spooler::calcLengthExtruded()
+float Spooler::getRPM(){return _motor.getRPM();}
+
+void Spooler::setRPM(float rpm)
 {
-
+  _motor.setRPM(rpm);
 }
 
+//Instead of using the following, should I have a public pointer to _motor and then use someting like spool.motor->enable()?
+void Spooler::enable(){ _motor.enable();}
+void Spooler::disable(){ _motor.disable();}
 
-*/
+
+
+
+
+
