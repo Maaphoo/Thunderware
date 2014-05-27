@@ -24,7 +24,7 @@ class StepperMotor
 //    enum PinSet {
 //      SET_3_14_8 = 0,// wired to auger motor, pins: step->3, dir->14, enable->8 
 //      SET_11_15_12,//wired to outfeed motor, pins: step->11, dir->15, enable->12
-//      SET_10_16_9,//wired to spool motor, pins: step->10, dir->16, enable->9
+//      SET_10_16_9,//wired to spooler motor, pins: step->10, dir->16, enable->9
 //      //STARVE_FEEDER,
 //    };
     int pinSet;
@@ -33,10 +33,10 @@ class StepperMotor
     float getRPM();
     void disable();
     void enable();
+    double _rpm;
 
   private:
     FastPWM _timer;
-    double _rpm;
     int _ratio;//Stepmode And gear ratio (if it exists)
     int _pinSet;
     Configuration* _configuration;

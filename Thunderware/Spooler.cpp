@@ -35,7 +35,7 @@ void Spooler::setRPM(float rpm)
   _motor.setRPM(rpm);
 }
 
-//Instead of using the following, should I have a public pointer to _motor and then use someting like spool.motor->enable()?
+//Instead of using the following, should I have a public pointer to _motor and then use someting like spooler.motor->enable()?
 void Spooler::enable(){ _motor.enable();}
 void Spooler::disable(){ _motor.disable();}
 

@@ -9,11 +9,11 @@ void test()
 {
 //  Serial.println(configuration.physical.outfeedDirection);
 // outfeed.enable();
-// spool.enable();
+// spooler.enable();
 // while(1){
-//   //it is as if spool._outfeed is pointing to a null Outfeed object.
-// outfeed.setRPM(60);//Doesen't work. spool can't access outfeed.getRPM() all it gets is zero. 
-// spool.setRPM();
+//   //it is as if spooler._outfeed is pointing to a null Outfeed object.
+// outfeed.setRPM(60);//Doesen't work. spooler can't access outfeed.getRPM() all it gets is zero. 
+// spooler.setRPM();
 //
 // Serial.print("beginning to outfeed: ");
 // Serial.println(outfeed.getMmExtruded());
@@ -23,7 +23,7 @@ void test()
 //  Serial.println(outfeed.getMmExtruded());
 //  outfeed.reset();
 //  outfeed.setRPM(0);
-//  spool.setRPM();
+//  spooler.setRPM();
 // delay(10000); 
 // }
 
@@ -38,8 +38,8 @@ void test()
 //auger.setRPM(40);
 //outfeed.enable();
 //outfeed.setRPM(50);
-//spool.enable();
-//spool.setRPM();
+//spooler.enable();
+//spooler.setRPM();
 //flag = true;
 //}
 

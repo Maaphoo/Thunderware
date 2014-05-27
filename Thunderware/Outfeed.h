@@ -32,6 +32,12 @@ class Outfeed
     void setMode(int mode);
     int getMode();
     void setTunings();
+    double getKp();
+    void setKp(double kp);
+    double getKi();
+    void setKi(double ki);
+    double getKd();
+    void setKd(double kd);
     void disable();
     void enable();
     void reset();

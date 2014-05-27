@@ -9,7 +9,7 @@ boolean heaterError(){
     nozzle.off();
     auger.disable();
     outfeed.disable();
-    spool.disable();
+    spooler.disable();
     strcpy(safetyMsg, "Barrel over temp.");
     Serial.println(barrel.getTemp());
     currentState = SAFETY_SHUTDOWN;
@@ -19,15 +19,28 @@ boolean heaterError(){
 }
 
 void safetyShutdown(){
-        lcd.clear();
-        lcd.write("Safety Shutdown");
-        lcd.setCursor(0,1);
-        lcd.write(safetyMsg);
-        lcd.setCursor(0,3);
-        lcd.write("Press any key exit");
-//        safetyErrorSound();
-        kpd.waitForKey();
-        currentState = SELECT_PROFILE;
+  lcd.clear();
+  lcd.write("Safety Shutdown");
+  Serial.println("Safety Shutdown");
+  lcd.setCursor(0,1);
+  lcd.write(safetyMsg);
+  lcd.setCursor(0,3);
+  lcd.write("Press any key exit");
+  Serial.println("Press any key to exit.");
+  //        safetyErrorSound();
+  while(1){
+    kpd.getKey();
+
+    if (Serial.available() > 0) {
+      key = (char)Serial.read();
+    }
+
+    if (key){ 
+      break;
+    }
+  }
+  currentState = SELECT_PROFILE;
 
 }
 #endif // Safety_h
+

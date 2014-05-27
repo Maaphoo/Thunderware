@@ -46,7 +46,7 @@ void beginExtrude(){
     else{
       outfeed.setRPM(configuration.profile.outfeedRPM);
       outfeed.enable();
-      spool.enable();
+      spooler.enable();
       starveFeeder.setRPM(configuration.profile.starveFeederRPM);
       starveFeeder.enable();
       startFlag = true;
@@ -71,7 +71,7 @@ void beginExtrude(){
     outfeed.setRPM(configuration.profile.outfeedRPM);
     outfeed.enable();
     outfeed.setMode(MANUAL);
-    spool.enable();
+    spooler.enable();
     starveFeeder.setRPM(configuration.profile.starveFeederRPM);
     startFlag = true;
     extrudeStartTime = millis();
@@ -120,7 +120,7 @@ void extrude(){
 
     //Safety check
     // if (heaterError()) {return;}
-    spool.setRPM();
+    spooler.setRPM();
     if (now>=redrawTime){
       lcd.begin(20,4);
       redrawLCD = true;
@@ -159,13 +159,9 @@ void extrude(){
   switch(key){
   case '*':// Automatic or manual
     if (outfeed.getMode() == MANUAL){
-      lcd.setCursor(0,3);
-      lcd.write("Press * for AUTO  ");
       outfeed.setMode(AUTOMATIC);
     } 
     else {
-      lcd.setCursor(0,3);
-      lcd.write("Press * for MANUAL");
       outfeed.setMode(MANUAL);
     }
     break;
@@ -246,20 +242,13 @@ void extrude(){
   case '3'://increase starveFeeder RPM
     {
       starveFeeder.setRPM(starveFeeder.getRPM()+1.0);
-      Serial.println(starveFeeder.getRPM());
       break;
     }
-  case '6'://decrease outfeed RPM
+  case '6'://decrease starveFeeder RPM
     {
       starveFeeder.setRPM(starveFeeder.getRPM()-1.0);
-      Serial.println(starveFeeder.getRPM());
-      //          decreaseFeedRate();
       break;
     }
-    //Notify on Computer screen
-    //Serial.print("Decreased spool Scale Factor to: ");
-    //Serial.println(sf);
-    break;
 
   case '7':
 
@@ -323,7 +312,7 @@ void extrude(){
         if (key == 'A'){
           auger.disable();
           outfeed.disable();
-          spool.disable();
+          spooler.disable();
           barrel.off();
           nozzle.off();
           starveFeeder.disable();
@@ -342,6 +331,7 @@ void extrude(){
       lcd.write("Increase temp to:");
       lcd.setCursor(0,1);
       configuration.profile.barrelTemp += 5;
+      configuration.profile.nozzleTemp += 5;
       char tempSetPointString[10];
       dtostrf(configuration.profile.barrelTemp, 1,2,tempSetPointString);
       lcd.write(tempSetPointString);
@@ -358,6 +348,7 @@ void extrude(){
       lcd.write("Decrease temp to:");
       lcd.setCursor(0,1);
       configuration.profile.barrelTemp -= 5;
+      configuration.profile.nozzleTemp -= 5;
       char tempSetPointString[10];
       dtostrf(configuration.profile.barrelTemp, 1,2,tempSetPointString);
       lcd.write(tempSetPointString);
@@ -384,6 +375,14 @@ void displayExtrudeScreen(){
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.write("Extruding");
+  
+  //Display if in Auto or Manual
+  lcd.setCursor(10, 0);
+  if (outfeed.getMode() == MANUAL){
+    lcd.write("Manual");
+  } else {
+    lcd.write("Automatic");
+  }
 
   lcd.setCursor(0,1);
   lcd.write("Nozzle: ");
@@ -399,19 +398,12 @@ void displayExtrudeScreen(){
   lcd.write("Rate: ");
   writeDouble(outfeed.getMPerMin(),2, 7,3);
   lcd.write(" m/min");
-
-  //  if (outfeedPID.GetMode() == MANUAL){
-  //    lcd.write("Press * for AUTO  ");
-  //  } else {
-  //    lcd.write("Press * for Manual");
-  //  }
-
 }
 
 void stopExtruding(){
   auger.disable();
   outfeed.disable();
-  spool.disable();
+  spooler.disable();
   barrel.off();
   nozzle.off();
   starveFeeder.disable();

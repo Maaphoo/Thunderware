@@ -3,23 +3,23 @@
 
 #include "StarveFeeder.h"
 
-
-//void reportSettings(){
-//  Serial.print("Auger Speed: ");
-//  Serial.println(augerRPM);
-//
-//  Serial.print("Outfeed Speed: ");
-//  Serial.println(outfeedRPM);
-//
-//  Serial.print("Temp Set Point: ");
-//  Serial.println(*tempSetPoint);
-//
-//  Serial.println("");
-//}
-
 void reportCurrentMeasurementTitles(){
 
-  Serial.println("Time(s), Dia(mm), Barrel Temp(C), BarrelDutyCycle(%), Nozzle Temp(c), NozzleDutyCycle(%), augerRPM, outfeedRPM, spoolRPM, steps, FeedRate");
+  Serial.println("Time(s), "
+                 "Dia(mm), "
+                 "outfeedRPM, "
+                 "starveFeederRPM,  "
+                 "augerRPM, "
+                 "Mode, "
+                 "Barrel Temp(C), "
+                 "BarrelDutyCycle(%), "
+                 "Nozzle Temp(C), "
+                 "NozzleDutyCycle(%), "
+                 "outfeedKp, "
+                 "outfeedKi, "
+                 "outfeedKd, "
+                 "feedRate(m/min), "
+                 "metersExtruded");
 
 }
 
@@ -29,10 +29,20 @@ void reportCurrentMeasurements(){
    Serial.print((millis()-extrudeStartTime)/1000L);
 
    Serial.print(", ");
-   Serial.print(outfeed.getMmExtruded()*0.00328084);//feet bc that's what my tape measure is.
+   Serial.print(outfeed.getDia(),3);
 
    Serial.print(", ");
-   Serial.print(outfeed.getDia(),3);
+   Serial.print(outfeed.getRPM());
+   
+   Serial.print(", ");
+   Serial.print(starveFeeder.getRPM());
+ 
+   Serial.print(", ");
+   Serial.print(auger.getRPM());
+   
+   
+   Serial.print(", ");
+   Serial.print(outfeed.getMode());
 
    Serial.print(", ");
    Serial.print(barrel.getTemp(),2);
@@ -45,138 +55,23 @@ void reportCurrentMeasurements(){
 
    Serial.print(", ");
    Serial.print(nozzle.getDutyCycle());
+ 
+   Serial.print(", ");
+   Serial.print(outfeed.getKp());  
+ 
+   Serial.print(", ");
+   Serial.print(outfeed.getKi());
+  
+   Serial.print(", ");
+   Serial.print(outfeed.getKd()); 
 
    Serial.print(", ");
-   Serial.print(auger.getRPM());
-
+   Serial.print(outfeed.getMPerMin());
+   
    Serial.print(", ");
-   Serial.print(outfeed.getRPM());
-
-   Serial.print(", ");
-   Serial.print(spool.getRPM());
-
-
-//   Serial.print(", ");
-//   Serial.print(getFeedRate());
-
-//   Serial.print(", ");
-//   Serial.print(getFeederState());
+   Serial.print(outfeed.getMmExtruded()*0.001);
 
    Serial.println();
 }
 
-//void reportArray(){
-//   if (k<172){//build array
-//    *(array+k) = now/1000;
-//    k++;
-//    *(array+k) = mmExtruded/(25.4*12.0);
-//    k++;
-//    *(array+k) = medianDia;
-//    k++;
-//    *(array+k) = barrelTemp;
-//    k++;
-//    *(array+k) = nozzleTemp;
-//    k++;
-//    *(array+k) = dutyCycle;
-//    k++;
-//    *(array+k) = aStepInterval;
-//    k++;
-//    *(array+k) = oStepInterval;
-//    k++;
-//    *(array+k) = sStepInterval;
-//    k++;
-//    }else{
-//    i = 0;
-//    while (i<180){
-//     Serial.print(*(array+i));
-//     i++;
-//     Serial.print(", ");
-//     Serial.print(*(array+i));
-//     i++;
-//     Serial.print(", ");
-//     Serial.print(*(array+i));
-//     i++;
-//     Serial.print(", ");
-//     Serial.print(*(array+i));
-//     i++;
-//     Serial.print(", ");
-//     Serial.print(*(array+i));
-//     i++;
-//     Serial.print(", ");
-//     Serial.print(*(array+i));
-//     i++;
-//     Serial.print(", ");
-//     Serial.print(*(array+i));
-//     i++;
-//     Serial.print(", ");
-//     Serial.print(*(array+i));
-//     i++;
-//     Serial.print(", ");
-//     Serial.print(*(array+i));
-//     i++;
-//     Serial.println();
-//  }
-//    k=0;//reset counter
-//    //capture this second's data
-//    *(array+k) = now/1000;
-//    k++;
-//    *(array+k) = mmExtruded/25.4*12.0;
-//    k++;
-//    *(array+k) = medianDia;
-//    k++;
-//    *(array+k) = barrelTemp;
-//    k++;
-//    *(array+k) = nozzleTemp;
-//    k++;
-//    *(array+k) = dutyCycle;
-//    k++;
-//    *(array+k) = aStepInterval;
-//    k++;
-//    *(array+k) = oStepInterval;
-//    k++;
-//    *(array+k) = sStepInterval;
-//    k++;
-//  }
-// }
-//
-//void reportDiameter(){
-//   Serial.println(caliperReading);
-// }
-//
-//void reportSPS(){
-//  Serial.print("AugerSPS: ");
-//  Serial.print(augerSPS);
-//  Serial.print("  outfeedSPS: ");
-//  Serial.print(outfeedSPS);
-//  Serial.print("  spoolSPS: ");
-//  Serial.println(spoolSPS);
-//}
-//
-//void reportDiaVTime(){
-//  Serial.print(now/1000);
-//  Serial.print(", ");
-//  Serial.print(caliperReading, 3);
-//  Serial.print(", ");
-//  Serial.print(barrelTemp);
-//  Serial.print(", ");
-//  Serial.println(nozzleTemp);
-//}
-//
-//void reportCaliper(){
-//     Serial.print(now/1000);
-//   Serial.print(", ");
-//   Serial.print(caliperReading,3);
-//   Serial.print(", ");
-//   Serial.print(medianDia,3);
-//      Serial.print(" Readings: ");
-//
-//   for (int i=0;i<7;i++){
-//        Serial.print("  ");
-//   Serial.print(*(diaMeasurements+i),3);
-//   }
-//
-//   Serial.println();
-//
-//}
-//
 #endif // TestReporting_h

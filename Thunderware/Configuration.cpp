@@ -21,7 +21,7 @@ void Configuration::loadDefaultProfile()
     profile.tolerance = 0.05;
     
     //Starve Feeder
-    profile.starveFeederRPM = 20;
+    profile.starveFeederRPM = 10;
     profile.starveFeederTargetFeedRate = 7.5;
     
     //Auger
@@ -42,10 +42,10 @@ void Configuration::loadDefaultProfile()
 
     //Barrel
     profile.soakTime = 8.0;// minutes for barrel to remain at setpoint before extruding
-    profile.barrelTemp = 190.0;
+    profile.barrelTemp = 210.0;
 
     //nozzle
-    profile.nozzleTemp = 190.0;
+    profile.nozzleTemp = 210.0;
 }
 
 
@@ -57,7 +57,7 @@ void Configuration::loadDefaultConfig()
   //StarveFeeder
   physical.starveFeederPinSet = 3;
   physical.starveFeederStepMode = 32;//Something is wrong somewhere b/c this should be 16
-  physical.starveFeederDirection = 0;
+  physical.starveFeederDirection = 1;
 
   //auger
   physical.augerPinSet = 0;
@@ -68,8 +68,8 @@ void Configuration::loadDefaultConfig()
   //Outfeed
   physical.outfeedPinSet = 1;
   physical.outfeedStepMode = 16;
-  physical.outfeedDirection = 0;
-  physical.outfeedRollerRadius = 5.9769; // Efective radius of outfeed roller32;
+  physical.outfeedDirection = 1;
+  physical.outfeedRollerRadius = 3.11; // Efective radius of outfeed roller32;
   physical.outfeedMaxRPM = 200.0;
   physical.outfeedMinRPM = 0.0;
   
@@ -77,10 +77,10 @@ void Configuration::loadDefaultConfig()
   physical.spoolerPinSet = 2; 
   physical.spoolerStepMode = 16;
   physical.spoolerDirection = 1;
-  physical.rsc1 = 72.85; // Inner radius of spool core
-  physical.rsc2 = 75.96; // Outer radius of spool core
-  physical.rsm = 9.19; // radius of spool stepper motor roller
-  physical.ts = 56.0; // Traverse Length in mm
+  physical.rsc1 = 73.15; // Inner radius of spool core
+  physical.rsc2 = 75.93; // Outer radius of spool core
+  physical.rsm = 14.25; // radius of spool stepper motor roller
+  physical.ts = 56.8; // Traverse Length in mm
 
   
   //Barrel
@@ -111,8 +111,8 @@ void Configuration::loadDefaultConfig()
   physical.nozzleTSeriesResistor = 9910;
     
   //Diameter Sensor
-  physical.slope = 0.0007846 ;
-  physical.yIntercept = 1.3648;
+  physical.slope = 0.0005656 ;
+  physical.yIntercept = 1.5519;
 }
 
 Configuration::Configuration()

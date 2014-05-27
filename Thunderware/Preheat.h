@@ -21,6 +21,7 @@ void preheat(){
 
   if (startFlag){
     lcd.clear();
+    reportCurrentMeasurementTitles();
 
     //start from full power state
     barrel.setDutyCycle(90);
@@ -143,7 +144,7 @@ void preheat(){
   }
 
 
-  if (barrel.getTemp() > configuration.profile.barrelTemp-3){
+  if (barrel.getTemp() > configuration.profile.barrelTemp-3 && nozzle.getTemp() > configuration.profile.nozzleTemp-3){
     buzzer.setMsg(Buzzer::PREHEAT_FINISHED);
     startFlag = true;//set to reinitialize vars for next preheat
     currentState = SOAK;
@@ -241,7 +242,8 @@ void soak(){
       lcd.clear();
       lcd.write("Increase temp to:");
       lcd.setCursor(0,1);
-      configuration.profile.barrelTemp = configuration.profile.barrelTemp+5;
+      configuration.profile.barrelTemp += 5;
+      configuration.profile.nozzleTemp += 5;
       char tempSetPointString[10];
       dtostrf(configuration.profile.barrelTemp, 1,2,tempSetPointString);
       lcd.write(tempSetPointString);
@@ -256,7 +258,8 @@ void soak(){
       lcd.clear();
       lcd.write("Decrease temp to:");
       lcd.setCursor(0,1);
-      configuration.profile.barrelTemp = configuration.profile.barrelTemp-5;
+      configuration.profile.barrelTemp -= 5;
+      configuration.profile.nozzleTemp -= 5;
       char tempSetPointString[10];
       dtostrf(configuration.profile.barrelTemp, 1,2,tempSetPointString);
       lcd.write(tempSetPointString);

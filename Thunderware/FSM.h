@@ -8,6 +8,7 @@ double getNumber(char *title, char *subTitle);
 
 
 void selectProfile(){
+      buzzer.setMsg(Buzzer::PREHEAT_FINISHED);
   //Display message on LCD and Computer Screen
   // initializeLCD();
   lcd.clear();
@@ -28,8 +29,9 @@ void selectProfile(){
   boolean invalid = true;
 
   while(invalid){
+    buzzer.activate();
     key = kpd.getKey();
-
+    
     //Allow for keyboard input as well
     if (Serial.available() > 0) {
       key = (char)Serial.read();
@@ -56,6 +58,8 @@ void selectProfile(){
       configuration.profile.barrelTemp = 0;
       configuration.profile.nozzleTemp = 0;
       configuration.profile.augerRPM = 0 ;
+      configuration.profile.augerRPM = 0 ;
+      configuration.profile.starveFeederRPM = 0;
       configuration.profile.outfeedRPM = 72.42;
       configuration.profile.soakTime = 0;
 

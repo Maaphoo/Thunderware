@@ -145,7 +145,7 @@ LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
  
  //Membrane Kpd initialize keypad pins
 
-  byte rowPins[ROWS]={23,25,27,29};
+ byte rowPins[ROWS]={23,25,27,29};
  byte colPins[COLS]={31,33,35,37};
  
  //Keymap
@@ -186,7 +186,7 @@ StepperMotor auger(&configuration, configuration.physical.augerPinSet);
 
 Outfeed outfeed(&configuration);
 
-Spooler spool(&configuration, &outfeed);
+Spooler spooler(&configuration, &outfeed);
 
 //Caliper caliper(&configuration);
 

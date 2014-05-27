@@ -14,7 +14,7 @@ Outfeed::Outfeed(Configuration* configuration)
         :  _motor(configuration, configuration->physical.outfeedPinSet),
            _caliper(configuration),
            _pid(&_caliper.dia, 
-                &_rpm, // I think that the outfeed PID problem is here. Should be _motor.r
+                &_motor._rpm,//&_rpm, // I think that the outfeed PID problem is here. Should be _motor.r
                 &configuration->profile.diaSetPoint,
                 configuration->profile.outfeedKp,
                 configuration->profile.outfeedKi,
@@ -53,6 +53,18 @@ void Outfeed::setTunings(){ _pid.SetTunings(_configuration->profile.outfeedKp,
                                            _configuration->profile.outfeedKi,
                                            _configuration->profile.outfeedKd);}
 
+double Outfeed::getKp(){return _pid.GetKp();}
+
+void Outfeed::setKp(double kp){ _pid.SetTunings(kp, _pid.GetKi(), _pid.GetKd());}
+
+double Outfeed::getKi(){return _pid.GetKi();}
+
+void Outfeed::setKi(double ki){ _pid.SetTunings(_pid.GetKp(), ki, _pid.GetKd());}
+
+double Outfeed::getKd(){return _pid.GetKd();}
+
+void Outfeed::setKd(double kd){ _pid.SetTunings(_pid.GetKp(), _pid.GetKi(), kd);}
+
 void Outfeed::disable(){  _motor.disable();}
 
 void Outfeed::enable(){  _motor.enable();}
@@ -83,7 +95,7 @@ void Outfeed::reset()
 void Outfeed::activate()
 {
   _now = millis();
-  _mmExtruded += ro*_motor.getRPM()*2.0*PI/60.0*(_now-_previousTime)/1000.0;
+  _mmExtruded += _configuration->physical.outfeedRollerRadius*_motor.getRPM()*2.0*PI/60.0*(_now-_previousTime)/1000.0;
   
   if (_now >= _computeTime){
     _caliper.update();
