@@ -26,7 +26,7 @@ void reportCurrentMeasurementTitles(){
 void reportCurrentMeasurements(){
 
   //Serial.println("Barrel_Temp Nozzle_Temp Duty_Cycle Diameter");
-   Serial.print((millis()-extrudeStartTime)/1000L);
+   Serial.print((millis()-stateMachine.getExtrudeStartTime())/1000L);
 
    Serial.print(", ");
    Serial.print(outfeed.getDia(),3);

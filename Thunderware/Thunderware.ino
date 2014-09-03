@@ -62,7 +62,6 @@ Genneral additions:
 
 */
 
-  #include "States.h"
   #include <LiquidCrystal.h>
   #include <Keypad.h>
   #include <PID_v1.h>
@@ -108,7 +107,6 @@ void soak();
 void beginExtrude();
 void loadFilament();
 void extrude();
-void safetyShutdown();
 void test();
 void calibrateCalipers();
 
@@ -120,7 +118,6 @@ void (*state_table[])()={
   beginExtrude,
   loadFilament,
   extrude,
-  safetyShutdown,
   test,
   calibrateCalipers
 };
@@ -191,7 +188,7 @@ Outfeed outfeed(&configuration);
 
 Spooler spooler(&configuration, &outfeed);
 
-Safety safety(&configuration, &barrel, &nozzle, &currentState);
+Safety safety(&configuration, &barrel, &nozzle, &stateMachine);
 
 
 
@@ -209,7 +206,7 @@ void setup()
   Wire.begin();
   lcd.begin(20, 4); //Start up LCD
 
-  currentState = SELECT_PROFILE;
+  stateMachine.setState(StateMachine::SELECT_PROFILE);
 // currentState = TEST;
 //  currentState = EXTRUDE_AUTOMATIC;
 
@@ -217,7 +214,7 @@ void setup()
 }
 
   void loop(){
-   state_table[currentState]();
+   state_table[stateMachine.getState()]();
  }
  
  

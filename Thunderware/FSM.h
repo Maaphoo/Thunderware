@@ -46,7 +46,7 @@ void selectProfile(){
     {
 
       configuration.loadDefaultProfile();
-      currentState = PREHEAT;
+      stateMachine.setState(StateMachine::PREHEAT);
 
     }
     break;
@@ -61,7 +61,7 @@ void selectProfile(){
       configuration.profile.starveFeederRPM = 0;
       configuration.profile.soakTime = 0;
 
-      currentState = BEGIN_EXTRUDE;
+      stateMachine.setState(StateMachine::BEGIN_EXTRUDE);
 
     }
     break;
@@ -74,17 +74,17 @@ void selectProfile(){
     configuration.profile.soakTime = 0;
 
     //Shift state.
-    currentState = BEGIN_EXTRUDE;
+    stateMachine.setState(StateMachine::BEGIN_EXTRUDE);
     break;
 
   case '4':
     Serial.println("calibrate Calipers");
     //Shift state.
-    currentState = CALIBRATE_CALIPERS;
+    stateMachine.setState(StateMachine::CALIBRATE_CALIPERS);
     break;
 
   case 'D':
-    currentState = TEST;
+    stateMachine.setState(StateMachine::TEST);
     break;
   }
 }
@@ -118,7 +118,7 @@ void calibrateCalipers(){
       break;
     }
     if (key == 'A'){
-      currentState = SELECT_PROFILE;
+      stateMachine.setState(StateMachine::SELECT_PROFILE);
       return;
     }
   }
@@ -159,7 +159,7 @@ void calibrateCalipers(){
       break;
     }
     if (key == 'A'){
-      currentState = SELECT_PROFILE;
+      stateMachine.setState(StateMachine::SELECT_PROFILE);
       return;
     }
   }
@@ -204,14 +204,14 @@ void calibrateCalipers(){
       }
       if(key == 'C'){ 
         if (i<2){
-        currentState = SELECT_PROFILE;
+          stateMachine.setState(StateMachine::SELECT_PROFILE);
         return;
         }
         finished = true;
         break;
       }
       if (key == 'A'){
-        currentState = SELECT_PROFILE;
+        stateMachine.setState(StateMachine::SELECT_PROFILE);
         return;
       }
     }
@@ -222,8 +222,8 @@ void calibrateCalipers(){
     sampleDias[i] = getNumber("Enter Diameter", "<enter> to exit");
     if (sampleDias[i] == -1){ 
       if (i<2){
-        currentState = SELECT_PROFILE;
-        return;
+        stateMachine.setState(StateMachine::SELECT_PROFILE);
+      return;
       }
       break;
     }
@@ -245,7 +245,7 @@ void calibrateCalipers(){
   while (1){ 
   key = kpd.getKey();
     if(key){ 
-      currentState = SELECT_PROFILE;
+      stateMachine.setState(StateMachine::SELECT_PROFILE);
       return;
     }
   }

@@ -35,7 +35,7 @@ void beginExtrude(){
       if (barrel.getTemp()< 0){//Cant run the auger if the barrel isn't hot;
         startFlag = true;
         buzzer.setMsg(Buzzer::SAFETY);
-        currentState = SELECT_PROFILE;
+          stateMachine.setState(StateMachine::SELECT_PROFILE);
         return;
       }
       else{
@@ -53,8 +53,8 @@ void beginExtrude(){
       starveFeeder.setRPM(configuration.profile.starveFeederRPM);
       starveFeeder.enable();
       startFlag = true;
-      extrudeStartTime = millis();
-      currentState = EXTRUDE;
+      stateMachine.setExtrudeStartTime(millis());
+      stateMachine.setState(StateMachine::EXTRUDE);
       return;
     }
   }
@@ -77,8 +77,8 @@ void beginExtrude(){
     spooler.enable();
     starveFeeder.setRPM(configuration.profile.starveFeederRPM);
     startFlag = true;
-    extrudeStartTime = millis();
-    currentState = EXTRUDE;
+    stateMachine.setExtrudeStartTime(millis());
+    stateMachine.setState(StateMachine::EXTRUDE);
   }
 }
 
@@ -342,7 +342,7 @@ void extrude(){
           nozzle.off();
           starveFeeder.disable();
           startFlag = true;//reset start flag so that vars are re initialized if extrude is re entered.
-          currentState = SELECT_PROFILE;
+          stateMachine.setState(StateMachine::SELECT_PROFILE);
           return;
         }
       }

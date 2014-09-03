@@ -20,7 +20,7 @@ void preheat(){
   now = millis();
 
   if (startFlag){
-    preheatStartTime = now;
+    stateMachine.setPreheatStartTime(now);
     
     lcd.clear();
     reportCurrentMeasurementTitles();
@@ -132,7 +132,7 @@ void preheat(){
   case 'A':
     barrel.off();
     nozzle.off();
-    currentState = SELECT_PROFILE;
+    stateMachine.setState(StateMachine::SELECT_PROFILE);
     return;
 
   case 'D':
@@ -141,7 +141,7 @@ void preheat(){
 
   case '*':
     startFlag = true;//set to reinitialize vars for next preheat
-    currentState = SOAK;
+    stateMachine.setState(StateMachine::SOAK);
     return;
   }
 
@@ -149,7 +149,7 @@ void preheat(){
   if (barrel.getTemp() > configuration.profile.barrelTemp-3 && nozzle.getTemp() > configuration.profile.nozzleTemp-3){
     buzzer.setMsg(Buzzer::PREHEAT_FINISHED);
     startFlag = true;//set to reinitialize vars for next preheat
-    currentState = SOAK;
+    stateMachine.setState(StateMachine::SOAK);
   }
 }
 
@@ -234,7 +234,7 @@ void soak(){
   case 'A':
     barrel.off();
     nozzle.off();
-    currentState = SELECT_PROFILE;
+    stateMachine.setState(StateMachine::SELECT_PROFILE);
     return;
 
   case 'B'://increase Tempature setpoint
@@ -287,7 +287,7 @@ void soak(){
         }
         if (key == '*'){
           startFlag = true;//set to reinitialize vars on next soak
-          currentState = BEGIN_EXTRUDE;
+          stateMachine.setState(StateMachine::BEGIN_EXTRUDE);
           return;
         }
         if (key == 'D'){
@@ -366,7 +366,7 @@ void soak(){
     barrel.off();
     nozzle.off();
     startFlag = true;//set to reinitialize vars on next soak
-    currentState = BEGIN_EXTRUDE;
+    stateMachine.setState(StateMachine::BEGIN_EXTRUDE);
   }
 }
 

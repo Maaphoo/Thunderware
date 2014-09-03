@@ -52,7 +52,7 @@ void Safety::check()
   switch( _stateMachine->getState()){
   case StateMachine::PREHEAT:
     //check for exceeding allowed preheat time
-    if (_now > preheatStartTime+_configuration->profile.maxPreheatTime*1000L*60L*60L){
+    if (_now > _stateMachine->getPreheatStartTime()+_configuration->profile.maxPreheatTime*1000L*60L*60L){
     strcpy(_safetyMsg1, "The preheat time has");
     strcpy(_safetyMsg2, "been exceeded.");
     shutDown(_safetyMsg1, _safetyMsg2);
@@ -73,7 +73,7 @@ void Safety::check()
     
   case StateMachine::LOAD_FILAMENT:
     //Check to make sure load filament time has not been exceeded.
-    if (_now > startLoadFilament+_configuration->physical.loadFilamentTime*1000*60*60){
+    if (_now >  _stateMachine->getLoadFilamentStartTime()+_configuration->physical.loadFilamentTime*1000*60*60){
     strcpy(_safetyMsg1, "Load Filament Time");
     strcpy(_safetyMsg2, "has been exceeded.");
     shutDown(_safetyMsg1, _safetyMsg2);
@@ -95,4 +95,5 @@ void Safety::check()
     }    
   }
 
+void Safety::shutDown(char* msg1, char* msg2){}
 

@@ -20,7 +20,6 @@ class StateMachine
       BEGIN_EXTRUDE,
       LOAD_FILAMENT,
       EXTRUDE,
-      SAFETY_SHUTDOWN,
       TEST,
       CALIBRATE_CALIPERS
     };
@@ -28,13 +27,18 @@ class StateMachine
     StateMachine();//constructor
     ExtruderState getState();
     void setState(ExtruderState state);
-    unsigned long extrudeStartTime;
-    unsigned long preheatStartTime;
-    unsigned long startLoadFilament;
-
+    unsigned long getPreheatStartTime();
+    void setPreheatStartTime(unsigned long time);
+    unsigned long getLoadFilamentStartTime();
+    void setLoadFilamentStartTime(unsigned long time);
+    unsigned long getExtrudeStartTime();
+    void setExtrudeStartTime(unsigned long time);
+    
   private:
     ExtruderState _currentState;
-
+    unsigned long _preheatStartTime;
+    unsigned long _loadFilamentStartTime;
+    unsigned long _extrudeStartTime;
 
 };
 
