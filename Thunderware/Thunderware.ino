@@ -47,9 +47,22 @@
 	Created 02/12/2014
 	By Matthew Rogge
 
+Changes that need to be made for Quito
+
+  1) Add logic and config for enable/disable so it can be switched easily
+  2) check that code works with buzzer logic
+  3) Re write Spooler code so that it works with new geometry
+  4) Test keypad
+  5) test LCD
+  6) Verify the correct logic on the nozzle/barrel heaters.
+  
+Genneral additions:
+  Indicator LED for nozzle and barrel heaters.
+  
+
 */
 
-
+  #include "States.h"
   #include <LiquidCrystal.h>
   #include <Keypad.h>
   #include <PID_v1.h>
@@ -60,6 +73,7 @@
   #include <stdio.h>
   #include <string.h>
   #include "application.h"
+  #include "StateMachine.h"
   #include "Configuration.h"
   #include "config.h"
   #include "Buzzer.h"
@@ -71,21 +85,7 @@
   #include "StarveFeeder.h"
   #include "Caliper.h"
   #include "OMMenuMgr.h"
-
-//Finite State Machine for controlling the state of the extruder.
-
-//Names of States
-enum ExtruderState {
-  SELECT_PROFILE,
-  PREHEAT,
-  SOAK,
-  BEGIN_EXTRUDE,
-  EXTRUDE,
-  SAFETY_SHUTDOWN,
-  TEST,
-  CALIBRATE_CALIPERS
-};
-ExtruderState currentState;
+  #include "Safety.h"
 
 Application app;
 Configuration configuration;
@@ -106,6 +106,7 @@ void customProfile();
 void preheat();
 void soak();
 void beginExtrude();
+void loadFilament();
 void extrude();
 void safetyShutdown();
 void test();
@@ -117,13 +118,13 @@ void (*state_table[])()={
   preheat,
   soak,
   beginExtrude,
+  loadFilament,
   extrude,
   safetyShutdown,
   test,
   calibrateCalipers
 };
 
-unsigned long extrudeStartTime;
 // lcd pins
 const byte LCD_RS  = 22;
 const byte LCD_EN  = 24;
@@ -145,8 +146,8 @@ LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
  
  //Membrane Kpd initialize keypad pins
 
- byte rowPins[ROWS]={23,25,27,29};
- byte colPins[COLS]={31,33,35,37};
+ byte colPins[ROWS]={29, 27, 25, 23};
+ byte rowPins[COLS]={37, 35, 33, 31};
  
  //Keymap
  char keys[ROWS][COLS]={
@@ -174,6 +175,8 @@ Keypad kpd = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 char key;//The key that is pressed
 
 //Initialize objects
+StateMachine stateMachine;
+
 Buzzer buzzer;
 
 Nozzle nozzle(&configuration);
@@ -188,7 +191,7 @@ Outfeed outfeed(&configuration);
 
 Spooler spooler(&configuration, &outfeed);
 
-//Caliper caliper(&configuration);
+Safety safety(&configuration, &barrel, &nozzle, &currentState);
 
 
 
@@ -207,7 +210,7 @@ void setup()
   lcd.begin(20, 4); //Start up LCD
 
   currentState = SELECT_PROFILE;
-//  currentState = TEST;
+// currentState = TEST;
 //  currentState = EXTRUDE_AUTOMATIC;
 
 

@@ -20,6 +20,8 @@ void preheat(){
   now = millis();
 
   if (startFlag){
+    preheatStartTime = now;
+    
     lcd.clear();
     reportCurrentMeasurementTitles();
 
@@ -196,9 +198,7 @@ void soak(){
   if (now >= reportTime){
 
     //Safety check
-    if (heaterError()) {
-      return;
-    }
+    safety.check();
 
     //reportHeaterStatus1();
     reportCurrentMeasurements();

@@ -1,5 +1,5 @@
 /*
-  StepperMotor.h - Library for controlling the 3 stepper motors
+  StepperMotor.cpp - Library for controlling the 3 stepper motors
   in the extruder. The motors are driven using a fast PWM signal
   (Timer1, Timer2 and Timer4). PWM is used because angular velocity
   is more important than angular position the PWM signal works well
@@ -22,12 +22,12 @@ StepperMotor::StepperMotor(Configuration* configuration, int pinSet) : _timer(pi
   _configuration = configuration;
   //Set Direction, Step and Enable pins to output
   switch (_pinSet){
-    case 0://SET_6_14_8
+    case 0://SET_3_14_6
       _ratio = _configuration->physical.augerStepMode*_configuration->physical.augerGearRatio;
 
       DDRJ |= B00000010; //Direction, Pin 14 to output
       DDRH |= B00001000; // Step pin 6 to output
-      DDRH |= B00100000;//Enable pin 3 to output
+      DDRE |= B00100000;//Enable pin 3 to output
 
       //set Auger Stepper direction (pin 14)
       if (_configuration->physical.augerDirection){
@@ -51,7 +51,7 @@ StepperMotor::StepperMotor(Configuration* configuration, int pinSet) : _timer(pi
       }else{
         PORTJ &= B11111110; // Direction is backward so set the pin LOW
       }
-
+     
       break;
 
     case 2://SET_10_16_9
@@ -107,52 +107,87 @@ void StepperMotor::enable() {
     case 0://SET_3_14_8
       //Auger Stepper pin 8
       //disable is backwards for the KL stepper driver being used. Set LOW
-      PORTH |= B00100000;
+      if (_configuration->physical.augerEnable){
+      PORTE |= B00100000;
+      }else{
+      PORTE &= B11011111;
+      }
       break;
 
     case 1://SET_11_15_12
       //Outfeed Stepper pin 12
       //disable outfeed stepper by setting the enable pin HIGH
+      if (_configuration->physical.outfeedEnable){
       PORTB |= B01000000;
+      }else{
+      PORTB &= B10111111;
+      }
       break;
 
     case 2://SET_10_16_9
        //Spool Stepper pin 9
        //disable Spool stepper by setting the enable pin HIGH
-       PORTH |= B01000000;
-       break;
+      if (_configuration->physical.spoolerEnable){
+        PORTH |= B01000000;
+      }else{
+        PORTH &= B10111111;
+      }          
+      break;
        
     case 3://SET_46_48_5
        //StarveFeeder Stepper pin 48
        //enable StarveFeeder stepper by setting the enable pin HIGH
+      if (_configuration->physical.starveFeederEnable){
        PORTL |= B00000010;
-       break;  }
+      }else{
+       PORTL &= B11111101;
+      }   
+       break;  
+     }
 }
 
 void StepperMotor::disable() {
   switch (_pinSet){
     case 0://SET_3_14_8
-      //Auger Stepper pin 8
-      //disable is backwards for the KL stepper driver being used. Set HIGH
-      PORTH &= B11011111;
+      //Auger Stepper pin 3
+      if (!_configuration->physical.augerEnable){
+        PORTE |= B00100000;
+      }else{
+        PORTE &= B11011111;
+      }
+      
       break;
 
     case 1://SET_11_15_12
       //Outfeed Stepper pin 12
       //disable outfeed stepper by setting the enable pin Low
+      if (!_configuration->physical.outfeedEnable){
+      PORTB |= B01000000;
+      }else{
       PORTB &= B10111111;
+      }      
       break;
 
     case 2://SET_10_16_9
        //Spool Stepper pin 9
        //disable Spool stepper by setting the enable pin low
+      if (!_configuration->physical.spoolerEnable){
+         PORTH |= B01000000;
+      }else{
        PORTH &= B10111111;
-       break;
+      }              
+      break;
+       
     case 3://SET_46_48_5
        //StarveFeeder Stepper pin 48
        //disable StarveFeeder stepper by setting the enable pin low
+      if (!_configuration->physical.starveFeederEnable){
+       PORTL |= B00000010;
+      }else{
        PORTL &= B11111101;
-       break;
+      }           
+      
+      break;
   }
 }
 

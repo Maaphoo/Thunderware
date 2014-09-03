@@ -8,7 +8,7 @@ double getNumber(char *title, char *subTitle);
 
 
 void selectProfile(){
-      buzzer.setMsg(Buzzer::PREHEAT_FINISHED);
+   buzzer.setMsg(Buzzer::POWER_ON);
   //Display message on LCD and Computer Screen
   // initializeLCD();
   lcd.clear();
@@ -58,9 +58,7 @@ void selectProfile(){
       configuration.profile.barrelTemp = 0;
       configuration.profile.nozzleTemp = 0;
       configuration.profile.augerRPM = 0 ;
-      configuration.profile.augerRPM = 0 ;
       configuration.profile.starveFeederRPM = 0;
-      configuration.profile.outfeedRPM = 72.42;
       configuration.profile.soakTime = 0;
 
       currentState = BEGIN_EXTRUDE;
@@ -73,8 +71,6 @@ void selectProfile(){
     configuration.loadDefaultProfile();
     configuration.profile.barrelTemp = 0;
     configuration.profile.nozzleTemp = 0;
-    configuration.profile.augerRPM = 38 ;
-    configuration.profile.outfeedRPM = 70;
     configuration.profile.soakTime = 0;
 
     //Shift state.
@@ -92,7 +88,6 @@ void selectProfile(){
     break;
   }
 }
-
 
 
 void calibrateCalipers(){

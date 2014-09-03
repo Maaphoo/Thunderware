@@ -33,6 +33,11 @@ class Spooler
     float _motorRPM;
     float _diaSetPoint;
     float _filamentSurfaceRaduis;
+    Configuration* _configuration;
+    float c1;
+    float c2;
+    float c3;
+    float c4;
     StepperMotor _motor;
 
 

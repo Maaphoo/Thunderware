@@ -17,20 +17,20 @@ void Configuration::loadDefaultProfile()
     //General
     profile.isStored = 0;
     strcpy(profile.name, "(Default) 1.75 ABS");
-    profile.diaSetPoint = 1.75;
+    profile.diaSetPoint = 2.85;
     profile.tolerance = 0.05;
     
     //Starve Feeder
-    profile.starveFeederRPM = 10;
+    profile.starveFeederRPM = 17;
     profile.starveFeederTargetFeedRate = 7.5;
     
     //Auger
     profile.augerRPM = 40.0;
 
     //Outfeed
-    profile.outfeedRPM = 73;
-    profile.outfeedKi = 3.0;
+    profile.outfeedRPM = 60;//73
     profile.outfeedKp = 0.0;
+    profile.outfeedKi = 3.0;
     profile.outfeedKd = 0.0;
     profile.outfeedMaxRPM = 200.0;
     profile.outfeedMinRPM = 0.0;
@@ -42,10 +42,15 @@ void Configuration::loadDefaultProfile()
 
     //Barrel
     profile.soakTime = 8.0;// minutes for barrel to remain at setpoint before extruding
-    profile.barrelTemp = 210.0;
+    profile.barrelTemp = 200.0;
 
     //nozzle
-    profile.nozzleTemp = 210.0;
+    profile.nozzleTemp = 200.0;
+    
+    //Safety parameters
+    profile.minExtrudeTemp = 180; //The minimum temp allowed for extrusion
+    profile.maxTemp = 240; //The max temp allowed for the barrel or the nozzle.
+    profile.maxPreheatTime = 10; // The max number of minutes allowed for the preheat state.
 }
 
 
@@ -57,26 +62,35 @@ void Configuration::loadDefaultConfig()
   //StarveFeeder
   physical.starveFeederPinSet = 3;
   physical.starveFeederStepMode = 32;//Something is wrong somewhere b/c this should be 16
-  physical.starveFeederDirection = 1;
+  physical.starveFeederDirection = 0;
+  physical.starveFeederEnable = 0;
 
   //auger
   physical.augerPinSet = 0;
   physical.augerStepMode = 32;
   physical.augerDirection = 1;
+  physical.augerEnable = 1;
   physical.augerGearRatio = 3.0;
   
   //Outfeed
   physical.outfeedPinSet = 1;
   physical.outfeedStepMode = 16;
-  physical.outfeedDirection = 1;
-  physical.outfeedRollerRadius = 3.11; // Efective radius of outfeed roller32;
+  physical.outfeedDirection = 0;
+  physical.outfeedEnable = 0;
+  physical.outfeedRollerRadius = 5.465; //
   physical.outfeedMaxRPM = 200.0;
   physical.outfeedMinRPM = 0.0;
   
   //Spooler
   physical.spoolerPinSet = 2; 
   physical.spoolerStepMode = 16;
-  physical.spoolerDirection = 1;
+  physical.spoolerDirection = 0;
+  physical.spoolerEnable = 0;
+  physical.spoolerDiskRadius = 280.0/2.0;//Radius of wooden disk
+  physical.spoolerCoreRadius = 94.0/2.0;//Radius of spool core
+  physical.spoolerTraverseLength = 62.5/2.0;
+  physical.spoolerMotorRollerRaduis = 15.0/2.0;
+  
   physical.rsc1 = 73.15; // Inner radius of spool core
   physical.rsc2 = 75.93; // Outer radius of spool core
   physical.rsm = 14.25; // radius of spool stepper motor roller
@@ -113,6 +127,10 @@ void Configuration::loadDefaultConfig()
   //Diameter Sensor
   physical.slope = 0.0005656 ;
   physical.yIntercept = 1.5519;
+  
+  //Safety Parameters for the different states
+  physical.maxTemp = 250;//the max temp the barrel or nozzle are allowed to achieve.
+  physical.loadFilamentTime = 2; //The number of minutes allowed for loading the filament.
 }
 
 Configuration::Configuration()

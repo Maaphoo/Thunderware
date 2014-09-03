@@ -51,9 +51,9 @@ class Outfeed
     
   private:
     Configuration* _configuration;
-    StepperMotor _motor;
-    Caliper _caliper;
-    PID _pid;
+    StepperMotor   _motor;
+    Caliper        _caliper;
+    PID            _pid;
     double _rpm;
     int* _computeInterval;
     unsigned long _computeTime;

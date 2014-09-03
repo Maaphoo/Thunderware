@@ -10,6 +10,8 @@ void displayExtrudeScreen();
 void printDiameter(int col, int row);
 void printFtPerMin(int col, int row);
 void stopExtruding();
+
+
 //setup for extruding
 void beginExtrude(){
   static boolean startFlag = true;
@@ -27,11 +29,12 @@ void beginExtrude(){
     //For testing serial print the titles of the recorded Data
     reportCurrentMeasurementTitles();
 
-    //if the auger will me rotating, check the temp before accelerating
+    //if the auger will be rotating, check the temp before accelerating
     //if it isn't going to rotate skip straight to extrude
     if (configuration.profile.augerRPM > 0.0){
-      if (barrel.getTemp()<170){//Cant run the auger if the barrel isn't hot;
+      if (barrel.getTemp()< 0){//Cant run the auger if the barrel isn't hot;
         startFlag = true;
+        buzzer.setMsg(Buzzer::SAFETY);
         currentState = SELECT_PROFILE;
         return;
       }
@@ -80,6 +83,13 @@ void beginExtrude(){
 }
 
 
+//State during which the filament is fed through the optical calipers, outfeed and spool
+void loadFilament(){
+  
+}
+
+
+
 
 
 
@@ -98,7 +108,22 @@ void extrude(){
   static boolean startFlag = true;//marks first time soak is run
 
   now = millis();
+  
+//Uncomment the following for testing the starve feeder. 
+//This should be rewritten into it's own state.
+//  if (now > extrudeStartTime + 1000*60*2){ 
+//    auger.disable();
+//    outfeed.disable();
+//    spooler.disable();
+//    barrel.off();
+//    nozzle.off();
+//    starveFeeder.disable();
+//    startFlag = true;//reset start flag so that vars are re initialized if extrude is re entered.
+//    currentState = SELECT_PROFILE;
+//    return;
+//  }
 
+  
   if (startFlag){
     reportTime = now;
     startTime = now;
@@ -124,7 +149,7 @@ void extrude(){
     if (now>=redrawTime){
       lcd.begin(20,4);
       redrawLCD = true;
-      redrawTime += 10000;
+      redrawTime += 1000;
     }
     if (redrawLCD){
       displayExtrudeScreen();

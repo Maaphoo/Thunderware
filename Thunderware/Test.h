@@ -27,27 +27,49 @@ void test()
 // delay(10000); 
 // }
 
-//Serial.println("HEre about to enable");
-//starveFeeder.enable();
-//starveFeeder.setRPM(100);
-//delay(100000);
-
-//static boolean flag;
-//if (!flag){
+////Auger Enable test
 //auger.enable();
-//auger.setRPM(40);
+//delay(5000);
+//auger.disable();
+//delay(1000);
+
+////Auger Direction test
+//auger.enable();
+//auger.setRPM(30);
+//delay(5000);
+//auger.disable();
+//delay(1000);
+
+////Small Stepper Enable Tests
 //outfeed.enable();
-//outfeed.setRPM(50);
 //spooler.enable();
-//spooler.setRPM();
-//flag = true;
+//starveFeeder.enable();
+//delay (5000);
+//outfeed.disable();
+//spooler.disable();
+//starveFeeder.disable();
+//delay (1000);
+
+//Small Stepper Direction and pot adjust tests
+//outfeed.enable();
+//spooler.enable();
+//starveFeeder.enable();
+//outfeed.setRPM(60);
+//starveFeeder.setRPM(60);
+//spooler.setRPM(60);
+//delay(5000);
+//outfeed.disable();
+//spooler.disable();
+//starveFeeder.disable();
+//delay(1000);
+
+
+////buzzer Test
+//buzzer.setMsg(Buzzer::SOAK_FINISHED);
+//while(millis()<10000){
+//  buzzer.activate();
 //}
 
-auger.enable();
-auger.setRPM(10);
-delay (5000);
-auger.disable();
-delay (1000);
 
 
 //Serial.println(caliper.getRawADC());
@@ -59,6 +81,7 @@ delay (1000);
 //delay(100000);
 
 
+////Nozzle Testing
 //static long now;
 //static long reportTime;
 //static int interval;
@@ -68,7 +91,7 @@ delay (1000);
 //
 //now = millis();
 //if (now >= reportTime){
-////  nozzle.setDutyCycle(50);
+//  nozzle.setDutyCycle(0);
 //  Serial.print("nozzle Temp set point: ");
 //  Serial.println(configuration.profile.nozzleTemp);
 //  Serial.print("nozzle Temp");
@@ -79,12 +102,56 @@ delay (1000);
 //  reportTime += 1000;
 //}
 
+////Barrel Testing
+//static long now;
+//static long reportTime;
+//static int interval;
+//static boolean flag;
+//
+//barrel.activate();
+//
+//now = millis();
+//if (now >= reportTime){
+//  barrel.setDutyCycle(0);
+//  Serial.print("barrel Temp set point: ");
+//  Serial.println(configuration.profile.barrelTemp);
+//  Serial.print("barrel Temp");
+//  Serial.println(barrel.getTemp());
+//  Serial.print("barrel dutyCycle");
+//  Serial.println(barrel.getDutyCycle());  
+//  Serial.println();
+//  reportTime += 1000;
+//}
 
-//pinMode(5, OUTPUT);
-//analogWrite(5,100);
-//delay (100000);
+////Keypad Testing
+//key = kpd.waitForKey();
+//Serial.println(key);
 
+////LCD Testing
+//  lcd.clear();
+//  lcd.setCursor(0,0);
+//  lcd.write("This is a Test.");
+//  lcd.setCursor(0,1);
+//  lcd.write("1: Only a test");
+//  lcd.setCursor(0,2);
+//  lcd.write("2:Not the Real thing");
+//  lcd.setCursor(0,3);
+//  lcd.write("3: But close");
+//delay (5000);
 
+////Optical Caliper testing
+//  lcd.clear();
+//  lcd.write("Sensor Value");
+//
+//  double rawADC;
+//  while(1){
+//    rawADC = outfeed.getRawADC();
+//    lcd.setCursor(7,1);
+//    writeDouble(rawADC,0,7,1);
+//    Serial.println(rawADC);
+//    delay(1000);
+//
+//  }
 
 //  delay(5000);
 //    Serial.println("Saving new name to profile 1: Prof1Name");

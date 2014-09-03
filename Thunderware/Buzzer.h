@@ -20,7 +20,8 @@ class Buzzer
       PREHEAT_FINISHED, // The soak period is starting
       SOAK_FINISHED, // The machine is extruding
       OUT_OF_TOL, // The filament is out of tolerance
-      SAFETY // A safety shutdown has been triggered
+      SAFETY, // A safety shutdown has been triggered
+      POWER_ON //Sound to alert that power has been turned on
     };
 
     Buzzer();//constructor
@@ -31,7 +32,7 @@ class Buzzer
     unsigned long _now;
     unsigned long _changeTime; //the time to turn the buzzer on or off
     Message _currentMsg;
-    static int _messages[5][10];
+    static int _messages[6][10];
 
 };
 

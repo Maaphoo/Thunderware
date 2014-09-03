@@ -55,6 +55,11 @@ public:
 
     //nozzle
     double nozzleTemp;
+    
+    //Safety parameters
+    double minExtrudeTemp; 
+    double maxTemp; //The maximum temp allowed for barrel or nozzle 
+    unsigned long maxPreheatTime;
   } profile, tempProfile;
 
 
@@ -69,18 +74,21 @@ public:
     int starveFeederPinSet;
     int starveFeederStepMode;
     boolean starveFeederDirection;
+    boolean starveFeederEnable;
 
     
     //Auger
     int augerPinSet;
     int augerStepMode;
     boolean augerDirection;
+    boolean augerEnable;
     float augerGearRatio;
 
     //Outfeed
     int outfeedPinSet;
     int outfeedStepMode;
     boolean outfeedDirection;
+    boolean outfeedEnable;
     float outfeedRollerRadius;
     double outfeedMaxRPM;
     double outfeedMinRPM;
@@ -90,6 +98,11 @@ public:
     int spoolerPinSet;
     int spoolerStepMode;
     boolean spoolerDirection;
+    boolean spoolerEnable;
+    float spoolerDiskRadius;
+    float spoolerCoreRadius;
+    float spoolerTraverseLength;
+    float spoolerMotorRollerRaduis;
     float rsc1; // Inner radius of spool core
     float rsc2; // Outer radius of spool core
     float rsm; // radius of spool stepper motor roller
@@ -122,6 +135,11 @@ public:
     //Diameter Sensor
     float slope;
     float yIntercept;
+    
+    //Parameters for the different states
+    double maxTemp;
+    unsigned long loadFilamentTime; //The number of minutes allowed for loading the filament.
+
   }physical;
 
 

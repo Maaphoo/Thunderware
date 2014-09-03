@@ -45,7 +45,9 @@ void Outfeed::setRPM(float rpm)
   _motor.setRPM(rpm);
 } 
 
-void Outfeed::setMode(int mode){ _pid.SetMode(mode);}
+void Outfeed::setMode(int mode){ _pid.SetMode(mode);
+  Serial.print("Mode = ");
+  Serial.println(mode);}
 
 int Outfeed::getMode(){ return _pid.GetMode();}
 
@@ -99,8 +101,10 @@ void Outfeed::activate()
   
   if (_now >= _computeTime){
     _caliper.update();
-    _pid.Compute();
-    if (_pid.GetMode() == AUTOMATIC) {_motor.setRPM(_rpm);}
+    if (_pid.GetMode() == AUTOMATIC) {
+      _pid.Compute();
+      _motor.setRPM(_motor._rpm);
+    }
     _computeTime = _now + (long)*_computeInterval;
   }
   _previousTime = _now;

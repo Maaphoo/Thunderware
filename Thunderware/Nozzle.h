@@ -7,7 +7,7 @@
   Released into the public domain.
 */
 
-#ifndef Nozzle_H
+#ifndef Nozzle_h
 #define Nozzle_h
 
 #include "Arduino.h"

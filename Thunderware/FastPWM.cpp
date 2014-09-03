@@ -47,37 +47,36 @@ int prescaler;
   if (_timerNumber == 2){ //Timer 2 is an 8 bit timer so gets a different setup than the others
     byte mode = 7;//Fast PWM
 
-  int prescalers[] = {1,8,32,64,128,256,1024};
-  
-    //Select Prescaler assumes using 16bit fast PWM
-  for (int i=0; i<7;i++){
-    if (16000000/(2*frequency* *(prescalers+i))< 255){
-      prescaler = *(prescalers+i);
-      break;
-    }
-  }
+    int prescalers[] = {1,8,32,64,128,256,1024};
     
-  byte clockMode = 0 ; // 0 means no clocking - the counter is frozen.
-  switch (prescaler)
-  {
-    case 1: clockMode = 1 ; break ;
-    case 8: clockMode = 2 ; break ;
-    case 32: clockMode = 3 ; break ;
-    case 64: clockMode = 4 ; break ;
-    case 128: clockMode = 5 ; break ;
-    case 256: clockMode = 6 ; break ;
-    case 1024: clockMode = 7 ; break ;
-  }
+      //Select Prescaler assumes using 16bit fast PWM
+    for (int i=0; i<7;i++){
+      if (16000000/(2*frequency* *(prescalers+i))< 255){
+        prescaler = *(prescalers+i);
+        break;
+      }
+    }
+      
+    byte clockMode = 0 ; // 0 means no clocking - the counter is frozen.
+    switch (prescaler)
+    {
+      case 1: clockMode = 1 ; break ;
+      case 8: clockMode = 2 ; break ;
+      case 32: clockMode = 3 ; break ;
+      case 64: clockMode = 4 ; break ;
+      case 128: clockMode = 5 ; break ;
+      case 256: clockMode = 6 ; break ;
+      case 1024: clockMode = 7 ; break ;
+    }
   
-  TCCR2A = (outModeA << 6) | (outModeB << 4) | (mode & 3) ;
-  TCCR2B = (captureMode << 6) | ((mode & B00000100) << 1) | clockMode;
-  OCR2A = (byte)(16000000.0/(2*frequency * prescaler));//OCR2A because we are working with pin OC2As (pin 10)
-  
-} else { //Timer 1, 3 or 4
+    TCCR2A = (outModeA << 6) | (outModeB << 4) | (mode & 3) ;
+    TCCR2B = (captureMode << 6) | ((mode & B00000100) << 1) | clockMode;
+    OCR2A = (byte)(16000000.0/(2*frequency * prescaler));//OCR2A because we are working with pin OC2As (pin 10)
+    
+  } else { //Timer 1, 3 or 4
   
   byte mode = 15 ;//Fast PWM
 
-  //changes the frequency of the 50% PWM on pin 11
   int prescalers[] = {1,8,64,256,1024};
   
     //Select Prescaler assumes using 16bit fast PWM
