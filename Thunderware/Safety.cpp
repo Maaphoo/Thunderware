@@ -23,7 +23,7 @@ void Safety::check()
   _now = millis();
   //The following safety checks are always done when check() is called
   
-  //Check for barrel overtemp
+  //Check barrel plastic overtemp
   if (_barrel->getTemp()>_configuration->profile.maxTemp){
     strcpy(_safetyMsg1, "The max Plastic Temp");
     strcpy(_safetyMsg2, "has been exceeded.");
@@ -63,7 +63,7 @@ void Safety::check()
     break;
     
   case StateMachine::BEGIN_EXTRUDE:
-    //Check to see that if the auger is rotating
+    //Check to see that if the auger will be used the temp is high enough
     if ((_configuration->profile.augerRPM>0) && (_nozzle->getTemp()<_configuration->profile.minExtrudeTemp)){
     strcpy(_safetyMsg1, "Insufficient temp");
     strcpy(_safetyMsg2, "for extrusion.");

@@ -13,3 +13,18 @@ UI::UI(Configuration* config, Keypad* kpd, LiquidCrystal* lcd)
 {
 
 }
+
+void UI::introScreen()
+{
+//  lcd.clear();
+//  lcd.setCursor(0,1);
+//  lcd.write("    THUNDERHEAD");
+//  lcd.setCursor(0,2);
+//  lcd.write(" Filament Extruder");
+//  delay(2000);
+}
+
+void UI::mainMenu()
+{
+  
+}

@@ -22,8 +22,10 @@ void StateMachine::setState(ExtruderState state){_currentState = state;}
 
 unsigned long StateMachine:: getPreheatStartTime(){return _preheatStartTime;}
 void StateMachine:: setPreheatStartTime(unsigned long time){_preheatStartTime = time;}
+
 unsigned long StateMachine:: getLoadFilamentStartTime(){return _loadFilamentStartTime;}
 void StateMachine:: setLoadFilamentStartTime(unsigned long time){_loadFilamentStartTime = time;}
+
 unsigned long StateMachine:: getExtrudeStartTime(){return _extrudeStartTime;}
 void StateMachine:: setExtrudeStartTime(unsigned long time){_extrudeStartTime = time;}
 

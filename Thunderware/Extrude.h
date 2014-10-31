@@ -14,14 +14,15 @@ void stopExtruding();
 
 //setup for extruding
 void beginExtrude(){
-  static boolean startFlag = true;
-  static unsigned long accelerateTime;
+  static boolean startFlag = true;//True if this is the first time the program has been run
+  static boolean accelerating = false;//True if the auger is being accelerated
+  static unsigned long accelerateTime;//time at which acceleration has started
   static float augerRPMTmp;
-  static int i;
+  static int accInt; //keeps track of the acceleration interval
 
   if (startFlag){
     augerRPMTmp = configuration.profile.augerRPM;
-    i = 1;
+    accInt = 1;
     lcd.clear();
     // Reset the outfeed mmExtruded and Spool quanitiy
     outfeed.reset();
@@ -29,58 +30,130 @@ void beginExtrude(){
     //For testing serial print the titles of the recorded Data
     reportCurrentMeasurementTitles();
 
-    //if the auger will be rotating, check the temp before accelerating
-    //if it isn't going to rotate skip straight to extrude
-    if (configuration.profile.augerRPM > 0.0){
-      if (barrel.getTemp()< 0){//Cant run the auger if the barrel isn't hot;
-        startFlag = true;
-        buzzer.setMsg(Buzzer::SAFETY);
-          stateMachine.setState(StateMachine::SELECT_PROFILE);
-        return;
-      }
-      else{
-        auger.enable();
-        startFlag = false;
-        accelerateTime = millis()+5;
-        lcd.clear();
-        lcd.write("Starting to Extrude");
-      }
-    }
-    else{
-      outfeed.setRPM(configuration.profile.outfeedRPM);
-      outfeed.enable();
-      spooler.enable();
-      starveFeeder.setRPM(configuration.profile.starveFeederRPM);
-      starveFeeder.enable();
-      startFlag = true;
-      stateMachine.setExtrudeStartTime(millis());
-      stateMachine.setState(StateMachine::EXTRUDE);
-      return;
-    }
+
+
+    //NEW  NEW  NEW  NEW  NEW  NEW  NEW  NEW  
+
+
+
+    //Do safety check
+    safety.check();
+    startFlag = false;
   }
 
-  if (millis() >= accelerateTime){
-    //Accelerate Auger
+  //If auger speed greater than 0 and the auger isn't geing accelerated yet, accelerate auger
+  if (!accelerating && configuration.profile.augerRPM > 0.0){
+    accelerating = true;
+    accelerateTime = millis();//Get start time for acceleration
+  }
 
+  //Accelerate auger if accelerating and it is time for a speed up)
+  if (accelerating && millis()>accelerateTime){  
+    //Accelerate Auger
     barrel.activate();
     nozzle.activate();
 
-    auger.setRPM(augerRPMTmp/400.0*(double)i);
-    i++;
+    auger.setRPM(augerRPMTmp/400.0*(double)accInt);
+    accInt++;
     accelerateTime +=5;
   }
 
-  if (i>400){
+  //If the auger has been accelerated, set accelerating back to false
+  //This will allow the state to be exited.
+  if (accInt == 400) {
+    accelerating = false;
+  }
+
+  //If the Auger isn't accelerating or if it has already been accelerated,
+  // turn everything else on and switch the state.
+  if (!accelerating){
     outfeed.setRPM(configuration.profile.outfeedRPM);
     outfeed.enable();
-    outfeed.setMode(MANUAL);
     spooler.enable();
     starveFeeder.setRPM(configuration.profile.starveFeederRPM);
+
+    //if the auger is running, turn on the Starve Feeder
+    if (auger.getRPM()>0){
+      starveFeeder.enable();
+    }
+
+    //reset the start flag for the next time beginExtrude is called
     startFlag = true;
-    stateMachine.setExtrudeStartTime(millis());
-    stateMachine.setState(StateMachine::EXTRUDE);
+
+    //Switch the state
+    //If auger speed is > 0, this should be LOAD_FILAMENT
+    //If auger speed is = 0, this should be EXTRUDE
+    if (auger.getRPM()>0){
+      stateMachine.setLoadFilamentStartTime(millis());
+      stateMachine.setState(StateMachine::LOAD_FILAMENT);
+    } 
+    else {
+      stateMachine.setExtrudeStartTime(millis());
+      stateMachine.setState(StateMachine::EXTRUDE);
+    }
+
+    return;
   }
 }
+
+//NEW  NEW  NEW  NEW  NEW  NEW  NEW  NEW  
+
+
+
+
+//
+//    //if the auger will be rotating, check the temp before accelerating
+//    //if it isn't going to rotate skip straight to extrude
+//    if (configuration.profile.augerRPM > 0.0){
+//      if (barrel.getTemp()< 0){//Cant run the auger if the barrel isn't hot;
+//        startFlag = true;
+//        buzzer.setMsg(Buzzer::SAFETY);
+//          stateMachine.setState(StateMachine::SELECT_PROFILE);
+//        return;
+//      }
+//      else{
+//        auger.enable();
+//        startFlag = false;
+//        accelerateTime = millis()+5;
+//        lcd.clear();
+//        lcd.write("Starting to Extrude");
+//      }
+//    }
+//    else{
+//      outfeed.setRPM(configuration.profile.outfeedRPM);
+//      outfeed.enable();
+//      spooler.enable();
+//      starveFeeder.setRPM(configuration.profile.starveFeederRPM);
+//      starveFeeder.enable();
+//      startFlag = true;
+//      stateMachine.setExtrudeStartTime(millis());
+//      stateMachine.setState(StateMachine::EXTRUDE);
+//      return;
+//    }
+//  }
+//
+//  if (millis() >= accelerateTime){
+//    //Accelerate Auger
+//
+//    barrel.activate();
+//    nozzle.activate();
+//
+//    auger.setRPM(augerRPMTmp/400.0*(double)i);
+//    i++;
+//    accelerateTime +=5;
+//  }
+//
+//  if (i>400){
+//    outfeed.setRPM(configuration.profile.outfeedRPM);
+//    outfeed.enable();
+//    outfeed.setMode(MANUAL);
+//    spooler.enable();
+//    starveFeeder.setRPM(configuration.profile.starveFeederRPM);
+//    startFlag = true;
+//    stateMachine.setExtrudeStartTime(millis());
+//    stateMachine.setState(StateMachine::EXTRUDE);
+//  }
+//}
 
 
 //State during which the filament is fed through the optical calipers, outfeed and spool
@@ -105,36 +178,36 @@ void extrude(){
   static unsigned long redrawTime;
   static unsigned long startTime;
   static boolean redrawLCD = true;
-  static boolean startFlag = true;//marks first time soak is run
+  static boolean startFlag = true;//marks first time extrude is run
 
   now = millis();
-  
-//Uncomment the following for testing the starve feeder. 
-//This should be rewritten into it's own state.
-//  if (now > extrudeStartTime + 1000*60*2){ 
-//    auger.disable();
-//    outfeed.disable();
-//    spooler.disable();
-//    barrel.off();
-//    nozzle.off();
-//    starveFeeder.disable();
-//    startFlag = true;//reset start flag so that vars are re initialized if extrude is re entered.
-//    currentState = SELECT_PROFILE;
-//    return;
-//  }
 
-  
+  //Uncomment the following for testing the starve feeder. 
+  //This should be rewritten into it's own state.
+  //  if (now > extrudeStartTime + 1000*60*2){ 
+  //    auger.disable();
+  //    outfeed.disable();
+  //    spooler.disable();
+  //    barrel.off();
+  //    nozzle.off();
+  //    starveFeeder.disable();
+  //    startFlag = true;//reset start flag so that vars are re initialized if extrude is re entered.
+  //    currentState = SELECT_PROFILE;
+  //    return;
+  //  }
+
+
   if (startFlag){
     reportTime = now;
     startTime = now;
     redrawLCD = true;
     startFlag = false;
   }
-//  if (now-startTime >=60000){
-//    stopExtruding();
-//    startFlag = true;
-//    currentState = SELECT_PROFILE;  
-//  }
+  //  if (now-startTime >=60000){
+  //    stopExtruding();
+  //    startFlag = true;
+  //    currentState = SELECT_PROFILE;  
+  //  }
   //turn relay on or off (or neither)
   barrel.activate();
   nozzle.activate();
@@ -279,8 +352,7 @@ void extrude(){
 
     //Sets the outfeedRPM at the theoretical correct speed to match the pellet input
     //        outfeedRPM = calcOutfeedRPM();
-    outfeed.setRPM(0);
-
+    //outfeed.setRPM(0);
     break;
 
   case'8':
@@ -400,12 +472,13 @@ void displayExtrudeScreen(){
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.write("Extruding");
-  
+
   //Display if in Auto or Manual
   lcd.setCursor(10, 0);
   if (outfeed.getMode() == MANUAL){
     lcd.write("Manual");
-  } else {
+  } 
+  else {
     lcd.write("Automatic");
   }
 
@@ -436,5 +509,7 @@ void stopExtruding(){
 
 
 #endif // Extrude_h
+
+
 
 

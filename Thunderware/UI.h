@@ -9,13 +9,11 @@
 #define UI_h
 
 #include "Arduino.h"
-#include "OMMenuMgr.h"
 #include <Keypad.h>
 #include <LiquidCrystal.h>
 #include "Configuration.h"
 
 
-class OMMenuMgr;
 class Configuration;
 class Keypad;
 class LiquidCrystal;
@@ -26,15 +24,13 @@ class UI
 public:
 	
     UI(Configuration* config, Keypad* kpd, LiquidCrystal* lcd);//constructor
-
+    void introScreen();
+    void mainMenu();
 private:
 	
 	Configuration*	_config;
 	Keypad*		_kpd;
 	LiquidCrystal*	_lcd;
-	
-	
-	
 	
 };
 
