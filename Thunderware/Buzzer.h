@@ -12,7 +12,7 @@
 #include "Arduino.h"
 
 class Buzzer
-{
+{å
   public:
 
     enum Message {
