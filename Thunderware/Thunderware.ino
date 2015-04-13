@@ -84,6 +84,8 @@ Genneral additions:
   #include "StarveFeeder.h"
   #include "Caliper.h"
   #include "Safety.h"
+  #include "MenuItem.h"
+  #include "Menu.h"
 
 Application app;
 Configuration configuration;
@@ -181,6 +183,18 @@ Spooler spooler(&configuration, &outfeed);
 Safety safety(&configuration, &barrel, &nozzle, &stateMachine);
 
 
+MenuItem root;
+MenuItem mainMenu[3];
+int mainMenuSize = 3;
+MenuItem selectProfileMenu[10];
+int selectProfileSize = 10;
+MenuItem calibrate[2];
+int calibrateSize = 2;
+MenuItem auxiliary[1];
+int auxiliarySize = 1;
+
+
+Menu menu(&root, &lcd, &kpd);
 
 #include "Extrude.h"
 #include "FSM.h"
@@ -200,14 +214,93 @@ void setup()
 // currentState = TEST;
 //  currentState = EXTRUDE_AUTOMATIC;
 
+//  makeChild (&root, mainMenu, mainMenuSize);
+//  wireMenu(mainMenu, mainMenuSize);
+//  wireMenu(selectProfileMenu, selectProfileSize);
+//  wireMenu(calibrate, calibrateSize);
+//  wireMenu(auxiliary, auxiliarySize);
+//
+//  makeChild(&mainMenu[0], selectProfileMenu, selectProfileSize);
+//  makeChild(&mainMenu[1], calibrate, calibrateSize);
+//  makeChild(&mainMenu[2], auxiliary, auxiliarySize);
+//
+//  root.setText("Main Menu");
+//
+//  mainMenu[0].setText("Select Profile");
+//  mainMenu[1].setText("Calibrate");
+//  mainMenu[2].setText("Auxiliry");
+//
+//  selectProfileMenu[0].setText("ABS");
+//  selectProfileMenu[0].setAction(&sayHello);
+//  selectProfileMenu[1].setText("PLA");
+//  selectProfileMenu[1].setValue(23.453);
+//  selectProfileMenu[1].setPrecision(3);
+//  selectProfileMenu[1].itemType = MenuItem::VALUE;
+//
+//  calibrate[0].setText("Calipers");
+//  calibrate[1].setText("Starve Feeder");
+//  calibrate[2].setText("Auger Motor");
+//  calibrate[3].setText("Barrel");
+//  calibrate[4].setText("Nozzle");
+//  calibrate[5].setText("Outfeed Motor");
+//  calibrate[6].setText("Spooler Motor");
+//
+//  calibrate[0].setAction(&testCalipers);
+//  calibrate[1].setAction(&testStarveFeeder);
+//  calibrate[2].setAction(&testAuger);
+//  calibrate[3].setAction(&testBarrel);
+//  calibrate[4].setAction(&testNozzle);
+//
+//  
+////  menu.reset();
+
 
 }
 
   void loop(){
+    
+//      //Allow for keyboard input as well
+//  key = kpd.getKey();
+//  if (Serial.available() > 0) {
+//    key = (char)Serial.read();
+//  }
+//  switch(key){
+//  case '1':
+//    menu.up();
+//    break;
+//  case '2':
+//    menu.down();
+//    break;
+//    
+//  case '3':
+//    menu.select();
+//    break;
+//  case '4':
+//    menu.back();
+//    break;
+//  }
    state_table[stateMachine.getState()]();
  }
 
 
+void wireMenu(MenuItem* menuItem,int size){
+  for (int i=0;i<size-1;i++){
+    menuItem[i].setNext(&menuItem[i+1]);
+    menuItem[i+1].setPrevious(&menuItem[i]);
+  }
+}
 
+void makeChild(MenuItem* parent, MenuItem* child, int childSize){
 
+  for (int i=0;i<childSize;i++){
+    child[i].setParent(parent);
+  }
+  parent->setChild(child);//Set child of parent to be the first entry in the menu
+}
 
+void sayHello() {}
+void testCalipers() {}
+void testStarveFeeder() {}
+void testAuger() {}
+void testBarrel() {}
+void testNozzle() {}

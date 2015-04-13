@@ -15,7 +15,7 @@ void selectProfile(){
   lcd.setCursor(0,0);
   lcd.write("Select a profile.");
   lcd.setCursor(0,1);
-  lcd.write("1: 1.75 ABS");
+  lcd.write("1: 2.85 ABS");
   lcd.setCursor(0,2);
   lcd.write("2: No Auger");
   lcd.setCursor(0,3);

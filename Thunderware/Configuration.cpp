@@ -67,7 +67,7 @@ void Configuration::loadDefaultConfig()
 
   //auger
   physical.augerPinSet = 0;
-  physical.augerStepMode = 32;
+  physical.augerStepMode = 16;
   physical.augerDirection = 1;
   physical.augerEnable = 1;
   physical.augerGearRatio = 3.0;
@@ -86,7 +86,7 @@ void Configuration::loadDefaultConfig()
   physical.spoolerStepMode = 16;
   physical.spoolerDirection = 0;
   physical.spoolerEnable = 0;
-  physical.spoolerDiskRadius = 280.0/2.0;//Radius of wooden disk
+  physical.spoolerDiskRadius = 276.6/2.0;//Radius of wooden disk
   physical.spoolerCoreRadius = 94.0/2.0;//Radius of spool core
   physical.spoolerTraverseLength = 62.5/2.0;
   physical.spoolerMotorRollerRaduis = 15.0/2.0;

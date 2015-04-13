@@ -85,6 +85,7 @@ StepperMotor::StepperMotor(Configuration* configuration, int pinSet) : _timer(pi
       }
       break;
     }
+    disable(); // Make sure that the steppers begin disabled
  }
 
 void StepperMotor::setRPM(double RPM){

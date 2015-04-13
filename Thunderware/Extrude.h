@@ -85,7 +85,7 @@ void beginExtrude(){
     //If auger speed is = 0, this should be EXTRUDE
     if (auger.getRPM()>0){
       stateMachine.setLoadFilamentStartTime(millis());
-      stateMachine.setState(StateMachine::LOAD_FILAMENT);
+      stateMachine.setState(StateMachine::EXTRUDE);// LOAD_FILAMENT);//Change back to Extrude
     } 
     else {
       stateMachine.setExtrudeStartTime(millis());

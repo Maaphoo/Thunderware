@@ -74,7 +74,8 @@ void Nozzle::setDutyCycle(float dutyCycle)
   }
   //Validate the duty cycle
   if (dutyCycle<0){dutyCycle = 0.0;}
-  if (dutyCycle>100){dutyCycle = 100.0;}
+  if (dutyCycle>255){dutyCycle = 255.0;}
+ // if (dutyCycle>100){dutyCycle = 100.0;}
   
   _dutyCycle = dutyCycle;
 }
