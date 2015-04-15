@@ -25,13 +25,17 @@ class Menu
     void select();
     void reset();
     void display();
+    void printSelected();
     
   private:
     
     void      _setDisplay();
     void      _editValue();
     char*     _ftoa(char *a, double f, int precision);
+    char*     _ntos(double value, char *ptr, MenuItem::ItemType type, int precision);
     int       _valueLength(double value, int presision);
+    char*     _ultostr(unsigned long value, char *ptr, int base);
+    int       _selectLineNumber;
     
     MenuItem* _firstItem;
     MenuItem* _root;

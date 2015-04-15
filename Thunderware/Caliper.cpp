@@ -44,7 +44,7 @@ void Caliper::linReg(float *slope, float *yIntercept, float *xVals, float *yVals
   //Variables
   float sumX = 0.0, sumY=0.0, sumXY=0.0, sumXX=0.0, sumYY=0.0;
   float sXY, sXX;
-  
+ 
   //Find Sums
   for (int i=0; i<*n; i++) {   
     sumX = sumX + *(xVals + i);
@@ -62,17 +62,23 @@ void Caliper::linReg(float *slope, float *yIntercept, float *xVals, float *yVals
 //  Serial.println(sumYY);  
   
   //Compute slope and intercept
-  sXY = sumXY-sumX*sumY / *n;
+  sXY = sumXY-sumX*sumY/ *n;
   sXX = sumXX-sumX*sumX / *n;
+  
+  /*
+  There is an error here or in the variables used. I can't find it.
+  
+  
   *slope = sXY/sXX;
   *yIntercept = sumY/ *n - *slope*sumX / *n;
 
-  
+  */
   //Debug
 //  Serial.println(sXY);
 //  Serial.println(sXX);
 //  Serial.println(*slope,6);
 //  Serial.println(*yIntercept,6);  
+
 }
 
   

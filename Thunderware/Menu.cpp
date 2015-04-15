@@ -1,6 +1,6 @@
 /*
   Menu.cpp - Library for controlling LCD menus
- 
+
  Created by Matthew P. Rogge, Februrary 12, 2014.
  Released into the public domain.
  */
@@ -27,24 +27,24 @@ void Menu::up()
 {
 
   //Move up the menu if possible
-  if (_selectedItem == _firstLine){
+  if (_selectedItem == _firstLine) {
     //The selectedItem is on the first line
-    if (_selectedItem->getPrevious() != _firstItem){
-      //The selecedItem is the third item or lower. 
+    if (_selectedItem->getPrevious() != _firstItem) {
+      //The selecedItem is the third item or lower.
       //move the first line up one
       _firstLine = _selectedItem->getPrevious();
       _selectedItem = _selectedItem->getPrevious();
-    } 
+    }
     else {
       // The selectedItem is the secondItem
       //Move up to the title line
       _firstLine = _currentTitle;
       _selectedItem = _firstItem;
     }
-  } 
+  }
   else {
     //Selected item is not on the first line
-    if (_selectedItem!=_firstItem){
+    if (_selectedItem != _firstItem) {
       //the selectedItem is not the first item so move selected up
       _selectedItem = _selectedItem->getPrevious();
     }
@@ -56,22 +56,22 @@ void Menu::up()
 void Menu::down()
 {
   //move menu down if possible
-  if (_displayed[3] == _selectedItem && _displayed[3]->getNext()){
+  if (_displayed[3] == _selectedItem && _displayed[3]->getNext()) {
     //the last line is selected and it has a next
     //move the firstLine down one
-    if (_firstLine == _currentTitle){
+    if (_firstLine == _currentTitle) {
       _firstLine = _firstItem;
-    } 
+    }
     else {
       _firstLine = _firstLine->getNext();
     }
     _selectedItem = _selectedItem->getNext();
 
-  } 
+  }
   else {
     //The line Item wasn't selected
     //Move the selected item down if possible
-    if (_selectedItem->getNext()){
+    if (_selectedItem->getNext()) {
       _selectedItem = _selectedItem->getNext();
     }
   }
@@ -79,44 +79,58 @@ void Menu::down()
   display();
 }
 
+void Menu::printSelected()
+{
+//for testing
+//  char value[20];
+//  _selectedItem->getValStr(value);
+//  Serial.println(_selectedItem->getPrecision());
+//  Serial.println(*(float*)_selectedItem->_value1,_selectedItem->getPrecision() );
+
+}
 void Menu::back()
 {
-  if (_currentTitle->getParent() != NULL){
+  if (_currentTitle->getParent() != NULL) {
     _currentTitle = _currentTitle->getParent();
 
     _firstLine = _currentTitle;
     _firstItem = _firstLine->getChild();
     _selectedItem = _firstItem;
-  } 
+  }
   _setDisplay();
   display();
 }
 
 void Menu::select()
 {
-  switch (_selectedItem->itemType){
+  switch (_selectedItem->getType()) {
     case MenuItem::TITLE:
-    if (_selectedItem->getChild()){
-      //Set old selected item as title and first line
-      _currentTitle= _selectedItem;
-      _firstLine = _currentTitle;
+      if (_selectedItem->getChild()) {
+        //Set old selected item as title and first line
+        _currentTitle = _selectedItem;
+        _firstLine = _currentTitle;
 
-      //set old selected item's child as firstItem and selectedItem
-      _selectedItem = _selectedItem->getChild();
-      _firstItem = _selectedItem;
+        //set old selected item's child as firstItem and selectedItem
+        _selectedItem = _selectedItem->getChild();
+        _firstItem = _selectedItem;
 
-      _setDisplay();
-      display();
-    }
-    break;
+        _setDisplay();
+        display();
+      }
+      break;
 
     case MenuItem::ACTION:
       _selectedItem->doAction();
       break;
 
     case MenuItem::VALUE:
-    _editValue();
-    break;
+    case MenuItem::BOOLEAN:
+    case MenuItem::INT:
+    case MenuItem::UNSIGNED_LONG:
+    case MenuItem::FLOAT:
+    case MenuItem::DOUBLE:
+      _editValue();
+      break;
   }
 }
 
@@ -125,51 +139,104 @@ void Menu::select()
 void Menu::display()
 {
   _lcd->clear();
-  for (int i=0;i<4;i++){
+  for (int i = 0; i < 4; i++) {
     int j = 0;
-    
+
     //if the ith item isn't null and if it has text
-    if (_displayed[i] != NULL && _displayed[i]->getText() && _displayed[i]->getText()[0] != '\0'){ 
+    if (_displayed[i] != NULL && _displayed[i]->getText() && _displayed[i]->getText()[0] != '\0') {
       //If the current line of text text isn't the title,
       // decide whether or not it is selected
-      if (_currentTitle != _displayed[i]){
-        j=1;//advance
-        if (_selectedItem == _displayed[i]){
+      if (_currentTitle != _displayed[i]) {
+        j = 1; //advance
+        if (_selectedItem == _displayed[i]) {
           _text[0] = '>';
-        } 
-        else{
+          _selectLineNumber = i;
+        }
+        else {
           _text[0] = ' ';
         }
       }
 
       // itterate through the item text and add it to the text to be displayed
       char *c = _displayed[i]->getText();
-      while(*c){
-        _text[j]=*c;
+      while (*c) {
+        _text[j] = *c;
         *c++;
         j++;
       }
 
-      //if the item is a value, display it's value
-      if (_displayed[i]->itemType == MenuItem::VALUE){
-        while (j<21){
-          _text[j] = ' ';
-          j++; 
-        }
-        _text[21] = '\0';
+      //Blank out any old characters
+      while (j < 20) {
+        _text[j] = ' ';
+        j++;
+      }
 
-        //find the length of the value
-        int length = _valueLength(_displayed[i]->getValue(), _displayed[i]->getPrecission());
-
-        //convert it to a string and insert it into the _text string
-        _ftoa(&_text[20-length],_displayed[i]->getValue(), _displayed[i]->getPrecission());//_displayed[i]->getPrecision()));
+      int valLength;
+      if ((int)_displayed[i]->_value1) {
+        _displayed[i]->getValStr(&_text[20 - _displayed[i]->getLength()]);
         j = 21;
       }
-      _text[j]=0; //Terminate the string with the null character;
+      //      switch (_displayed[i]->getType()) {
+      //        case MenuItem::BOOLEAN:
+      //        case MenuItem::INT:
+      //        case MenuItem::UNSIGNED_LONG:
+      //        case MenuItem::FLOAT:
+      //        case MenuItem::DOUBLE:
+      //          _displayed[i]->getValStr(&_text[20 - _displayed[i]->getLength()]);
+      //          j = 21;
+      //          break;
+
+      //        case MenuItem::VALUE:
+      //        case MenuItem::BOOLEAN:
+      //          //convert it to a string and insert it into the _text string
+      //          _ntos(*(boolean*)_displayed[i]->_value1, &_text[19], _displayed[i]->getType(), _displayed[i]->getPrecision());
+      ////          _text[19] = *(boolean*)_displayed[i]->_value1 ? '1' : '0';
+      //          j = 21;
+      //          break;
+      //
+      //
+      //        case MenuItem::INT:
+      //          //find the length of the value
+      //          valLength = _displayed[i]->getLength();
+      //
+      //          //convert it to a string and insert it into the _text string
+      //          _ntos(*(int*)_displayed[i]->_value1, &_text[20 - valLength], _displayed[i]->getType(), _displayed[i]->getPrecision());
+      ////          _ftoa(&_text[20 - valLength], *(int*)_displayed[i]->_value1, _displayed[i]->getPrecision());
+      //          j = 21;
+      //          break;
+      //
+      //
+      //        case MenuItem::UNSIGNED_LONG:
+      //          //find the length of the value
+      //          valLength = _displayed[i]->getLength();
+      //
+      //          //convert it to a string and insert it into the _text string
+      //          _ultostr(*(unsigned long*)_displayed[i]->_value1, &_text[20 - valLength], 10);
+      //          j = 21;
+      //          break;
+      //
+      //
+      //        case MenuItem::FLOAT:
+      //        case MenuItem::DOUBLE:
+      //          _text[21] = '\0';//comment out?
+      //
+      //          //find the length of the value
+      //          valLength = _displayed[i]->getLength();
+      //
+      //          //convert it to a string and insert it into the _text string
+      //          _ftoa(&_text[20 - valLength], *(float*)_displayed[i]->_value1, _displayed[i]->getPrecision());
+      //          j = 21;
+      //            valLength = _displayed[i]->getLength();
+      //          _displayed[i]->getValStr(&_text[20-_displayed[i]->getLength()]);
+      //          j=21;
+      //          break;
+      //      }
+
+      _text[j] = '\0'; //Terminate the string with the null character;
 
       //Display the text
       Serial.println(_text);
-      _lcd->setCursor(0,i);
+      _lcd->setCursor(0, i);
       _lcd->write(_text);
     }
   }
@@ -185,9 +252,9 @@ void Menu::reset()
   _selectedItem = _root->getChild();
   _displayed[0] = _firstLine;
   _displayed[1] = _root->getChild();
-  if (_displayed[1]->getNext() != NULL){
+  if (_displayed[1]->getNext() != NULL) {
     _displayed [2] = _displayed[1]->getNext();
-    if (_displayed[2]->getNext() != NULL){
+    if (_displayed[2]->getNext() != NULL) {
       _displayed [3] = _displayed[2]->getNext();
 
     }
@@ -200,85 +267,56 @@ void Menu::_setDisplay()
 
 
   _displayed[0] = _firstLine;
-  if (_firstLine ==_currentTitle){
+  if (_firstLine == _currentTitle) {
     //The first line is a title, so the second line is its child
     _displayed[1] = _displayed[0]->getChild();
   }
-  else{
+  else {
     //The first line is not a title, so the second line is its next
     _displayed[1] = _displayed[0]->getNext();
   }
   _displayed[2] = _displayed[1]->getNext();
-  if (_displayed[2] != NULL && _displayed[2]->getNext() != NULL){
+  if (_displayed[2] != NULL && _displayed[2]->getNext() != NULL) {
     _displayed[3] = _displayed[2]->getNext();
   }
-  else{
+  else {
     _displayed[3] = NULL;
   }
 }
 
-//void Menu::_editValue()
-//{
-//  Serial.println(_selectedItem->getText());
-//  Serial.print("Current Value: ");
-//  Serial.println(_selectedItem->getValue());
-//  Serial.print("New Value: ");
-//
-//  char inData[21]; // Allocate some space for the string
-//  char inChar; // Where to store the character read
-//  byte index = 0; // Index into array; where to store the character
-//  boolean flag = true;
-//  while (flag){
-//    while(Serial.available() > 0) // Don't read unless
-//      // there you know there is data
-//    {
-//      if(index < 20) // One less than the size of the array
-//      {
-//        inChar = Serial.read(); // Read a character
-//        if (inChar =='D'){
-//          Serial.println(inData);
-//          _selectedItem->setValue(inData);
-//          flag = false;
-//          break;
-//        }
-//        inData[index] = inChar; // Store it
-//        index++; // Increment where to write next
-//        inData[index] = '\0'; // Null terminate the string
-//      }
-//
-//    }
-//  }
-//  Serial.println("");
-//  delay(2000);
-//  display();
-//}
 
-void Menu::_editValue(){
-  char diameterString[21];
-  char *diameterPtr;//pointer to char in diameterString.
-  bool noDecimal = true;
-  _lcd->clear();
-  _lcd->setCursor(0,0);
-  _lcd->write(_selectedItem->getText());
-  _lcd->setCursor(0,1);
-  _lcd->write("Current Val: ");
-  _lcd->print(_selectedItem->getValue(),2);  
-  _lcd->setCursor(0,3);
-  _lcd->write("(Esc press D)");
-  _lcd->setCursor(0,2);
-  Serial.println("");
-  Serial.println(_selectedItem->getText());
-  Serial.print("Current Val: ");
-  Serial.println(_selectedItem->getValue(),_selectedItem->getPrecission());
-  Serial.println("Enter an new value followed by 'D'");
-  Serial.println("(Esc press D)");
 
+void Menu::_editValue() {
+  char valueString[21];
+  char *valuePtr;//pointer to char in valueString.
+  //find the length of the value
+
+  //this is type dependent
+  int valLength = _selectedItem->getLength();
+  _lcd->setCursor(20 - valLength, _selectLineNumber);
+  for (int i = 0; i < valLength; i++) {
+    _lcd->write(' ');
+  }
+
+  int textLength = 0;
+  // itterate through the item text and add it to the text to be displayed
+  char *c = _selectedItem->getText();
+  while (*c) {
+    *c++;
+    textLength++;
+  }
+
+  _lcd->setCursor(textLength + 3, _selectLineNumber);
+  _lcd->blink();
+
+  boolean noDecimal = true;
   boolean invalid = true;
-  diameterPtr = diameterString;// set pointer to first digit
+  int precision = 0;
+  valuePtr = valueString;// set pointer to first digit
   boolean valueBeingEntered = true;
-  while (valueBeingEntered){
-    while (invalid){
-      _key=_kpd->getKey();//get user input
+  while (valueBeingEntered) {
+    while (invalid) {
+      _key = _kpd->getKey(); //get user input
 
       //Allow for keyboard input as well
       if (Serial.available() > 0) {
@@ -288,67 +326,91 @@ void Menu::_editValue(){
         break;
       }
     }
-    switch(_key){
+    switch (_key) {
 
-    // case 13 - carriage return from serial 
-    //need to select carriage return option 
-    //in serial monitor for this to work.
-    case 'D':
-      //Check to see that a valid diameter was entered
+      // case 13 - carriage return from serial
+      //need to select carriage return option
+      //in serial monitor for this to work.
+      case 'CR' :
+      case 'D':
+        //Check to see that a valid diameter was entered
 
-      //return number
-      if (diameterPtr != diameterString){
-        _selectedItem->setValue(atof(diameterString));
-      }
-      valueBeingEntered = false;
-//      Serial.print(_selectedItem->getText());
-//      Serial.print(" = ");
-//      Serial.println(_selectedItem->getValue(),_selectedItem->getPrecission());
-      Serial.println("");
+        //terminate string
+        *valuePtr == '\0';
 
-      break;
+        //return number
+        if (valuePtr != valueString) {
+          float f = atof(valueString);//make the value into a float no matter what it is
+          _selectedItem->setValue(&f, precision);//setValue corrects the type of the value
+        }
+        valueBeingEntered = false;
+        _lcd->noBlink();
 
-    case 'A': //backspace was pressed so go back.
-      if (diameterPtr > diameterString){
-        _lcd->setCursor(diameterPtr - diameterString - 1,2);
-        _lcd->write(' ');
-        _lcd->setCursor(diameterPtr - diameterString - 1,2);
-        diameterPtr--;
-        if (*diameterPtr == '.'){
-          noDecimal = true;
+        break;
+
+      case 'A': //backspace was pressed so go back.
+        if (valuePtr > valueString) {
+          valuePtr--;
+          _lcd->setCursor(textLength + 3 + (valuePtr - valueString), _selectLineNumber);
+          _lcd->write(' ');
+          _lcd->setCursor(textLength + 3 + (valuePtr - valueString), _selectLineNumber);
+          if (precision > 0 && *valuePtr != '.') precision--;
+          if (*valuePtr == '.') {
+            noDecimal = true;
+          }
+          *valuePtr = '\0';
+
+        }
+        else {//back space was pressed to exit Custom
+          //keep state as selectProfile
+          valueBeingEntered = false;
+        }
+        break;
+
+      case '-':
+      case 'B'://negitive
+        if (valuePtr == valueString) { //Make sure that it is the first key
+          *valuePtr = '-';
+          valuePtr++;
+          _lcd->write('-');
         }
 
-      } 
-      else {//back space was pressed to exit Custom
-        //keep state as selectProfile
-        valueBeingEntered = false;
-      }
+        break;
 
-    case 'B'://invalid do nothing
-      break;
+      case 'C'://invalid do nothing
+        break;
 
-    case 'C'://invalid do nothing
-      break;
+      case '#'://invalid do nothing
+        break;
 
-    case '#'://invalid do nothing
-      break;
+      case '*'://decimal place
+      case '.'://decimal place
+        if (valuePtr - valueString < 19 && noDecimal == true) { //Make sure that the valueString isn't full
+          *valuePtr = '.';
+          _lcd->write('.');
+          valuePtr++;
+          noDecimal = false;
+        }
+        break;
 
-    case '*'://decimal place
-    case '.'://decimal place
-      if (diameterPtr - diameterString < 20 && noDecimal == true){ //Make sure that the diameterString isn't full
-        *diameterPtr = '.';
-        _lcd->write('.');
-        diameterPtr++;
-        noDecimal = false;
-      }
-      break;
-
-    default:
-      if (diameterPtr - diameterString < 20){ //Make sure that the diameterString isn't full
-        *diameterPtr = _key;
-        diameterPtr++;
-        _lcd->write(_key);
-      }
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+        if (valuePtr - valueString < 20) { //Make sure that the valueString isn't full
+          *valuePtr = _key;
+          valuePtr++;
+          if (!noDecimal) {
+            precision++;
+          }
+          _lcd->write(_key);
+        }
     }
   }
   display();
@@ -356,44 +418,153 @@ void Menu::_editValue(){
 
 char* Menu:: _ftoa(char *a, double f, int precision)
 {
-  long p[] = {
-    0,10,100,1000,10000,100000,1000000,10000000,100000000    };
-
+  long p[] = {0, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000};
   char *ret = a;
-  long heiltal = (long)f;
-  itoa(heiltal, a, 10);
-  while (*a != '\0') a++;
-  *a++ = '.';
-  long desimal = abs((long)((f - heiltal) * p[precision]));
-  itoa(desimal, a, 10);
+  long integer = (long)f;
+  itoa(integer, a, 10);
+  while (*a != '\0') a++;//advance pointer to end of integer section.
+
+  if (precision != 0) {
+    *a++ = '.';
+    int decimal = floor(abs((f - (float)integer) * p[precision]) + 0.5); //float math isn't exact so need to round from next decimal out
+    int i = precision - 1;
+    while (p[i] >= decimal) {
+      *a++ = '0';
+      i--;
+    }
+    if (decimal != 0) {
+      itoa(decimal, a, 10);
+    }
+  }
   return ret;
 }
 
 int Menu:: _valueLength(double value, int presision)
 {
-  int i = 1;
   int length;
-  long p[] = {
-    0,10,100,1000,10000,100000,1000000,10000000,100000000    };
-
+  boolean negative = false;
+  unsigned long p[] = {
+    1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000
+  };
+  int i = 1;//Start at 1 because there is always a leading zero.
+  if (value < 0) negative = true; // add one space for the negative sign
+  value = abs(value);//remove negative if there.
   //divide by progressively larger values until the remainder is zero
   //This gives the number of digits before the decimal
-  while (i>9){
-    if((int)value/p[i] == 0){
+
+  while (i < 9) {
+    if ((unsigned long)value / p[i] == 0) {
       break;
     }
     i++;
   }
-  if (presision>0){ //if there is a decimal place include the it and the extra digits
-    length = i+presision+1;
-  } 
-  else {
-    length = i;
-  }
-  return length;
+  if (negative) i++; // add one space for the negative sign
+
+  if (presision > 0) i = i + presision + 1; //if there is a decimal place include the it and the extra digits
+  return i;
 }
 
 
+char* Menu::_ultostr(unsigned long value, char *ptr, int base)
+{
+  unsigned long t = 0, res = 0;
+  unsigned long tmp = value;
+  int count = 0;
+
+  if (NULL == ptr) return NULL;
+  if (tmp == 0) count++;
+
+  while (tmp > 0) {
+    tmp = tmp / base;
+    count++;
+  }
+
+  ptr += count;
+
+  *ptr = '\0';
+
+  do {
+    res = value - base * (t = value / base);
+    if (res < 10) {
+      * -- ptr = '0' + res;
+    } else if ((res >= 10) && (res < 16)) {
+      * --ptr = 'A' - 10 + res;
+    }
+  } while ((value = t) != 0);
+
+  return (ptr);
+}
+
+char* Menu::_ntos(double value, char *ptr, MenuItem::ItemType type, int precision) {
+  switch (type) {
+    case MenuItem::BOOLEAN: //boolean
+      *ptr = value > 0 ? '1' : '0';
+      return ptr;
+      break;
+
+    case MenuItem::INT: //int
+
+      itoa ( value, ptr, 10 );
+      return ptr;
+      break;
+
+    case MenuItem::UNSIGNED_LONG: //unsigned long
+      {
+        unsigned long t = 0, res = 0;
+        unsigned long tmp = (unsigned long)value;
+        unsigned long val = (unsigned long)value;
+
+        int count = 0;
+
+        if (NULL == ptr) return NULL;
+        if (tmp == 0) count++;
+
+        while (tmp > 0) {
+          tmp = tmp / 10;
+          count++;
+        }
+
+        ptr += count;
+
+        *ptr = '\0';
+
+        do {
+          res = val - 10 * (t = val / 10);
+          if (res < 10) {
+            * -- ptr = '0' + res;
+          } else if ((res >= 10) && (res < 16)) {
+            * --ptr = 'A' - 10 + res;
+          }
+        } while ((val = t) != 0);
+        return ptr;
+        break;
+      }
+
+    case MenuItem::FLOAT:
+    case MenuItem::DOUBLE:
+      long p[] = {0, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000};
+      char *ret = ptr;
+      long integer = (long)value;
+      itoa(integer, ptr, 10);
+      while (*ptr != '\0') ptr++;//advance pointer to end of integer section.
+
+      if (precision != 0) {
+        *ptr++ = '.';
+        int decimal = floor(abs((value - (float)integer) * p[precision]) + 0.5); //float math isn't exact so need to round from next decimal out
+        int i = precision - 1;
+        while (p[i] >= decimal) {
+          *ptr++ = '0';
+          i--;
+        }
+        if (decimal != 0) {
+          itoa(decimal, ptr, 10);
+        }
+      }
+      return ptr;
+      break;
+
+  }
+}
 
 
 

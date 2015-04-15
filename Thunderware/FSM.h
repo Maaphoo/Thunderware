@@ -8,24 +8,24 @@ double getNumber(char *title, char *subTitle);
 
 
 void selectProfile(){
-   buzzer.setMsg(Buzzer::POWER_ON);
+   //
   //Display message on LCD and Computer Screen
   // initializeLCD();
-  lcd.clear();
-  lcd.setCursor(0,0);
-  lcd.write("Select a profile.");
-  lcd.setCursor(0,1);
-  lcd.write("1: 2.85 ABS");
-  lcd.setCursor(0,2);
-  lcd.write("2: No Auger");
-  lcd.setCursor(0,3);
-  lcd.write("3: No Heat");
+//  lcd.clear();
+//  lcd.setCursor(0,0);
+//  lcd.write("Select a profile.");
+//  lcd.setCursor(0,1);
+//  lcd.write("1: 2.85 ABS");
+//  lcd.setCursor(0,2);
+//  lcd.write("2: No Auger");
+//  lcd.setCursor(0,3);
+//  lcd.write("3: No Heat");
 
 
-  Serial.println("Select a profile.");
-  Serial.println("1: 1.75 ABS (Default)");
-  Serial.println("2: No Auger");
-  Serial.println("3: No Heat\n");
+  Serial.println(F("Select a profile."));
+  Serial.println(F("1: 1.75 ABS (Default)"));
+  Serial.println(F("2: No Auger"));
+  Serial.println(F("3: No Heat\n"));
   boolean invalid = true;
 
   while(invalid){
@@ -78,7 +78,7 @@ void selectProfile(){
     break;
 
   case '4':
-    Serial.println("calibrate Calipers");
+    Serial.println(F("calibrate Calipers"));
     //Shift state.
     stateMachine.setState(StateMachine::CALIBRATE_CALIPERS);
     break;
@@ -92,18 +92,18 @@ void selectProfile(){
 
 void calibrateCalipers(){
   lcd.clear();
-  lcd.write("Caliper Calibration");
-  Serial.println("Caliper Calibration");
+  lcd.print(F("Caliper Calibration"));
+  Serial.println(F("Caliper Calibration"));
   delay (4000);
 
   lcd.clear();
   lcd.setCursor(0,0);
-  lcd.write("Step 1:Load filament");
+  lcd.print(F("Step 1:Load filament"));
   lcd.setCursor(0,1);
-  lcd.write("with target Diameter");
+  lcd.print(F("with target Diameter"));
   lcd.setCursor(0,3);
-  lcd.write("Press <enter>");
-  Serial.println("Step 1: Load filament with target diameter.");
+  lcd.print(F("Press <enter>"));
+  Serial.println(F("Step 1: Load filament with target diameter."));
   
   char key;
   while (1){
@@ -123,15 +123,15 @@ void calibrateCalipers(){
     }
   }
   lcd.clear();
-  lcd.write("Step 2: Adjust the");
+  lcd.print(F("Step 2: Adjust the"));
   lcd.setCursor(0,1);
   lcd.write("sensor until it is");
   lcd.setCursor(0,2);
   lcd.write("between 450 and 550.");
   lcd.setCursor(0,3);
   lcd.write("Then press <enter>.");
-  Serial.println("Step2: Adjust the sensor until it is between 450 and 550.");
-  Serial.println("Then Press <enter>");
+  Serial.println(F("Step2: Adjust the sensor until it is between 450 and 550."));
+  Serial.println(F("Then Press <enter>"));
   delay(4000);
   lcd.clear();
 
@@ -172,7 +172,7 @@ void calibrateCalipers(){
   lcd.write("Minimum of 3");
   lcd.setCursor(0,3);
   lcd.write("Then record Diameter");
-  Serial.println("Step 3: Load samples with known Diameter. Minimum of 3. Then Record Diameter.");
+  Serial.println(F("Step 3: Load samples with known Diameter. Minimum of 3. Then Record Diameter."));
   delay(4000);
 
   key = 0;
@@ -190,7 +190,7 @@ void calibrateCalipers(){
     
     lcd.setCursor(0,3);
     lcd.write("Press 'C' when done");
-    Serial.println("Load sample then poress 'D'. Press 'C' when Done.");
+    Serial.println(F("Load sample then poress 'D'. Press 'C' when Done."));
     while (1){ 
       key = kpd.getKey();
 
