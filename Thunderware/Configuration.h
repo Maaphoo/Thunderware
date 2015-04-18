@@ -24,13 +24,13 @@ public:
   
   struct Profile {
     //General
-    boolean isStored;
+    int profileNumber;
     char name[20];
     double diaSetPoint;
     float tolerance;
 
     //Starve Feeder
-    double starveFeederRPM;
+//    double starveFeederRPM;
     float starveFeederTargetFeedRate;
 
     //Auger
@@ -45,10 +45,6 @@ public:
     double outfeedMinRPM;
     int outfeedComputeInterval;
     
-
-    //buzzer
-    boolean buzzerActive;
-
     //Barrel
     double soakTime;
     double barrelTemp;
@@ -69,12 +65,27 @@ public:
   struct PhysicalConfig{
     //variables that help with storage
     boolean configStored;
+    boolean loadAutomatically;
     
     //StarveFeeder
-    int starveFeederPinSet;
-    int starveFeederStepMode;
+//    int starveFeederPinSet;
+//    int starveFeederStepMode;
+//    boolean starveFeederDirection;
+//    boolean starveFeederEnable;
+
+    float starveFeederLumpMass;
+    int starveFeederDumpPosition;
+    int starveFeederStepDelay;
+    int starveFeederHomeDelay;
+    int starveFeederOverRotation;
     boolean starveFeederDirection;
-    boolean starveFeederEnable;
+    int starveFeederMaxDutyCycle;
+    int starveFeederMinDutyCycle;
+    int starveFeederSensorPin;
+    int starveFeederDirectionPin;
+    int starveFeederStepPin;
+    int starveFeederEnablePin;
+    int starveFeederVibPin;
 
     
     //Auger
@@ -141,18 +152,15 @@ public:
     unsigned long loadFilamentTime; //The number of minutes allowed for loading the filament.
 
   }physical;
-
-
+  
+  char profileNames[10][20];
+  void loadProfileName(char* namePtr, int profile);//Used for menus.
   Configuration();//constructor
-  //The default configs are used unless there is a config file stored in the EEPROM
   void saveConfig();
   void deleteConfig();
   boolean loadConfig();//returns true if successfull
   void loadDefaultConfig();
-
-  //Profile is left empty unless one is selected or default is used. 
-  boolean saveProfile();//Saves profile in first available position. Returns true on success. 
-  void saveProfile(int profileNum);//Saves profile in designated position.
+  void saveProfile();//Saves profile in designated position.
   boolean loadProfile(int profileNum);
   void loadDefaultProfile();
   void deleteProfile(int profileNum);

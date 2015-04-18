@@ -20,7 +20,7 @@ void preheat(){
   now = millis();
 
   if (startFlag){
-    stateMachine.setPreheatStartTime(now);
+//    stateMachine.setPreheatStartTime(now);
     
     lcd.clear();
     reportCurrentMeasurementTitles();
@@ -76,28 +76,28 @@ void preheat(){
   case 'B'://increase Tempature setpoint
     {
       lcd.clear();
-      lcd.write("Increase temp to:");
+      lcd.print(F("Increase temp to:"));
       lcd.setCursor(0,1);
       configuration.profile.barrelTemp = configuration.profile.barrelTemp+5;
       char tempSetPointString[10];
       dtostrf(configuration.profile.barrelTemp, 1,2,tempSetPointString);
       lcd.write(tempSetPointString);
 
-      Serial.print("Increased barrelTemp set point to: ");
+      Serial.print(F("Increased barrelTemp set point to: "));
       Serial.println(configuration.profile.barrelTemp);
       break;
     }
   case 'C'://decrease temp set point
     {
       lcd.clear();
-      lcd.write("Decrease temp to:");
+      lcd.print(F("Decrease temp to:"));
       lcd.setCursor(0,1);
       configuration.profile.barrelTemp = configuration.profile.barrelTemp-5;
       char tempSetPointString[10];
       dtostrf(configuration.profile.barrelTemp, 1,2,tempSetPointString);
       lcd.write(tempSetPointString);
 
-      Serial.print("Decreased temp set point to: ");
+      Serial.print(F("Decreased temp set point to: "));
       Serial.println(configuration.profile.barrelTemp);
 
       break;
@@ -105,13 +105,13 @@ void preheat(){
 
   case '1'://Skip soaking period
     configuration.profile.barrelTemp = configuration.profile.barrelTemp+5;
-    Serial.print("TempSetPoint increased to: ");
+    Serial.print(F("TempSetPoint increased to: "));
     Serial.println(configuration.profile.barrelTemp);
 
     break;
   case '4':
     configuration.profile.barrelTemp = configuration.profile.barrelTemp-5;
-    Serial.print("TempSetPoint decreased to: ");
+    Serial.print(F("TempSetPoint decreased to: "));
     Serial.println(configuration.profile.barrelTemp);
     break;
 
@@ -132,7 +132,7 @@ void preheat(){
   case 'A':
     barrel.off();
     nozzle.off();
-    stateMachine.setState(StateMachine::SELECT_PROFILE);
+//    stateMachine.setState(StateMachine::SELECT_PROFILE);
     return;
 
   case 'D':
@@ -141,7 +141,7 @@ void preheat(){
 
   case '*':
     startFlag = true;//set to reinitialize vars for next preheat
-    stateMachine.setState(StateMachine::SOAK);
+//    stateMachine.setState(StateMachine::SOAK);
     return;
   }
 
@@ -149,7 +149,7 @@ void preheat(){
   if (barrel.getTemp() > configuration.profile.barrelTemp-3 && nozzle.getTemp() > configuration.profile.nozzleTemp-3){
     buzzer.setMsg(Buzzer::PREHEAT_FINISHED);
     startFlag = true;//set to reinitialize vars for next preheat
-    stateMachine.setState(StateMachine::SOAK);
+//    stateMachine.setState(StateMachine::SOAK);
   }
 }
 
@@ -234,13 +234,13 @@ void soak(){
   case 'A':
     barrel.off();
     nozzle.off();
-    stateMachine.setState(StateMachine::SELECT_PROFILE);
+//    stateMachine.setState(StateMachine::SELECT_PROFILE);
     return;
 
   case 'B'://increase Tempature setpoint
     {
       lcd.clear();
-      lcd.write("Increase temp to:");
+      lcd.print(F("Increase temp to:"));
       lcd.setCursor(0,1);
       configuration.profile.barrelTemp += 5;
       configuration.profile.nozzleTemp += 5;
@@ -248,7 +248,7 @@ void soak(){
       dtostrf(configuration.profile.barrelTemp, 1,2,tempSetPointString);
       lcd.write(tempSetPointString);
 
-      Serial.print("Increased temp set point to: ");
+      Serial.print(F("Increased temp set point to: "));
       Serial.println(configuration.profile.barrelTemp);
 
       break;
@@ -256,7 +256,7 @@ void soak(){
   case 'C'://decrease temp set point
     {
       lcd.clear();
-      lcd.write("Decrease temp to:");
+      lcd.print(F("Decrease temp to:"));
       lcd.setCursor(0,1);
       configuration.profile.barrelTemp -= 5;
       configuration.profile.nozzleTemp -= 5;
@@ -264,7 +264,7 @@ void soak(){
       dtostrf(configuration.profile.barrelTemp, 1,2,tempSetPointString);
       lcd.write(tempSetPointString);
 
-      Serial.print("Decreased temp set point to: ");
+      Serial.print(F("Decreased temp set point to: "));
       Serial.println(configuration.profile.barrelTemp);
 
       break;
@@ -272,11 +272,11 @@ void soak(){
   case '*'://Skip soaking period
     {
       lcd.clear();
-      lcd.write("Skip Soak?");
+      lcd.print(F("Skip Soak?"));
       lcd.setCursor(0,1);
-      lcd.write("Press * to Skip");
+      lcd.print(F("Press * to Skip"));
       lcd.setCursor(0,2);
-      lcd.write("Press D to continue");
+      lcd.print(F("Press D to continue"));
       boolean noInput = true;
       while (noInput){
         barrel.activate();
@@ -287,27 +287,27 @@ void soak(){
         }
         if (key == '*'){
           startFlag = true;//set to reinitialize vars on next soak
-          stateMachine.setState(StateMachine::BEGIN_EXTRUDE);
+//          stateMachine.setState(StateMachine::BEGIN_EXTRUDE);
           return;
         }
         if (key == 'D'){
           noInput = false;
         }
       }
-      Serial.println("Pressed * or D");
+      Serial.println(F("Pressed * or D"));
       break;
     }
 
   case '1'://Increase soak time by 1 min
     lcd.clear();
-    lcd.write("Increasing Time");
+    lcd.print(F("Increasing Time"));
     extrudeTime = extrudeTime+1000L*60L;
 
     break;
   case '4'://Decrease soak time by 1 min
     extrudeTime = extrudeTime-1000L*60L;
     lcd.clear();
-    lcd.write("Decreasing Time");
+    lcd.print(F("Decreasing Time"));
     break;
 
   case '7':
@@ -362,29 +362,29 @@ void soak(){
   }
 
   if (now>=extrudeTime){
-    Serial.println("Finished Soaking");
+    Serial.println(F("Finished Soaking"));
     barrel.off();
     nozzle.off();
     startFlag = true;//set to reinitialize vars on next soak
-    stateMachine.setState(StateMachine::BEGIN_EXTRUDE);
+//    stateMachine.setState(StateMachine::BEGIN_EXTRUDE);
   }
 }
 
 void displayPreheatScreen(){
   lcd.clear();
 
-  lcd.write("Preheat:");
+  lcd.print(F("Preheat:"));
 
   lcd.setCursor(7,1);
-  lcd.write("(SP) (ACT)");
+  lcd.print(F("(SP) (ACT)"));
 
   lcd.setCursor(18,2);
-  lcd.write("C");
+  lcd.print(F("C"));
   lcd.setCursor(18,3);
-  lcd.write("C");
+  lcd.print(F("C"));
 
   lcd.setCursor(0,2);
-  lcd.write("Barrel ");
+  lcd.print(F("Barrel "));
   char tempString[10];
   dtostrf(configuration.profile.barrelTemp, 3,0,tempString);
   lcd.write(tempString);
@@ -406,18 +406,18 @@ void writeDouble(double value, int decPlaces, int col, int row) {
 
 void displaySoakScreen() {
   lcd.clear();
-  lcd.write("Soaking: ");
+  lcd.print(F("Soaking: "));
 
   lcd.setCursor(7,1);
-  lcd.write("(SP) (ACT)");
+  lcd.print(F("(SP) (ACT)"));
 
   lcd.setCursor(18,2);
-  lcd.write("C");
+  lcd.print(F("C"));
   lcd.setCursor(18,3);
-  lcd.write("C");
+  lcd.print(F("C"));
 
   lcd.setCursor(0,2);
-  lcd.write("Barrel ");
+  lcd.print(F("Barrel "));
   char tempString[10];
   dtostrf(configuration.profile.barrelTemp, 3,0,tempString);
   lcd.write(tempString);
@@ -440,7 +440,7 @@ void updateTime(unsigned long milliseconds, int col, int row){
   dtostrf(seconds, 2,0,secString);
   lcd.setCursor(col,row);
   lcd.write(minString);
-  lcd.write(":");
+  lcd.print(F(":"));
   if (seconds<10){
     secString[0] = '0';
   }

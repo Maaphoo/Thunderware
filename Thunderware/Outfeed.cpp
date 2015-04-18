@@ -46,7 +46,7 @@ void Outfeed::setRPM(float rpm)
 } 
 
 void Outfeed::setMode(int mode){ _pid.SetMode(mode);
-  Serial.print("Mode = ");
+  Serial.print(F("Mode = "));
   Serial.println(mode);}
 
 int Outfeed::getMode(){ return _pid.GetMode();}

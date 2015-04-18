@@ -10,12 +10,12 @@
 
 #include "Arduino.h"
 #include "Configuration.h"
-#include "StateMachine.h"
+//#include "StateMachine.h"
 #include "Barrel.h"
 #include "Nozzle.h"
 
 class Configuration;
-class StateMachine;
+//class StateMachine;
 class Barrel;
 class Nozzle;
 
@@ -24,7 +24,7 @@ class Safety
 {
 public:
 
-  Safety(Configuration* configuration, Barrel* barrel, Nozzle* nozzle, StateMachine* stateMachine);//constructor
+  Safety(Configuration* configuration, Barrel* barrel, Nozzle* nozzle);//constructor
   void check();
   void enable();
   void disable(); 
@@ -35,7 +35,7 @@ private:
   Configuration*  _configuration;
   Barrel*         _barrel;
   Nozzle*         _nozzle;
-  StateMachine*   _stateMachine;
+//  StateMachine*   _stateMachine;
   boolean         _enabled;
   char        _safetyMsg1[21];
   char        _safetyMsg2[21];

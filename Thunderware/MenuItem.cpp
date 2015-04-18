@@ -10,13 +10,13 @@
 #include "Arduino.h"
 #include "MenuItem.h"
 
+
 MenuItem::MenuItem() {}
 MenuItem::MenuItem(MenuItem* previous,
                    MenuItem* next,
                    MenuItem* parent,
                    MenuItem* child,
                    char* text,
-                   double value,
                    void(*action)(),
                    boolean doActionOnSelect
                   )//constructor)
@@ -26,7 +26,7 @@ MenuItem::MenuItem(MenuItem* previous,
   _parent = parent;
   _child = child;
   _text = text;
-  _value = value;
+  //  _value = value;
   _precision = 2;
   _action = action;
   _doActionOnSelect = doActionOnSelect;
@@ -48,10 +48,7 @@ MenuItem* MenuItem::getChild() {
 MenuItem::ItemType MenuItem::getType() {
   return _itemType;
 }
-double MenuItem::getValue() {
-  return _value;
-}
-//void*  MenuItem::getValue(){return _value1;}
+
 int MenuItem::getLength() {
   double tempVal;
   switch (getType()) {
@@ -70,6 +67,9 @@ int MenuItem::getLength() {
     case MenuItem::FLOAT:
     case MenuItem::DOUBLE:
       tempVal = *(double*)_value1;
+      break;
+    case MenuItem::STRING:
+      return strlen((char*)_value1);
       break;
   }
   int length;
@@ -96,7 +96,6 @@ int MenuItem::getLength() {
 }
 
 void MenuItem::getValStr(char* ptr) {
-  char* tempPtr;
   switch (_itemType) {
     case MenuItem::BOOLEAN: //boolean
       *ptr = *(boolean*)_value1 > 0 ? '1' : '0';
@@ -139,35 +138,36 @@ void MenuItem::getValStr(char* ptr) {
 
     case MenuItem::FLOAT:
     case MenuItem::DOUBLE:
-      long p[] = {0, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000};
-      char* ret = ptr;
-      long integer = *(float*)_value1;
-      itoa(integer, ptr, 10);
-      while (*ptr != '\0') ptr++;//advance pointer to end of integer section.
+      {
+        long p[] = {0, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000};
+        char* ret = ptr;
+        long integer = *(float*)_value1;
+        itoa(integer, ptr, 10);
+        while (*ptr != '\0') ptr++;//advance pointer to end of integer section.
 
-      if (_precision != 0) {
-        *ptr++ = '.';
-        int decimal = floor(abs((*(float*)_value1 - (float)integer) * p[_precision]) + 0.5); //float math isn't exact so need to round from next decimal out
-        int i = _precision - 1;
-        while (p[i] >= decimal) {
-          *ptr++ = '0';
-          i--;
-        }
-        if (decimal != 0) {
-          itoa(decimal, ptr, 10);
+        if (_precision != 0) {
+          *ptr++ = '.';
+          int decimal = floor(abs((*(float*)_value1 - (float)integer) * p[_precision]) + 0.5); //float math isn't exact so need to round from next decimal out
+          int i = _precision - 1;
+          while (p[i] >= decimal) {
+            *ptr++ = '0';
+            i--;
+          }
+          if (decimal != 0) {
+            itoa(decimal, ptr, 10);
+          }
         }
       }
-
       break;
 
+    case MenuItem::STRING:
+      strcpy(ptr, (char*)_value1);
   }
-
 }
 
 int MenuItem::getPrecision() {
   return _precision;
 }
-
 
 void MenuItem::setPrevious(MenuItem* previous) {
   _previous = previous;
@@ -184,9 +184,7 @@ void MenuItem::setChild(MenuItem* child) {
 void MenuItem::setType(ItemType type) {
   _itemType = type;
 }
-void MenuItem::setValue(double value) {
-  _value = value;
-}
+
 void MenuItem::setValue(void* val, int precision = 0)
 {
   switch (_itemType) {
@@ -213,23 +211,19 @@ void MenuItem::setValue(void* val, int precision = 0)
       break;
 
     case MenuItem::STRING: //not sure if this is correct
-      *(char*)_value1 = *(char*)val;
+      strcpy((char*)_value1, (char*)val);
       break;
 
   }
   _precision = precision;
 }
-void MenuItem::setValuePtr(float* ptr)
-{
-  if (_itemType == MenuItem::FLOAT) {
-    value1.f = ptr;
-  }
-}
+
 void MenuItem::setPrecision(int precision) {
   _precision = precision;
 }
 void MenuItem::setAction(void (*action)()) {
   _action = action;
+  //  _itemType = MenuItem::ACTION;
 }
 void MenuItem::setupVal(char* text,
                         ItemType itemType,
@@ -241,7 +235,6 @@ void MenuItem::setupVal(char* text,
   setText(text);
   _itemType = itemType;
   _value1 = valPtr;
-  //  setValue(val);
   _precision = precision;
 }
 void MenuItem::doAction() {
@@ -249,6 +242,12 @@ void MenuItem::doAction() {
 }
 
 
+void MenuItem::setDoActionOnSelect(boolean act) {
+  _doActionOnSelect = act;
+}
+boolean MenuItem::getDoActionOnSelect() {
+  return _doActionOnSelect;
+}
 
 char* MenuItem::getText() {
   return _text;
@@ -256,3 +255,4 @@ char* MenuItem::getText() {
 void MenuItem::setText(char* text) {
   _text = text;
 }
+

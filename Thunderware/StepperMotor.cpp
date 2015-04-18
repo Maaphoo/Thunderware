@@ -71,18 +71,18 @@ StepperMotor::StepperMotor(Configuration* configuration, int pinSet) : _timer(pi
       break;
       
     case 3://SET_46_48_5
-        _ratio = configuration->physical.starveFeederStepMode;
-
-      DDRL |= B00001000; //Direction, pin 46 to output
-      DDRL |= B00000010; //Enable, pin 48 to output
-      DDRE |= B00001000;//Step, pin 5 to output
+//      _ratio = configuration->physical.starveFeederStepMode;
+//
+//      DDRL |= B00001000; //Direction, pin 46 to output
+//      DDRL |= B00000010; //Enable, pin 48 to output
+//      DDRE |= B00001000;//Step, pin 5 to output
 
       //set Starve Feeder Stepper direction pin (pin 46)
-      if (configuration->physical.starveFeederDirection){
-        PORTL = PORTL | B00001000;// Direction is backward so set the pin HIGH
-      }else{
-        PORTL = PORTL & B11110111; // Direction is forward so set the pin LOW
-      }
+//      if (configuration->physical.starveFeederDirection){
+//        PORTL = PORTL | B00001000;// Direction is backward so set the pin HIGH
+//      }else{
+//        PORTL = PORTL & B11110111; // Direction is forward so set the pin LOW
+//      }
       break;
     }
     disable(); // Make sure that the steppers begin disabled
@@ -138,11 +138,11 @@ void StepperMotor::enable() {
     case 3://SET_46_48_5
        //StarveFeeder Stepper pin 48
        //enable StarveFeeder stepper by setting the enable pin HIGH
-      if (_configuration->physical.starveFeederEnable){
-       PORTL |= B00000010;
-      }else{
-       PORTL &= B11111101;
-      }   
+//      if (_configuration->physical.starveFeederEnable){
+//       PORTL |= B00000010;
+//      }else{
+//       PORTL &= B11111101;
+//      }   
        break;  
      }
 }
@@ -182,11 +182,11 @@ void StepperMotor::disable() {
     case 3://SET_46_48_5
        //StarveFeeder Stepper pin 48
        //disable StarveFeeder stepper by setting the enable pin low
-      if (!_configuration->physical.starveFeederEnable){
-       PORTL |= B00000010;
-      }else{
-       PORTL &= B11111101;
-      }           
+//      if (!_configuration->physical.starveFeederEnable){
+//       PORTL |= B00000010;
+//      }else{
+//       PORTL &= B11111101;
+//      }           
       
       break;
   }

@@ -70,11 +70,11 @@ void beginExtrude(){
     outfeed.setRPM(configuration.profile.outfeedRPM);
     outfeed.enable();
     spooler.enable();
-    starveFeeder.setRPM(configuration.profile.starveFeederRPM);
+//    starveFeeder.setRPM(configuration.profile.starveFeederRPM);
 
     //if the auger is running, turn on the Starve Feeder
     if (auger.getRPM()>0){
-      starveFeeder.enable();
+//      starveFeeder.enable();
     }
 
     //reset the start flag for the next time beginExtrude is called
@@ -84,12 +84,12 @@ void beginExtrude(){
     //If auger speed is > 0, this should be LOAD_FILAMENT
     //If auger speed is = 0, this should be EXTRUDE
     if (auger.getRPM()>0){
-      stateMachine.setLoadFilamentStartTime(millis());
-      stateMachine.setState(StateMachine::EXTRUDE);// LOAD_FILAMENT);//Change back to Extrude
+//      stateMachine.setLoadFilamentStartTime(millis());
+//      stateMachine.setState(StateMachine::EXTRUDE);// LOAD_FILAMENT);//Change back to Extrude
     } 
     else {
-      stateMachine.setExtrudeStartTime(millis());
-      stateMachine.setState(StateMachine::EXTRUDE);
+//      stateMachine.setExtrudeStartTime(millis());
+//      stateMachine.setState(StateMachine::EXTRUDE);
     }
 
     return;
@@ -339,12 +339,12 @@ void extrude(){
 
   case '3'://increase starveFeeder RPM
     {
-      starveFeeder.setRPM(starveFeeder.getRPM()+1.0);
+//      starveFeeder.setRPM(starveFeeder.getRPM()+1.0);
       break;
     }
   case '6'://decrease starveFeeder RPM
     {
-      starveFeeder.setRPM(starveFeeder.getRPM()-1.0);
+//      starveFeeder.setRPM(starveFeeder.getRPM()-1.0);
       break;
     }
 
@@ -412,9 +412,9 @@ void extrude(){
           spooler.disable();
           barrel.off();
           nozzle.off();
-          starveFeeder.disable();
+//          starveFeeder.disable();
           startFlag = true;//reset start flag so that vars are re initialized if extrude is re entered.
-          stateMachine.setState(StateMachine::SELECT_PROFILE);
+//          stateMachine.setState(StateMachine::SELECT_PROFILE);
           return;
         }
       }
@@ -457,12 +457,12 @@ void extrude(){
     }
 
   case 'D':
-    if (starveFeeder.getState()){
-      starveFeeder.disable();
-    }
-    else{
-      starveFeeder.enable();
-    }
+//    if (starveFeeder.getState()){
+//      starveFeeder.disable();
+//    }
+//    else{
+//      starveFeeder.enable();
+//    }
     break;
   }
 }
@@ -504,7 +504,7 @@ void stopExtruding(){
   spooler.disable();
   barrel.off();
   nozzle.off();
-  starveFeeder.disable();
+//  starveFeeder.disable();
 }
 
 

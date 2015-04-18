@@ -414,6 +414,29 @@ void test()
   //  configuration.saveConfig();
 }
 
+void testAuger(){
+  
+}
+
+void testBarrel(){
+  
+}
+
+void testNozzle(){
+  
+}
+
+void testOutfeed(){
+  
+}
+
+void testStarveFeeder(){
+  
+}
+
+void testSpooler(){
+  
+}
 #endif
 
 

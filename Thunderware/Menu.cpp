@@ -81,11 +81,11 @@ void Menu::down()
 
 void Menu::printSelected()
 {
-//for testing
-//  char value[20];
-//  _selectedItem->getValStr(value);
-//  Serial.println(_selectedItem->getPrecision());
-//  Serial.println(*(float*)_selectedItem->_value1,_selectedItem->getPrecision() );
+  //for testing
+  //  char value[20];
+  //  _selectedItem->getValStr(value);
+  //  Serial.println(_selectedItem->getPrecision());
+  //  Serial.println(*(float*)_selectedItem->_value1,_selectedItem->getPrecision() );
 
 }
 void Menu::back()
@@ -105,6 +105,9 @@ void Menu::select()
 {
   switch (_selectedItem->getType()) {
     case MenuItem::TITLE:
+      if (_selectedItem->getDoActionOnSelect()) {
+        _selectedItem->doAction();
+      }
       if (_selectedItem->getChild()) {
         //Set old selected item as title and first line
         _currentTitle = _selectedItem;
@@ -131,9 +134,12 @@ void Menu::select()
     case MenuItem::DOUBLE:
       _editValue();
       break;
+
+    case MenuItem::STRING:
+      _editString();
+      break;
   }
 }
-
 
 
 void Menu::display()
@@ -176,68 +182,13 @@ void Menu::display()
         _displayed[i]->getValStr(&_text[20 - _displayed[i]->getLength()]);
         j = 21;
       }
-      //      switch (_displayed[i]->getType()) {
-      //        case MenuItem::BOOLEAN:
-      //        case MenuItem::INT:
-      //        case MenuItem::UNSIGNED_LONG:
-      //        case MenuItem::FLOAT:
-      //        case MenuItem::DOUBLE:
-      //          _displayed[i]->getValStr(&_text[20 - _displayed[i]->getLength()]);
-      //          j = 21;
-      //          break;
-
-      //        case MenuItem::VALUE:
-      //        case MenuItem::BOOLEAN:
-      //          //convert it to a string and insert it into the _text string
-      //          _ntos(*(boolean*)_displayed[i]->_value1, &_text[19], _displayed[i]->getType(), _displayed[i]->getPrecision());
-      ////          _text[19] = *(boolean*)_displayed[i]->_value1 ? '1' : '0';
-      //          j = 21;
-      //          break;
-      //
-      //
-      //        case MenuItem::INT:
-      //          //find the length of the value
-      //          valLength = _displayed[i]->getLength();
-      //
-      //          //convert it to a string and insert it into the _text string
-      //          _ntos(*(int*)_displayed[i]->_value1, &_text[20 - valLength], _displayed[i]->getType(), _displayed[i]->getPrecision());
-      ////          _ftoa(&_text[20 - valLength], *(int*)_displayed[i]->_value1, _displayed[i]->getPrecision());
-      //          j = 21;
-      //          break;
-      //
-      //
-      //        case MenuItem::UNSIGNED_LONG:
-      //          //find the length of the value
-      //          valLength = _displayed[i]->getLength();
-      //
-      //          //convert it to a string and insert it into the _text string
-      //          _ultostr(*(unsigned long*)_displayed[i]->_value1, &_text[20 - valLength], 10);
-      //          j = 21;
-      //          break;
-      //
-      //
-      //        case MenuItem::FLOAT:
-      //        case MenuItem::DOUBLE:
-      //          _text[21] = '\0';//comment out?
-      //
-      //          //find the length of the value
-      //          valLength = _displayed[i]->getLength();
-      //
-      //          //convert it to a string and insert it into the _text string
-      //          _ftoa(&_text[20 - valLength], *(float*)_displayed[i]->_value1, _displayed[i]->getPrecision());
-      //          j = 21;
-      //            valLength = _displayed[i]->getLength();
-      //          _displayed[i]->getValStr(&_text[20-_displayed[i]->getLength()]);
-      //          j=21;
-      //          break;
-      //      }
-
+      
       _text[j] = '\0'; //Terminate the string with the null character;
 
       //Display the text
       Serial.println(_text);
       _lcd->setCursor(0, i);
-      _lcd->write(_text);
+      _lcd->print(_text);
     }
   }
   Serial.println("");
@@ -416,154 +367,100 @@ void Menu::_editValue() {
   display();
 }
 
-char* Menu:: _ftoa(char *a, double f, int precision)
-{
-  long p[] = {0, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000};
-  char *ret = a;
-  long integer = (long)f;
-  itoa(integer, a, 10);
-  while (*a != '\0') a++;//advance pointer to end of integer section.
+void Menu::_editString() {
+  char valueString[14];
+  char *valuePtr = valueString;//pointer to char in valueString.
 
-  if (precision != 0) {
-    *a++ = '.';
-    int decimal = floor(abs((f - (float)integer) * p[precision]) + 0.5); //float math isn't exact so need to round from next decimal out
-    int i = precision - 1;
-    while (p[i] >= decimal) {
-      *a++ = '0';
-      i--;
-    }
-    if (decimal != 0) {
-      itoa(decimal, a, 10);
-    }
+  //Clear out any characters that might be in the way
+  _lcd->setCursor(6, _selectLineNumber);
+  for (int i = 6; i < 20; i++) {
+    _lcd->write(' ');
   }
-  return ret;
-}
+  char character = 64;
+  _lcd->setCursor(6, _selectLineNumber);
+  _lcd->write(character);
+  _lcd->setCursor(6, _selectLineNumber);
+  _lcd->blink();
 
-int Menu:: _valueLength(double value, int presision)
-{
-  int length;
-  boolean negative = false;
-  unsigned long p[] = {
-    1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000
-  };
-  int i = 1;//Start at 1 because there is always a leading zero.
-  if (value < 0) negative = true; // add one space for the negative sign
-  value = abs(value);//remove negative if there.
-  //divide by progressively larger values until the remainder is zero
-  //This gives the number of digits before the decimal
+  boolean invalid = true;
+  valuePtr = valueString;// set pointer to first character
+  boolean valueBeingEntered = true;
+  int charPos = 6;
+  while (valueBeingEntered) {
+    while (invalid) {
+      _key = _kpd->getKey(); //get user input
 
-  while (i < 9) {
-    if ((unsigned long)value / p[i] == 0) {
-      break;
-    }
-    i++;
-  }
-  if (negative) i++; // add one space for the negative sign
-
-  if (presision > 0) i = i + presision + 1; //if there is a decimal place include the it and the extra digits
-  return i;
-}
-
-
-char* Menu::_ultostr(unsigned long value, char *ptr, int base)
-{
-  unsigned long t = 0, res = 0;
-  unsigned long tmp = value;
-  int count = 0;
-
-  if (NULL == ptr) return NULL;
-  if (tmp == 0) count++;
-
-  while (tmp > 0) {
-    tmp = tmp / base;
-    count++;
-  }
-
-  ptr += count;
-
-  *ptr = '\0';
-
-  do {
-    res = value - base * (t = value / base);
-    if (res < 10) {
-      * -- ptr = '0' + res;
-    } else if ((res >= 10) && (res < 16)) {
-      * --ptr = 'A' - 10 + res;
-    }
-  } while ((value = t) != 0);
-
-  return (ptr);
-}
-
-char* Menu::_ntos(double value, char *ptr, MenuItem::ItemType type, int precision) {
-  switch (type) {
-    case MenuItem::BOOLEAN: //boolean
-      *ptr = value > 0 ? '1' : '0';
-      return ptr;
-      break;
-
-    case MenuItem::INT: //int
-
-      itoa ( value, ptr, 10 );
-      return ptr;
-      break;
-
-    case MenuItem::UNSIGNED_LONG: //unsigned long
-      {
-        unsigned long t = 0, res = 0;
-        unsigned long tmp = (unsigned long)value;
-        unsigned long val = (unsigned long)value;
-
-        int count = 0;
-
-        if (NULL == ptr) return NULL;
-        if (tmp == 0) count++;
-
-        while (tmp > 0) {
-          tmp = tmp / 10;
-          count++;
-        }
-
-        ptr += count;
-
-        *ptr = '\0';
-
-        do {
-          res = val - 10 * (t = val / 10);
-          if (res < 10) {
-            * -- ptr = '0' + res;
-          } else if ((res >= 10) && (res < 16)) {
-            * --ptr = 'A' - 10 + res;
-          }
-        } while ((val = t) != 0);
-        return ptr;
+      //Allow for keyboard input as well
+      if (Serial.available() > 0) {
+        _key = (char)Serial.read();
+      }
+      if (_key) {
         break;
       }
+    }
+    switch (_key) {
 
-    case MenuItem::FLOAT:
-    case MenuItem::DOUBLE:
-      long p[] = {0, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000};
-      char *ret = ptr;
-      long integer = (long)value;
-      itoa(integer, ptr, 10);
-      while (*ptr != '\0') ptr++;//advance pointer to end of integer section.
+      case '1'://up
 
-      if (precision != 0) {
-        *ptr++ = '.';
-        int decimal = floor(abs((value - (float)integer) * p[precision]) + 0.5); //float math isn't exact so need to round from next decimal out
-        int i = precision - 1;
-        while (p[i] >= decimal) {
-          *ptr++ = '0';
-          i--;
+        if (character < 126) {
+          character++;
+        } else {
+          character = 32;
         }
-        if (decimal != 0) {
-          itoa(decimal, ptr, 10);
-        }
-      }
-      return ptr;
-      break;
 
+        _lcd->print(character);
+        _lcd->setCursor(charPos, _selectLineNumber);
+        break;
+
+      case '2'://down
+        if (character > 32) {
+          character--;
+        } else {
+          character = 126;
+        }
+
+        _lcd->print(character);
+        _lcd->setCursor(charPos, _selectLineNumber);
+        break;
+
+      case '3'://select
+        if (charPos < 20 && character != 64) {
+          *valuePtr = character;
+          valuePtr++;
+          charPos++;
+          _lcd->write(character);
+          _lcd->setCursor(charPos, _selectLineNumber);
+          _lcd->write(character);
+          _lcd->setCursor(charPos, _selectLineNumber);
+        } else if (character == 64) {
+            *valuePtr = 0;//terminate the string
+          Serial.print("valueString: ");
+          Serial.println(valueString);
+          _selectedItem->setValue(&valueString,0);
+          valueBeingEntered = false;
+          _lcd->noBlink();
+        }
+        break;
+
+
+      case '4'://back
+        if (valuePtr > valueString) {
+          valuePtr--;
+          _lcd->write(' ');
+          charPos--;
+          _lcd->setCursor(charPos, _selectLineNumber);
+          character = *valuePtr;
+          _lcd->write(character);
+          _lcd->setCursor(charPos, _selectLineNumber);
+        }
+        else {//back space was pressed to exit Custom
+          //keep state as selectProfile
+          valueBeingEntered = false;
+        }
+        break;
+    }
   }
+  display();
 }
 
 

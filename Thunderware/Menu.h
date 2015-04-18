@@ -28,13 +28,9 @@ class Menu
     void printSelected();
     
   private:
-    
     void      _setDisplay();
     void      _editValue();
-    char*     _ftoa(char *a, double f, int precision);
-    char*     _ntos(double value, char *ptr, MenuItem::ItemType type, int precision);
-    int       _valueLength(double value, int presision);
-    char*     _ultostr(unsigned long value, char *ptr, int base);
+    void      _editString();
     int       _selectLineNumber;
     
     MenuItem* _firstItem;
