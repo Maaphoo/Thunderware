@@ -102,7 +102,7 @@ void Configuration::loadDefaultConfig()
   physical.spoolerDiskRadius = 276.6 / 2.0; //Radius of wooden disk
   physical.spoolerCoreRadius = 94.0 / 2.0; //Radius of spool core
   physical.spoolerTraverseLength = 62.5 / 2.0;
-  physical.spoolerMotorRollerRaduis = 15.0 / 2.0;
+  physical.spoolerMotorRollerRadius = 15.0 / 2.0;
 
   physical.rsc1 = 73.15; // Inner radius of spool core
   physical.rsc2 = 75.93; // Outer radius of spool core
@@ -149,6 +149,7 @@ void Configuration::loadDefaultConfig()
 
 Configuration::Configuration()
 {
+  loadProfileNames();
   //EEPROM_readAnything(0,physical.configStored);
   //if (physical.configStored){
   //  //Read the stored profile from the EEPROM
@@ -159,7 +160,7 @@ Configuration::Configuration()
   loadDefaultConfig();
   loadDefaultProfile();
   //Serial.println(physical.starveFeederPinSet);
-  
+
 }
 
 
@@ -192,7 +193,6 @@ boolean Configuration::loadConfig()
 
 void Configuration::saveProfile()
 {
-  strcpy(profile.name,profileNames[profile.profileNumber]);
   EEPROM_writeAnything(calculateOffset(profile.profileNumber), profile);
 }
 
@@ -210,9 +210,15 @@ int Configuration::calculateOffset(int profileNum)
   return sizeof(PhysicalConfig) + profileNum * sizeof(Profile); //Will padding in the struct cause problems with this?
 }
 
-void Configuration::loadProfileName(char* namePtr, int profile){
-    EEPROM_readAnything(calculateOffset(profile), tempProfile);
-    strcpy(namePtr, tempProfile.name);
+void Configuration::loadProfileName(char* namePtr, int profile) {
+  EEPROM_readAnything(calculateOffset(profile), tempProfile);
+  strcpy(namePtr, tempProfile.name);
+}
+
+void Configuration::loadProfileNames() {
+  for (int i = 0; i < 10; i++) {
+    loadProfileName(profileNames[i], i);
+  }
 }
 
 

@@ -32,6 +32,7 @@ public:
     //Starve Feeder
 //    double starveFeederRPM;
     float starveFeederTargetFeedRate;
+//    float gramsPerMin;
 
     //Auger
     float augerRPM;
@@ -113,7 +114,7 @@ public:
     float spoolerDiskRadius;
     float spoolerCoreRadius;
     float spoolerTraverseLength;
-    float spoolerMotorRollerRaduis;
+    float spoolerMotorRollerRadius;
     float rsc1; // Inner radius of spool core
     float rsc2; // Outer radius of spool core
     float rsm; // radius of spool stepper motor roller
@@ -154,7 +155,9 @@ public:
   }physical;
   
   char profileNames[10][20];
+  char name0[20];
   void loadProfileName(char* namePtr, int profile);//Used for menus.
+  void loadProfileNames();
   Configuration();//constructor
   void saveConfig();
   void deleteConfig();

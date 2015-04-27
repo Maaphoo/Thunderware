@@ -20,7 +20,7 @@ Spooler::Spooler(Configuration* configuration, Outfeed* outfeed) :   _motor(conf
  c1 = (_configuration->physical.outfeedRollerRadius
        *_configuration->physical.spoolerDiskRadius
        *_configuration->physical.spoolerStepMode
-       /(_configuration->physical.spoolerMotorRollerRaduis
+       /(_configuration->physical.spoolerMotorRollerRadius
        *_configuration->physical.outfeedStepMode));
  c2 = (_configuration->profile.diaSetPoint/(PI*_configuration->physical.spoolerTraverseLength));
  c3 = (_configuration->physical.spoolerCoreRadius*_configuration->physical.spoolerCoreRadius);
@@ -34,7 +34,7 @@ void Spooler::setRPM()
   _filamentSurfaceRaduis = pow(c2*c2*_outfeed->getMmExtruded()+c3,0.5);
   _motorRPM = _configuration->physical.outfeedRollerRadius
              *_configuration->physical.spoolerDiskRadius
-             /(_filamentSurfaceRaduis*_configuration->physical.spoolerMotorRollerRaduis)
+             /(_filamentSurfaceRaduis*_configuration->physical.spoolerMotorRollerRadius)
              *_outfeed->getRPM();
   _motor.setRPM(_motorRPM);
 }

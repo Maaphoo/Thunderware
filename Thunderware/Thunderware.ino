@@ -50,6 +50,7 @@
 #include <PID_v1.h>
 #include <EEPROM.h>
 #include <Wire.h>
+#include <avr/pgmspace.h>
 #include "EEPROMAnything.h"
 #include "Thermistor.h"
 #include <stdio.h>
@@ -57,7 +58,7 @@
 #include "application.h"
 //#include "StateMachine.h"
 #include "Configuration.h"
-#include "config.h"
+//#include "config.h"
 #include "Buzzer.h"
 #include "Nozzle.h"
 #include "Barrel.h"
@@ -70,13 +71,334 @@
 #include "MenuItem.h"
 #include "Menu.h"
 //#include <MemoryFree.h>
+#include "test.h"
+
+
+
+//MenuItem Text strings
+const char root[] PROGMEM = "Main Menu";
+const char selectProfile[] PROGMEM = "Select Profile";
+const char calibrate[] PROGMEM = "Calibrate";
+const char auxiliary[] PROGMEM = "Auxiliary";
+const char profile0[] PROGMEM = "1)";
+const char profile1[] PROGMEM = "2)";
+const char profile2[] PROGMEM = "3)";
+const char profile3[] PROGMEM = "4)";
+const char profile4[] PROGMEM = "5)";
+const char profile5[] PROGMEM = "6)";
+const char profile6[] PROGMEM = "7)";
+const char profile7[] PROGMEM = "8)";
+const char profile8[] PROGMEM = "9)";
+const char profile9[] PROGMEM = "10)";
+const char defaultProfile[] PROGMEM = "Default";
+const char extrudeStr[] PROGMEM = "Extrude";
+const char saveProfile[] PROGMEM = "Save Profile";
+const char profileName[] PROGMEM = "Name";
+const char diaSetPoint[] PROGMEM = "Diameter";
+const char tolerance[] PROGMEM = "Tolerance";
+const char gramsPerMin[] PROGMEM = "GramsPerMin";
+const char augerRPM[] PROGMEM = "Auger RPM";
+const char outfeedRPM[] PROGMEM = "Outfeed RPM";
+const char outfeedKp[] PROGMEM = "Outfeed Kp";
+const char outfeedKi[] PROGMEM = "Outfeed Ki";
+const char outfeedKd[] PROGMEM = "Outfeed Kp";
+const char soakTime[] PROGMEM = "Soak Time";
+const char barrelTempStr[] PROGMEM = "Barrel Temp";
+const char nozzleTempStr[] PROGMEM = "Nozzle Temp";
+const char barrelSetTemp[] PROGMEM = "Barrel Temp";
+const char nozzleSetTemp[] PROGMEM = "Nozzle Temp";
+const char minTemp[] PROGMEM = "Min Temp";
+const char maxTemp[] PROGMEM = "Max Temp";
+const char maxPreheatTime[] PROGMEM = "MaxPreheatTime";
+const char starveFeederConfig[] PROGMEM = "Starve Feeder";
+const char augerConfig[] PROGMEM = "Auger";
+const char barrelConfig[] PROGMEM = "Barrel";
+const char nozzleConfig[] PROGMEM = "Nozzle";
+const char outfeedConfig[] PROGMEM = "Outfeed";
+const char spoolerConfig[] PROGMEM = "Spooler";
+const char testStarveFeederStr[] PROGMEM = "Test Starve Feeder";
+const char testAugerStr[] PROGMEM = "Test Auger";
+const char augerPinSet[] PROGMEM = "Pin Set";
+const char augerStepMode[] PROGMEM = "Step Mode";
+const char augerDirection[] PROGMEM = "Direction";
+const char augerEnable[] PROGMEM = "Enable";
+const char augerGearRatio[] PROGMEM = "Gear Ratio";
+const char testBarrelStr[] PROGMEM = "Test Barrel";
+const char timeBase[] PROGMEM = "Time Base";
+const char barrelMaxDutyCycle[] PROGMEM = "Max Duty Cycle";
+const char barrelMinDutyCycle[] PROGMEM = "Min Duty Cycle";
+const char barrelKp[] PROGMEM = "Kp";
+const char barrelKi[] PROGMEM = "Ki";
+const char barrelKd[] PROGMEM = "Kd";
+const char barrelTRNom[] PROGMEM = "Ther Resist Nom";
+const char barrelTTNom[] PROGMEM = "Ther Temp Nom";
+const char barrelTNumSamples[] PROGMEM = "Ther Num Samples";
+const char barrelTBCoefficient[] PROGMEM = "Ther B Coef";
+const char barrelTSeriesResistor[] PROGMEM = "Ther S Resist";
+const char testNozzleStr[] PROGMEM = "Test Nozzle";
+const char nozzlePin[] PROGMEM = "Pin";
+const char nozzleMaxDutyCycle[] PROGMEM = "Max Duty Cycle";
+const char nozzleMinDutyCycle[] PROGMEM = "Min Duty Cycle";
+const char nozzleKp[] PROGMEM = "Kp";
+const char nozzleKi[] PROGMEM = "Ki";
+const char nozzleKd[] PROGMEM = "Kd";
+const char nozzleSampleTime[] PROGMEM = "Sample Time";
+const char nozzleTRNom[] PROGMEM = "Ther Resist Nom";
+const char nozzleTTNom[] PROGMEM = "Ther Temp Nom";
+const char nozzleTNumSamples[] PROGMEM = "Ther Num Samples";
+const char nozzleTBCoefficient[] PROGMEM = "Ther B Coef";
+const char nozzleTSeriesResistor[] PROGMEM = "Ther S Resist";
+const char testOutfeedStr[] PROGMEM = "Test Outfeed";
+const char outfeedPinSet[] PROGMEM = "Pin Set";
+const char outfeedStepMode[] PROGMEM = "Step Mode";
+const char outfeedDirection[] PROGMEM = "Direction";
+const char outfeedEnable[] PROGMEM = "Enable";
+const char outfeedRollerRadius[] PROGMEM = "Roller Radius";
+const char outfeedMaxRPM[] PROGMEM = "Max RPM";
+const char outfeedMinRPM[] PROGMEM = "Min RPM";
+const char testSpoolerStr[] PROGMEM = "Test Spooler";
+const char spoolerPinSet[] PROGMEM = "Pin Set";
+const char spoolerStepMode[] PROGMEM = "Step Mode";
+const char spoolerDirection[] PROGMEM = "Direction";
+const char spoolerEnable[] PROGMEM = "Enable";
+const char spoolerDiskRadius[] PROGMEM = "Disk Radius";
+const char spoolerCoreRadius[] PROGMEM = "Core Radius";
+const char spoolerTraverseLength[] PROGMEM = "Traverse Length";
+const char spoolerMotorRollerRadius[] PROGMEM = "Roller Radius";
+const char preheatRoot[] PROGMEM = "Preheating...";
+const char soakRoot[] PROGMEM = "Soaking...";
+const char soakTimeRemainingStr[] PROGMEM = "Soak Time Left";
+const char increaseSoakTimeStr[] PROGMEM = "Increase Soak Time";
+const char decreaseSoakTimeStr[] PROGMEM = "Decrease Soak Time";
+const char skipSoakStr[] PROGMEM = "Skip Soak";
+const char loadFilamentRoot[] PROGMEM = "Load Filament...";
+const char loadFilamentRemainingTime[] PROGMEM = "Time Remaining";
+const char filamentLoadedStr[] PROGMEM = "Filament Loaded";
+const char loadFilamentAddTimeStr[] PROGMEM = "Add Time";
+const char starveFeederMode[] PROGMEM = "Starve Feeder";
+const char extrudeRoot[] PROGMEM = "Extruding...";
+const char filamentDiameter[] PROGMEM = "Diameter";
+const char gramsExtrudedStr[] PROGMEM = "Grams Extruded";
+
+
+//Variables for hoding menu values
+double barrelTemp;
+double nozzleTemp;
+char loadFilamentTimeRemaining[6];
+char starveFeederModeStr[3];
+char soakTimeRemaining[6];
+int gramsExtruded;
+
+//Menu Action methods
+void starveFeederChangeMode(){}
+void filamentLoaded(){}
+void increaseSoakTime(){}
+void decreaseSoakTime(){}
+void skipSoak(){}
+void loadFilamentAddTime(){}
+
+
+
+
+
+Configuration configuration;
+
+const Menu::MenuItem mainItems[] PROGMEM =
+{
+{root, -1, 1, NULL, 0, Menu::TITLE, NULL},
+{selectProfile, 0, 4, NULL, 0, Menu::TITLE, NULL},
+{calibrate, 0, 32, NULL, 0, Menu::TITLE, NULL},
+{auxiliary, 0, -1, NULL, 0, Menu::TITLE, NULL},
+{profile0, 1, 15, &configuration.profileNames[0], 0, Menu::TITLE_STRING, &loadProfile0},
+{profile1, 1, 15, &configuration.profileNames[1], 0, Menu::TITLE_STRING, &loadProfile1},
+{profile2, 1, 15, &configuration.profileNames[2], 0, Menu::TITLE_STRING, &loadProfile2},
+{profile3, 1, 15, &configuration.profileNames[3], 0, Menu::TITLE_STRING, &loadProfile3},
+{profile4, 1, 15, &configuration.profileNames[4], 0, Menu::TITLE_STRING, &loadProfile4},
+{profile5, 1, 15, &configuration.profileNames[5], 0, Menu::TITLE_STRING, &loadProfile5},
+{profile6, 1, 15, &configuration.profileNames[6], 0, Menu::TITLE_STRING, &loadProfile6},
+{profile7, 1, 15, &configuration.profileNames[7], 0, Menu::TITLE_STRING, &loadProfile7},
+{profile8, 1, 15, &configuration.profileNames[8], 0, Menu::TITLE_STRING, &loadProfile8},
+{profile9, 1, 15, &configuration.profileNames[9], 0, Menu::TITLE_STRING, &loadProfile9},
+{defaultProfile, 1, 15, NULL, 0, Menu::TITLE, &loadDefaultProfile},
+{extrudeStr, 4, -1, NULL, 0, Menu::TITLE, &actionExtrude},
+{saveProfile, 4, -1, NULL, 0, Menu::TITLE, &saveCurrentProfile},
+{profileName, 4, -1, &configuration.profile.name, 0, Menu::STRING, NULL},
+{diaSetPoint, 4, -1, &configuration.profile.diaSetPoint, 2, Menu::DOUBLE, NULL},
+{tolerance, 4, -1, &configuration.profile.tolerance, 2, Menu::FLOAT, NULL},
+{gramsPerMin, 4, -1, &configuration.profile.starveFeederTargetFeedRate, 2, Menu::FLOAT, NULL},
+{augerRPM, 4, -1, &configuration.profile.augerRPM, 1, Menu::FLOAT, NULL},
+{outfeedRPM, 4, -1, &configuration.profile.outfeedRPM, 1, Menu::DOUBLE, NULL},
+{outfeedKp, 4, -1, &configuration.profile.outfeedKp, 2, Menu::DOUBLE, NULL},
+{outfeedKi, 4, -1, &configuration.profile.outfeedKi, 2, Menu::DOUBLE, NULL},
+{outfeedKd, 4, -1, &configuration.profile.outfeedKd, 2, Menu::DOUBLE, NULL},
+{soakTime, 4, -1, &configuration.profile.soakTime, 0, Menu::DOUBLE, NULL},
+{barrelSetTemp, 4, -1, &configuration.profile.barrelTemp, 0, Menu::DOUBLE, NULL},
+{nozzleSetTemp, 4, -1, &configuration.profile.nozzleTemp, 0, Menu::DOUBLE, NULL},
+{minTemp, 4, -1, &configuration.profile.minExtrudeTemp, 0, Menu::DOUBLE, NULL},
+{maxTemp, 4, -1, &configuration.profile.maxTemp, 0, Menu::DOUBLE, NULL},
+{maxPreheatTime, 4, -1, &configuration.profile.maxPreheatTime, 0, Menu::UNSIGNED_LONG, NULL},
+{starveFeederConfig, 2, 38, NULL, 0, Menu::TITLE, NULL},
+{augerConfig, 2, 39, NULL, 0, Menu::TITLE, NULL},
+{barrelConfig, 2, 45, NULL, 0, Menu::TITLE, NULL},
+{nozzleConfig, 2, 57, NULL, 0, Menu::TITLE, NULL},
+{outfeedConfig, 2, 70, NULL, 0, Menu::TITLE, NULL},
+{spoolerConfig, 2, 78, NULL, 0, Menu::TITLE, NULL},
+{testStarveFeederStr, 32, -1, NULL, 0, Menu::ACTION, NULL},
+{testAugerStr, 33, -1, NULL, 0, Menu::ACTION, &testAuger},
+{augerPinSet, 33, -1, &configuration.physical.augerPinSet, 0, Menu::INT, NULL},
+{augerStepMode, 33, -1, &configuration.physical.augerStepMode, 0, Menu::INT, NULL},
+{augerDirection, 33, -1, &configuration.physical.augerDirection, 0, Menu::BOOLEAN, NULL},
+{augerEnable, 33, -1, &configuration.physical.augerEnable, 0, Menu::BOOLEAN, NULL},
+{augerGearRatio, 33, -1, &configuration.physical.augerGearRatio, 2, Menu::FLOAT, NULL},
+{testBarrelStr, 34, -1, NULL, 0, Menu::ACTION, &testBarrel},
+{timeBase, 34, -1, &configuration.physical.timeBase, 0, Menu::INT, NULL},
+{barrelMaxDutyCycle, 34, -1, &configuration.physical.barrelMax, 0, Menu::DOUBLE, NULL},
+{barrelMinDutyCycle, 34, -1, &configuration.physical.barrelMin, 0, Menu::DOUBLE, NULL},
+{barrelKp, 34, -1, &configuration.physical.barrelKp, 2, Menu::DOUBLE, NULL},
+{barrelKi, 34, -1, &configuration.physical.barrelKi, 2, Menu::DOUBLE, NULL},
+{barrelKd, 34, -1, &configuration.physical.barrelKd, 2, Menu::DOUBLE, NULL},
+{barrelTRNom, 34, -1, &configuration.physical.barrelTRNom, 0, Menu::UNSIGNED_LONG, NULL},
+{barrelTTNom, 34, -1, &configuration.physical.barrelTTNom, 0, Menu::INT, NULL},
+{barrelTNumSamples, 34, -1, &configuration.physical.barrelTNumSamples, 0, Menu::INT, NULL},
+{barrelTBCoefficient, 34, -1, &configuration.physical.barrelTBCoefficient, 0, Menu::INT, NULL},
+{barrelTSeriesResistor, 34, -1, &configuration.physical.barrelTSeriesResistor, 0, Menu::INT, NULL},
+{testNozzleStr, 35, -1, NULL, 0, Menu::ACTION, &testNozzle},
+{nozzlePin, 35, -1, &configuration.physical.nozzlePin, 0, Menu::INT, },
+{nozzleMaxDutyCycle, 35, -1, &configuration.physical.nozzleMax, 0, Menu::DOUBLE, NULL},
+{nozzleMinDutyCycle, 35, -1, &configuration.physical.nozzleMin, 0, Menu::DOUBLE, NULL},
+{nozzleKp, 35, -1, &configuration.physical.nozzleKp, 2, Menu::DOUBLE, NULL},
+{nozzleKi, 35, -1, &configuration.physical.nozzleKi, 2, Menu::DOUBLE, NULL},
+{nozzleKd, 35, -1, &configuration.physical.nozzleKd, 2, Menu::DOUBLE, NULL},
+{nozzleSampleTime, 35, -1, &configuration.physical.nozzleSampleTime, 0, Menu::INT, NULL},
+{nozzleTRNom, 35, -1, &configuration.physical.nozzleTRNom, 0, Menu::UNSIGNED_LONG, NULL},
+{nozzleTTNom, 35, -1, &configuration.physical.nozzleTTNom, 0, Menu::INT, NULL},
+{nozzleTNumSamples, 35, -1, & configuration.physical.nozzleTNumSamples, 0, Menu::INT, NULL},
+{nozzleTBCoefficient, 35, -1, &configuration.physical.nozzleTBCoefficient, 0, Menu::INT, NULL},
+{nozzleTSeriesResistor, 35, -1,  &configuration.physical.nozzleTSeriesResistor, 0, Menu::INT, NULL},
+{testOutfeedStr, 36, -1, NULL, 0, Menu::ACTION, &testOutfeed},
+{outfeedPinSet, 36, -1, &configuration.physical.outfeedPinSet, 0, Menu::INT, NULL},
+{outfeedStepMode, 36, -1, &configuration.physical.outfeedStepMode, 0, Menu::INT, NULL},
+{outfeedDirection, 36, -1, &configuration.physical.outfeedDirection, 0, Menu::BOOLEAN, NULL},
+{outfeedEnable, 36, -1, &configuration.physical.outfeedEnable, 0, Menu::BOOLEAN, NULL},
+{outfeedRollerRadius, 36, -1, &configuration.physical.outfeedRollerRadius, 2, Menu::FLOAT, NULL},
+{outfeedMaxRPM, 36, -1, &configuration.physical.outfeedMaxRPM, 2, Menu::DOUBLE, NULL},
+{outfeedMinRPM, 36, -1, &configuration.physical.outfeedMinRPM, 2, Menu::DOUBLE, NULL},
+{testSpoolerStr, 37, -1, NULL, 0, Menu::ACTION, &testSpooler},
+{spoolerPinSet, 37, -1, &configuration.physical.spoolerPinSet, 0, Menu::INT, NULL},
+{spoolerStepMode, 37, -1, &configuration.physical.spoolerStepMode, 0, Menu::INT, NULL},
+{spoolerDirection, 37, -1, &configuration.physical.spoolerDirection, 0, Menu::BOOLEAN, NULL},
+{spoolerEnable, 37, -1, &configuration.physical.spoolerEnable, 0, Menu::BOOLEAN, NULL},
+{spoolerDiskRadius, 37, -1, &configuration.physical.spoolerDiskRadius, 2, Menu::FLOAT, NULL},
+{spoolerCoreRadius, 37, -1, &configuration.physical.spoolerCoreRadius, 2, Menu::FLOAT, NULL},
+{spoolerTraverseLength, 37, -1, &configuration.physical.spoolerTraverseLength, 2, Menu::FLOAT, NULL},
+{spoolerMotorRollerRadius, 37, -1, &configuration.physical.spoolerMotorRollerRadius, 2, Menu::FLOAT, NULL}
+};
+
+const Menu::MenuItem preheatItems[] PROGMEM =
+{
+{preheatRoot, -1, 1, NULL, 0, Menu::TITLE, NULL},
+{barrelTempStr, 0, -1, &barrelTemp, 0, Menu::DOUBLE_LOCKED,NULL},
+{nozzleTempStr, 0, -1, &nozzleTemp, 0, Menu::DOUBLE_LOCKED,NULL},
+{barrelSetTemp, 0, -1, &configuration.profile.barrelTemp, 0, Menu::DOUBLE, NULL},
+{nozzleSetTemp, 0, -1, &configuration.profile.nozzleTemp, 0, Menu::DOUBLE, NULL},
+{profileName, 0, -1, &configuration.profile.name, 0, Menu::STRING, NULL},
+{diaSetPoint, 0, -1, &configuration.profile.diaSetPoint, 2, Menu::DOUBLE, NULL},
+{tolerance, 0, -1, &configuration.profile.tolerance, 2, Menu::FLOAT, NULL},
+{gramsPerMin, 0, -1, &configuration.profile.starveFeederTargetFeedRate, 2, Menu::FLOAT, NULL},
+{augerRPM, 0, -1, &configuration.profile.augerRPM, 1, Menu::FLOAT, NULL},
+{outfeedRPM, 0, -1, &configuration.profile.outfeedRPM, 1, Menu::DOUBLE, NULL},
+{outfeedKp, 0, -1, &configuration.profile.outfeedKp, 2, Menu::DOUBLE, NULL},
+{outfeedKi, 0, -1, &configuration.profile.outfeedKi, 2, Menu::DOUBLE, NULL},
+{outfeedKd, 0, -1, &configuration.profile.outfeedKd, 2, Menu::DOUBLE, NULL},
+{soakTime, 0, -1, &configuration.profile.soakTime, 0, Menu::DOUBLE, NULL},
+{minTemp, 0, -1, &configuration.profile.minExtrudeTemp, 0, Menu::DOUBLE, NULL},
+{maxTemp, 0, -1, &configuration.profile.maxTemp, 0, Menu::DOUBLE, NULL},
+{maxPreheatTime, 0, -1, &configuration.profile.maxPreheatTime, 0, Menu::UNSIGNED_LONG, NULL}
+};
+
+const Menu::MenuItem soakItems[] PROGMEM =
+{
+{soakRoot, -1, 1, NULL, 0, Menu::TITLE, NULL},
+{soakTimeRemainingStr, 0, -1, &soakTimeRemaining, 0, Menu::STRING_LOCKED, NULL},
+{barrelTempStr, 0, -1, &barrelTemp, 0, Menu::DOUBLE_LOCKED, NULL},
+{nozzleTempStr, 0, -1, &nozzleTemp, 0, Menu::DOUBLE_LOCKED, NULL},
+{increaseSoakTimeStr, 0, -1, NULL, 0, Menu::ACTION, &increaseSoakTime},
+{decreaseSoakTimeStr, 0, -1, NULL, 0, Menu::ACTION, &decreaseSoakTime},
+{skipSoakStr, 0, -1, NULL, 0, Menu::ACTION, &skipSoak},
+{barrelSetTemp, 0, -1, &configuration.profile.barrelTemp, 0, Menu::DOUBLE, NULL},
+{nozzleSetTemp, 0, -1, &configuration.profile.nozzleTemp, 0, Menu::DOUBLE, NULL},
+{profileName, 0, -1, &configuration.profile.name, 0, Menu::STRING, NULL},
+{diaSetPoint, 0, -1, &configuration.profile.diaSetPoint, 2, Menu::DOUBLE, NULL},
+{tolerance, 0, -1, &configuration.profile.tolerance, 2, Menu::FLOAT, NULL},
+{gramsPerMin, 0, -1, &configuration.profile.starveFeederTargetFeedRate, 2, Menu::FLOAT, NULL},
+{augerRPM, 0, -1, &configuration.profile.augerRPM, 1, Menu::FLOAT, NULL},
+{outfeedRPM, 0, -1, &configuration.profile.outfeedRPM, 1, Menu::DOUBLE, NULL},
+{outfeedKp, 0, -1, &configuration.profile.outfeedKp, 2, Menu::DOUBLE, NULL},
+{outfeedKi, 0, -1, &configuration.profile.outfeedKi, 2, Menu::DOUBLE, NULL},
+{outfeedKd, 0, -1, &configuration.profile.outfeedKd, 2, Menu::DOUBLE, NULL},
+{soakTime, 0, -1, &configuration.profile.soakTime, 0, Menu::DOUBLE, NULL},
+{minTemp, 0, -1, &configuration.profile.minExtrudeTemp, 0, Menu::DOUBLE, NULL},
+{maxTemp, 0, -1, &configuration.profile.maxTemp, 0, Menu::DOUBLE, NULL},
+{maxPreheatTime, 0, -1, &configuration.profile.maxPreheatTime, 0, Menu::UNSIGNED_LONG, NULL}
+};
+
+const Menu::MenuItem loadFilamentItems[] PROGMEM =
+{
+{loadFilamentRoot, -1, 1, NULL, 0, Menu::TITLE, NULL},
+{loadFilamentRemainingTime, 0, -1, &loadFilamentTimeRemaining, 0, Menu::STRING_LOCKED, NULL},
+{filamentLoadedStr, 0, -1, NULL, 0, Menu::ACTION, &filamentLoaded},
+{loadFilamentAddTimeStr, 0, 0, NULL, 0, Menu::ACTION, &loadFilamentAddTime},
+{starveFeederMode, 0, 1, &starveFeederModeStr, 0, Menu::STRING, &starveFeederChangeMode},
+{barrelSetTemp, 0, -1, &configuration.profile.barrelTemp, 0, Menu::DOUBLE, NULL},
+{nozzleSetTemp, 0, -1, &configuration.profile.nozzleTemp, 0, Menu::DOUBLE, NULL},
+{profileName, 0, -1, &configuration.profile.name, 0, Menu::STRING, NULL},
+{diaSetPoint, 0, -1, &configuration.profile.diaSetPoint, 2, Menu::DOUBLE, NULL},
+{tolerance, 0, -1, &configuration.profile.tolerance, 2, Menu::FLOAT, NULL},
+{gramsPerMin, 0, -1, &configuration.profile.starveFeederTargetFeedRate, 2, Menu::FLOAT, NULL},
+{augerRPM, 0, -1, &configuration.profile.augerRPM, 1, Menu::FLOAT, NULL},
+{outfeedRPM, 0, -1, &configuration.profile.outfeedRPM, 1, Menu::DOUBLE, NULL},
+{outfeedKp, 0, -1, &configuration.profile.outfeedKp, 2, Menu::DOUBLE, NULL},
+{outfeedKi, 0, -1, &configuration.profile.outfeedKi, 2, Menu::DOUBLE, NULL},
+{outfeedKd, 0, -1, &configuration.profile.outfeedKd, 2, Menu::DOUBLE, NULL},
+{soakTime, 0, -1, &configuration.profile.soakTime, 0, Menu::DOUBLE, NULL},
+{minTemp, 0, -1, &configuration.profile.minExtrudeTemp, 0, Menu::DOUBLE, NULL},
+{maxTemp, 0, -1, &configuration.profile.maxTemp, 0, Menu::DOUBLE, NULL},
+{maxPreheatTime, 0, -1, &configuration.profile.maxPreheatTime, 0, Menu::UNSIGNED_LONG, NULL},
+};
+
+const Menu::MenuItem extrudeItems[] PROGMEM =
+{
+{extrudeRoot, -1, 1, NULL, 0, Menu::TITLE, NULL},
+{filamentDiameter, 0, -1, &loadFilamentTimeRemaining, 0, Menu::STRING_LOCKED, NULL},
+{gramsPerMin, 0, -1, &configuration.profile.starveFeederTargetFeedRate, 2, Menu::FLOAT, NULL},
+{gramsExtrudedStr, 0, 0, &gramsExtruded, 0, Menu::INT_LOCKED, NULL},
+{barrelTempStr, 0, -1, &barrelTemp, 0, Menu::DOUBLE_LOCKED, NULL},
+{nozzleTempStr, 0, -1, &nozzleTemp, 0, Menu::DOUBLE_LOCKED, NULL},
+{augerRPM, 0, -1, &configuration.profile.augerRPM, 1, Menu::FLOAT, NULL},
+{outfeedRPM, 0, -1, &configuration.profile.outfeedRPM, 1, Menu::DOUBLE, NULL},
+{starveFeederMode, 0, 1, &starveFeederModeStr, 0, Menu::STRING, &starveFeederChangeMode},
+{barrelSetTemp, 0, -1, &configuration.profile.barrelTemp, 0, Menu::DOUBLE, NULL},
+{nozzleSetTemp, 0, -1, &configuration.profile.nozzleTemp, 0, Menu::DOUBLE, NULL},
+{profileName, 0, -1, &configuration.profile.name, 0, Menu::STRING, NULL},
+{diaSetPoint, 0, -1, &configuration.profile.diaSetPoint, 2, Menu::DOUBLE, NULL},
+{tolerance, 0, -1, &configuration.profile.tolerance, 2, Menu::FLOAT, NULL},
+{outfeedKp, 0, -1, &configuration.profile.outfeedKp, 2, Menu::DOUBLE, NULL},
+{outfeedKi, 0, -1, &configuration.profile.outfeedKi, 2, Menu::DOUBLE, NULL},
+{outfeedKd, 0, -1, &configuration.profile.outfeedKd, 2, Menu::DOUBLE, NULL},
+{soakTime, 0, -1, &configuration.profile.soakTime, 0, Menu::DOUBLE, NULL},
+{minTemp, 0, -1, &configuration.profile.minExtrudeTemp, 0, Menu::DOUBLE, NULL},
+{maxTemp, 0, -1, &configuration.profile.maxTemp, 0, Menu::DOUBLE, NULL},
+{maxPreheatTime, 0, -1, &configuration.profile.maxPreheatTime, 0, Menu::UNSIGNED_LONG, NULL},
+};
+
+
+
 
 Application app;
-Configuration configuration;
 
 //Setup Finite State Machine
 enum ExtruderStates {
-  SELECT_PROFILE,
+  //  SELECT_PROFILE,
   PREHEAT,
   SOAK,
   BEGIN_EXTRUDE,
@@ -86,7 +408,7 @@ enum ExtruderStates {
   CALIBRATE_CALIPERS
 } currentState;
 
-void selectProfile();
+//void selectProfile();
 void customProfile();
 void preheat();
 void soak();
@@ -98,7 +420,7 @@ void calibrateCalipers();
 
 //Pointers to State functios
 void (*state_table[])() = {
-  selectProfile,
+  //  selectProfile,
   preheat,
   soak,
   beginExtrude,
@@ -140,18 +462,6 @@ char keys[ROWS][COLS] = {
   {'*', '0', '#', 'D'}
 };
 
-//  //Black Kpd initialize keypad pins
-//
-// byte colPins[ROWS]={23,25,27,29};
-// byte rowPins[COLS]={31,33,35,37};
-//
-// //Keymap
-// char keys[ROWS][COLS]={
-// {'1','2','3','A'},
-// {'4','5','6','B'},
-// {'7','8','9','C'},
-// {'*','0','#','D'}
-// };
 
 Keypad kpd = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
@@ -176,46 +486,18 @@ Spooler spooler(&configuration, &outfeed);
 
 Safety safety(&configuration, &barrel, &nozzle);
 
-
-MenuItem root;
-
-MenuItem mainMenu[3];
-int mainMenuSize = 3;
-
-MenuItem selectProfileMenu[11];
-int selectProfileSize = 11;
-MenuItem calibrate[10];
-int calibrateSize = 10;
-MenuItem auxiliary[2];
-int auxiliarySize = 2;
-
-MenuItem profile[20 ];
-int profileSize = 20;
-
-MenuItem caliperConfig[1];
-int caliperConfigSize = 1;
-MenuItem augerConfig[6];
-int augerConfigSize = 6;
-MenuItem barrelConfig [12];
-int barrelConfigSize = 12;
-MenuItem nozzleConfig [13];
-int nozzleConfigSize = 13;
-MenuItem outfeedConfig [8];
-int outfeedConfigSize = 8;
-MenuItem spoolerConfig[11];
-int spoolerConfigSize = 11;
-MenuItem  starveFeederConfig[14];
-int  starveFeederConfigSize = 14;
-
-
-Menu menu(&root, &lcd, &kpd);
+Menu mainMenu(mainItems, sizeof(mainItems) / sizeof(mainItems[0]), &lcd, &kpd);
+Menu preheatMenu(preheatItems, sizeof(preheatItems) / sizeof(preheatItems[0]), &lcd, &kpd);
+Menu soakMenu(soakItems, sizeof(soakItems) / sizeof(soakItems[0]), &lcd, &kpd);
+Menu loadFilamentMenu(loadFilamentItems, sizeof(loadFilamentItems) / sizeof(loadFilamentItems[0]), &lcd, &kpd);
+Menu extrudeMenu(extrudeItems, sizeof(extrudeItems) / sizeof(extrudeItems[0]), &lcd, &kpd);
+Menu* activeMenu;
 
 #include "Extrude.h"
 #include "FSM.h"
 #include "Preheat.h"
 #include "Safety.h"
 #include "TestReporting.h"
-#include "test.h"
 #include "strings.h"
 
 void setup()
@@ -225,546 +507,15 @@ void setup()
   Wire.begin();
   lcd.begin(20, 4); //Start up LCD
   lcd.clear();
-
-
+  activeMenu = &mainMenu;
   buzzer.setMsg(Buzzer::POWER_ON);
   //  stateMachine.setState(StateMachine::SELECT_PROFILE);
 
   // currentState = TEST;
   //  currentState = EXTRUDE_AUTOMATIC;
+  activeMenu = &mainMenu;
 
-  makeChild (&root, mainMenu, mainMenuSize);
-
-  wireMenu(mainMenu, mainMenuSize);
-
-  wireMenu(selectProfileMenu, selectProfileSize);
-  wireMenu(calibrate, calibrateSize);
-  wireMenu(auxiliary, auxiliarySize);
-
-  wireMenu(profile, profileSize);
-
-  wireMenu(starveFeederConfig, starveFeederConfigSize);
-  wireMenu(augerConfig, augerConfigSize);
-  wireMenu(barrelConfig, barrelConfigSize);
-  wireMenu(nozzleConfig, nozzleConfigSize);
-  wireMenu(outfeedConfig, outfeedConfigSize);
-  wireMenu(spoolerConfig, spoolerConfigSize);
-
-  makeChild(&mainMenu[0], selectProfileMenu, selectProfileSize);
-  makeChild(&mainMenu[1], calibrate, calibrateSize);
-  makeChild(&mainMenu[2], auxiliary, auxiliarySize);
-
-  for (int i = 0; i < 10; i++) {
-    makeChild(&selectProfileMenu[i], profile, profileSize);//should be all 10
-  }
-
-  makeChild(&calibrate[1], starveFeederConfig, starveFeederConfigSize);
-  makeChild(&calibrate[2], augerConfig, augerConfigSize);
-  makeChild(&calibrate[3], barrelConfig, barrelConfigSize);
-  makeChild(&calibrate[4], nozzleConfig, nozzleConfigSize);
-  makeChild(&calibrate[5], outfeedConfig, outfeedConfigSize);
-  makeChild(&calibrate[6], spoolerConfig, spoolerConfigSize);
-  
-  root.setText("Main Menu");
-
-  mainMenu[0].setText("Select Profile");
-  mainMenu[1].setText("Calibrate");
-  mainMenu[2].setText("Auxiliry");
-
-  //Load the profile titles and link them to their data stored in EEPROM
-  for (int i = 0; i < 10; i++) {
-    configuration.loadProfileName(configuration.profileNames[i], i);
-    selectProfileMenu[i].setText(configuration.profileNames[i]);
-    selectProfileMenu[i].setDoActionOnSelect(true);
-  }
-
-  //Not sure how to do the following as part of the above loop or use one function (loadProfile) easily
-  selectProfileMenu[0].setAction(&loadProfile0);
-  selectProfileMenu[1].setAction(&loadProfile1);
-  selectProfileMenu[2].setAction(&loadProfile2);
-  selectProfileMenu[3].setAction(&loadProfile3);
-  selectProfileMenu[4].setAction(&loadProfile4);
-  selectProfileMenu[5].setAction(&loadProfile5);
-  selectProfileMenu[6].setAction(&loadProfile6);
-  selectProfileMenu[7].setAction(&loadProfile7);
-  selectProfileMenu[8].setAction(&loadProfile8);
-  selectProfileMenu[9].setAction(&loadProfile9);
-
-  //  selectProfileMenu[0].setText("1.85mm PET");
-  //  selectProfileMenu[0].setDoActionOnSelect(true);
-  //  selectProfileMenu[0].setAction(&loadProfile1);
-
-  selectProfileMenu[10].setText("Default Profile");
-  selectProfileMenu[10].setDoActionOnSelect(true);
-  selectProfileMenu[10].setAction(&loaddDefaultProfile);
-
-  profile[0].setText("Extrude");
-  profile[0].setAction(&extrude1);
-  profile[1].setText("Save Current Setngs");
-  profile[1].setAction(&saveCurrentSettings1);
-  profile[1].setType(MenuItem::ACTION);
-  profile[2].setText("Name");
-  profile[2].setType(MenuItem::STRING);
-  profile[3].setupVal("Dia Set Point",
-                      MenuItem::DOUBLE,
-                      &configuration.profile.diaSetPoint,
-                      2);
-  profile[4].setupVal("Tolerance",
-                      MenuItem::FLOAT,
-                      &configuration.profile.tolerance,
-                      3);
-
-  profile[5].setupVal("Grams Per Min",
-                      MenuItem::FLOAT,
-                      &configuration.profile.starveFeederTargetFeedRate,
-                      2);
-
-  profile[6].setupVal("Auger RPM",
-                      MenuItem::FLOAT,
-                      &configuration.profile.augerRPM,
-                      2);
-
-  profile[7].setupVal("Outfeed RPM",
-                      MenuItem::DOUBLE,
-                      &configuration.profile.outfeedRPM,
-                      2);
-
-  profile[8].setupVal("Outfeed Ki",
-                      MenuItem::DOUBLE,
-                      &configuration.profile.outfeedKi,
-                      2);
-
-  profile[9].setupVal("Outfeed Kp",
-                      MenuItem::DOUBLE,
-                      &configuration.profile.outfeedKp,
-                      2);
-
-  profile[10].setupVal("Outfeed Kd",
-                       MenuItem::DOUBLE,
-                       &configuration.profile.outfeedKd,
-                       2);
-
-  profile[11].setupVal("OutfeedMaxRPM",
-                       MenuItem::DOUBLE,
-                       &configuration.profile.outfeedMaxRPM,
-                       2);
-
-  profile[12].setupVal("OutfeedMinRPM",
-                       MenuItem::DOUBLE,
-                       &configuration.profile.outfeedMinRPM,
-                       2);
-
-  profile[13].setupVal("OF Comp Int",
-                       MenuItem::INT,
-                       &configuration.profile.outfeedComputeInterval
-                      );
-
-  profile[14].setupVal("Soak Time",
-                       MenuItem::DOUBLE,
-                       &configuration.profile.soakTime
-                      );
-
-  profile[15].setupVal("Barrel Temp",
-                       MenuItem::DOUBLE,
-                       &configuration.profile.barrelTemp
-                      );
-
-  profile[16].setupVal("Nozzle Temp",
-                       MenuItem::DOUBLE,
-                       &configuration.profile.nozzleTemp
-                      );
-
-  profile[17].setupVal("Min Temp",
-                       MenuItem::DOUBLE,
-                       &configuration.profile.minExtrudeTemp
-                      );
-
-  profile[18].setupVal("Max Temp",
-                       MenuItem::DOUBLE,
-                       &configuration.profile.maxTemp
-                      );
-
-  profile[19].setupVal("Max Preheat Time",
-                       MenuItem::UNSIGNED_LONG,
-                       &configuration.profile.maxPreheatTime
-                      );
-
-
-
-  calibrate[0].setText("Calipers");
-  calibrate[1].setText("Starve Feeder");
-  calibrate[2].setText("Auger");
-  calibrate[3].setText("Barrel");
-  calibrate[4].setText("Nozzle");
-  calibrate[5].setText("Outfeed");
-  calibrate[6].setText("Spooler");
-  calibrate[7].setText("Load Default Config");
-  calibrate[7].setAction(&loadDefaultConfig);
-  calibrate[7].setType(MenuItem::ACTION);
-  calibrate[8].setText("Load Saved Config"); //done at startup
-  calibrate[8].setAction(&loadConfig);
-  calibrate[8].setType(MenuItem::ACTION);
-  calibrate[9].setText("Save Current Config");
-  calibrate[9].setAction(&saveConfig);
-  calibrate[9].setType(MenuItem::ACTION);
-
-  //  calibrate[0].setAction(&testCalipers);
-  //  calibrate[1].setAction(&testStarveFeeder);
-  //  calibrate[2].setAction(&testAuger);
-  //  calibrate[3].setAction(&testBarrel);
-  //  calibrate[4].setAction(&testNozzle);
-  //  calibrate[5].setAction(&testOutfeed);
-
-  augerConfig[0].setText("Test Auger");
-  augerConfig[0].setAction(&testAuger);
-  augerConfig[1].setupVal("Pin Set",
-                          MenuItem::INT,
-                          &configuration.physical.augerPinSet
-                         );
-
-  augerConfig[2].setupVal("Step Mode",
-                          MenuItem::INT,
-                          &configuration.physical.augerStepMode
-                         );
-
-  augerConfig[3].setupVal("Direction",
-                          MenuItem::BOOLEAN,
-                          &configuration.physical.augerDirection
-                         );
-
-  augerConfig[4].setupVal("Enable",
-                          MenuItem::BOOLEAN,
-                          &configuration.physical.augerEnable
-                         );
-
-  augerConfig[5].setupVal("Gear Ratio",
-                          MenuItem::FLOAT,
-                          &configuration.physical.augerGearRatio,
-                          2);
-
-
-
-
-  barrelConfig[0].setText("Test Barrel");
-  barrelConfig[0].setAction(&testBarrel);
-
-  barrelConfig[1].setupVal("TimeBase",
-                           MenuItem::INT,
-                           &configuration.physical.timeBase
-                          );
-
-  barrelConfig[2].setupVal("Max DutyCycle",
-                           MenuItem::DOUBLE,
-                           &configuration.physical.barrelMax,
-                           2);
-
-  barrelConfig[3].setupVal("Min DutyCycle",
-                           MenuItem::DOUBLE,
-                           &configuration.physical.barrelMin,
-                           2);
-
-  barrelConfig[4].setupVal("Ki",
-                           MenuItem::DOUBLE,
-                           &configuration.physical.barrelKi,
-                           2);
-
-  barrelConfig[5].setupVal("Kp",
-                           MenuItem::DOUBLE,
-                           &configuration.physical.barrelKp,
-                           2);
-
-  barrelConfig[6].setupVal("Kd",
-                           MenuItem::DOUBLE,
-                           &configuration.physical.barrelKd,
-                           2);
-
-  barrelConfig[7].setupVal("Nom Resistance",
-                           MenuItem::INT,
-                           &configuration.physical.barrelTRNom
-                          );
-
-  barrelConfig[8].setupVal("Nom Temp",
-                           MenuItem::INT,
-                           &configuration.physical.barrelTTNom
-                          );
-
-  barrelConfig[9].setupVal("Num Samples",
-                           MenuItem::INT,
-                           &configuration.physical.barrelTNumSamples
-                          );
-
-  barrelConfig[10].setupVal("B Coef",
-                            MenuItem::INT,
-                            &configuration.physical.barrelTBCoefficient
-                           );
-
-  barrelConfig[11].setupVal("Series R",
-                            MenuItem::INT,
-                            &configuration.physical.barrelTSeriesResistor
-                           );
-
-
-
-  nozzleConfig[0].setText("Test nozzle");
-  nozzleConfig[0].setAction(&testNozzle);
-
-  nozzleConfig[1].setupVal("Pin",
-                           MenuItem::INT,
-                           &configuration.physical.nozzlePin
-                          );
-  nozzleConfig[2].setupVal("SampleTime",
-                           MenuItem::INT,
-                           &configuration.physical.nozzleSampleTime
-                          );
-
-  nozzleConfig[3].setupVal("Max DutyCycle",
-                           MenuItem::DOUBLE,
-                           &configuration.physical.nozzleMax,
-                           2);
-
-  nozzleConfig[4].setupVal("Min DutyCycle",
-                           MenuItem::DOUBLE,
-                           &configuration.physical.nozzleMin,
-                           2);
-
-  nozzleConfig[5].setupVal("Ki",
-                           MenuItem::DOUBLE,
-                           &configuration.physical.nozzleKi,
-                           2);
-
-  nozzleConfig[6].setupVal("Kp",
-                           MenuItem::DOUBLE,
-                           &configuration.physical.nozzleKp,
-                           2);
-
-  nozzleConfig[7].setupVal("Kd",
-                           MenuItem::DOUBLE,
-                           &configuration.physical.nozzleKd,
-                           2);
-
-  nozzleConfig[8].setupVal("Nom Resistance",
-                           MenuItem::INT,
-                           &configuration.physical.nozzleTRNom
-                          );
-
-  nozzleConfig[9].setupVal("Nom Temp",
-                           MenuItem::INT,
-                           &configuration.physical.nozzleTTNom
-                          );
-
-  nozzleConfig[10].setupVal("Num Samples",
-                            MenuItem::INT,
-                            &configuration.physical.nozzleTNumSamples
-                           );
-
-  nozzleConfig[11].setupVal("B Coef",
-                            MenuItem::INT,
-                            &configuration.physical.nozzleTBCoefficient
-                           );
-
-  nozzleConfig[12].setupVal("Series R",
-                            MenuItem::INT,
-                            &configuration.physical.nozzleTSeriesResistor
-                           );
-
-
-
-
-  outfeedConfig[0].setText("Test Outfeed");
-  outfeedConfig[0].setAction(&testOutfeed);
-
-  outfeedConfig[1].setupVal("Pin Set",
-                            MenuItem::INT,
-                            &configuration.physical.outfeedPinSet
-                           );
-
-  outfeedConfig[2].setupVal("Step Mode",
-                            MenuItem::INT,
-                            &configuration.physical.outfeedStepMode
-                           );
-
-  outfeedConfig[3].setupVal("Direction",
-                            MenuItem::BOOLEAN,
-                            &configuration.physical.outfeedDirection
-                           );
-
-  outfeedConfig[4].setupVal("Enable",
-                            MenuItem::BOOLEAN,
-                            &configuration.physical.outfeedEnable
-                           );
-
-  outfeedConfig[5].setupVal("Roller Rad",
-                            MenuItem::DOUBLE,
-                            &configuration.physical.outfeedRollerRadius,
-                            2);
-
-  outfeedConfig[6].setupVal("Max RPM",
-                            MenuItem::DOUBLE,
-                            &configuration.physical.outfeedMaxRPM,
-                            2);
-
-  outfeedConfig[7].setupVal("Min RPM",
-                            MenuItem::DOUBLE,
-                            &configuration.physical.outfeedMinRPM,
-                            2);
-
-
-
-
-
-  starveFeederConfig[0].setText("Test Starve Feeder");
-  starveFeederConfig[0].setAction(&testStarveFeeder);
-  starveFeederConfig[1].setupVal("Lump Mass",
-                                 MenuItem::FLOAT,
-                                 &configuration.physical.starveFeederLumpMass,
-                                 2);
-
-  starveFeederConfig[2].setupVal("DumpPosition",
-                                 MenuItem::INT,
-                                 &configuration.physical.starveFeederDumpPosition
-                                );
-
-  starveFeederConfig[3].setupVal("Step Delay",
-                                 MenuItem::INT,
-                                 &configuration.physical.starveFeederStepDelay
-                                );
-
-  starveFeederConfig[4].setupVal("Home Delay",
-                                 MenuItem::INT,
-                                 &configuration.physical.starveFeederHomeDelay
-                                );
-
-  starveFeederConfig[5].setupVal("Over Rotation",
-                                 MenuItem::INT,
-                                 &configuration.physical.starveFeederOverRotation
-                                );
-
-  starveFeederConfig[6].setupVal("Direction",
-                                 MenuItem::BOOLEAN,
-                                 &configuration.physical.starveFeederDirection
-                                );
-
-  starveFeederConfig[7].setupVal("Max DutyCycle",
-                                 MenuItem::INT,
-                                 &configuration.physical.starveFeederMaxDutyCycle
-                                );
-
-  starveFeederConfig[8].setupVal("Min DutyCycle",
-                                 MenuItem::INT,
-                                 &configuration.physical.starveFeederMinDutyCycle
-                                );
-
-  starveFeederConfig[9].setupVal("Sensor Pin",
-                                 MenuItem::INT,
-                                 &configuration.physical.starveFeederSensorPin
-                                );
-
-  starveFeederConfig[10].setupVal("Direction Pin",
-                                  MenuItem::INT,
-                                  &configuration.physical.starveFeederDirectionPin
-                                 );
-
-  starveFeederConfig[11].setupVal("Step Pin",
-                                  MenuItem::INT,
-                                  &configuration.physical.starveFeederStepPin
-                                 );
-
-  starveFeederConfig[12].setupVal("Enable Pin",
-                                  MenuItem::INT,
-                                  &configuration.physical.starveFeederEnablePin
-                                 );
-
-  starveFeederConfig[13].setupVal("Vib Pin",
-                                  MenuItem::INT,
-                                  &configuration.physical.starveFeederVibPin
-                                 );
-
-  //Spooler config menu
-  spoolerConfig[0].setText("Test Spooler");
-  spoolerConfig[0].setAction(&testSpooler);
-
-  spoolerConfig[1].setupVal("PIN SET",
-                            MenuItem::INT,
-                            &configuration.physical.spoolerPinSet
-                           );
-
-  spoolerConfig[2].setupVal("Step Mode",
-                            MenuItem::INT,
-                            &configuration.physical.spoolerStepMode
-                           );
-
-  spoolerConfig[3].setupVal("Direction",
-                            MenuItem::BOOLEAN,
-                            &configuration.physical.spoolerDirection
-                           );
-
-  spoolerConfig[4].setupVal("Enable",
-                            MenuItem::BOOLEAN,
-                            &configuration.physical.spoolerEnable
-                           );
-
-  spoolerConfig[5].setupVal("Disk Radius",
-                            MenuItem::FLOAT,
-                            &configuration.physical.spoolerDiskRadius,
-                            1);
-
-  spoolerConfig[6].setupVal("Core Radius",
-                            MenuItem::FLOAT,
-                            &configuration.physical.spoolerCoreRadius,
-                            1);
-
-  spoolerConfig[7].setupVal("Traverse Len",
-                            MenuItem::FLOAT,
-                            &configuration.physical.spoolerTraverseLength,
-                            1);
-
-  spoolerConfig[8].setupVal("Traverse Len",
-                            MenuItem::FLOAT,
-                            &configuration.physical.spoolerTraverseLength,
-                            1);
-
-  spoolerConfig[9].setupVal("Roller Raduis",
-                            MenuItem::FLOAT,
-                            &configuration.physical.spoolerMotorRollerRaduis,
-                            1);
-
-  spoolerConfig[10].setupVal("Traverse Len",
-                             MenuItem::FLOAT,
-                             &configuration.physical.spoolerTraverseLength,
-                             1);
-
-  auxiliary[0].setText("Measure Filament");
-  auxiliary[1].setText("Reset EEPROM");
-  auxiliary[1].setType(MenuItem::ACTION);
-  auxiliary[1].setAction(&resetEEPROM);
-
-  //  starveFeederConfig[1].setupVal("MinFillTime",
-  //                                 MenuItem::INT,
-  //                                 &testInt
-  //                                 );
-  //  starveFeederConfig[2].setupVal("maxFillTime",
-  //                                 MenuItem::INT,
-  //                                 &testLong
-  //                                 );
-  //  starveFeederConfig[3].setupVal("StartupTime",
-  //                                 MenuItem::INT,
-  //                                 &testFloat
-  //                                 );
-  //  starveFeederConfig[8].setupVal("Startup DCyc",
-  //                                 MenuItem::INT,
-  //                                 &testDouble
-  //                                 );
-  //  starveFeederConfig[9].setupVal("DutyCycle",
-  //                                 MenuItem::INT,
-  //                                 &testDouble
-  //                                 );
-  //  starveFeederConfig[4].setupVal("debounceTime",
-  //                                 MenuItem::INT,
-  //                                 &testDouble
-  //                                 );
-
-
-  menu.reset();
+  activeMenu->reset();
 }
 
 void loop() {
@@ -780,23 +531,20 @@ void loop() {
   //  }
   switch (key) {
     case '1':
-      menu.up();
+      activeMenu->up();
       break;
     case '2':
-      menu.down();
+      activeMenu->down();
       break;
 
     case '3':
-      menu.select();
+      activeMenu->select();
       break;
     case '4':
-      menu.back();
-      break;
-    case '5':
-      menu.printSelected();
+      activeMenu->back();
       break;
   }
-//  state_table[currentState]();
+  //  state_table[currentState]();
 }
 
 
@@ -823,7 +571,7 @@ void loadDefaultConfig() {
   lcd.clear();
   lcd.print(F("Configuration Loaded"));
   delay(2000);
-  menu.display();
+  mainMenu.display();
 }
 
 void loadConfig() {
@@ -834,7 +582,7 @@ void loadConfig() {
   lcd.clear();
   lcd.print(F("Configuration Loaded"));
   delay(2000);
-  menu.display();
+  mainMenu.display();
 }
 
 void saveConfig() {
@@ -845,52 +593,43 @@ void saveConfig() {
   lcd.clear();
   lcd.print(F("Configuration Saved"));
   delay(2000);
-  menu.display();
+  mainMenu.display();
 }
 
 
 void loadProfile0() {
+  Serial.println("Loading Profile 0");
   configuration.loadProfile(0);
-  profile[2]._value1 = configuration.profileNames[0];
 }
 void loadProfile1() {
   configuration.loadProfile(1);
-  profile[2]._value1 = configuration.profileNames[1];
 }
 void loadProfile2() {
   configuration.loadProfile(2);
-  profile[2]._value1 = configuration.profileNames[2];
 }
 void loadProfile3() {
   configuration.loadProfile(3);
-  profile[2]._value1 = configuration.profileNames[3];
 }
 void loadProfile4() {
   configuration.loadProfile(4);
-  profile[2]._value1 = configuration.profileNames[4];
 }
 void loadProfile5() {
   configuration.loadProfile(5);
-  profile[2]._value1 = configuration.profileNames[5];
 }
 void loadProfile6() {
   configuration.loadProfile(6);
-  profile[2]._value1 = configuration.profileNames[6];
 }
 void loadProfile7() {
   configuration.loadProfile(7);
-  profile[2]._value1 = configuration.profileNames[7];
 }
 void loadProfile8() {
   configuration.loadProfile(8);
-  profile[2]._value1 = configuration.profileNames[8];
 }
 void loadProfile9() {
   configuration.loadProfile(9);
-  profile[2]._value1 = configuration.profileNames[9];
 }
 
-void loaddDefaultProfile() {
+void loadDefaultProfile() {
   configuration.loadDefaultProfile();
 }
 void extrude1() {
@@ -898,7 +637,7 @@ void extrude1() {
 }
 
 
-void saveCurrentSettings1() {
+void saveCurrentProfile() {
   Serial.print("Saving Settings for profile number: ");
   Serial.println(configuration.profile.profileNumber);
   configuration.saveProfile();
@@ -932,7 +671,7 @@ void resetEEPROM() {
       configuration.loadDefaultProfile();
       for (int i = 0; i < 10; i++) {
         configuration.profile.profileNumber = i;
-        selectProfileMenu[i].setText(configuration.profileNames[i]);//The names have been reset. This will reflect the change
+        //        selectProfileMenu[i].setText(configuration.profileNames[i]);//The names have been reset. This will reflect the change
         configuration.saveProfile();
       }
       waitForResponse = false;
@@ -942,8 +681,13 @@ void resetEEPROM() {
       waitForResponse = false;
     }
   }
-  menu.display();
+  mainMenu.display();
 }
 
+void actionExtrude() {
+  Serial.println("Extruding...");
+  activeMenu = &preheatMenu;
+  activeMenu->reset();
+}
 
 
