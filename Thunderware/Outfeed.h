@@ -11,11 +11,11 @@
 #define Outfeed_h
 
 #include "Arduino.h"
-#include "config.h"
+//#include "config.h"
 #include "Configuration.h"
 #include "StepperMotor.h"
 #include "Caliper.h"
-#include <PID_v1.h>
+#include "PID_v1.h"
 
 class Configuration;
 class StepperMotor;
@@ -48,6 +48,7 @@ class Outfeed
     double getRawADC();
     void linReg(float *slope, float *yIntercept, float *xVals, float *yVals, int *n);
     void activate();
+	void setDirection();
     
   private:
     Configuration* _configuration;

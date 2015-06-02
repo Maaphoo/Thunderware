@@ -11,12 +11,13 @@
 #include "Buzzer.h"
 
 //Buzzer messages. The pattern is on, off, on, off ... in milliseconds
-int Buzzer::_messages[6][10] = {{0,0,0,0,0,0,0,0,0,0},//NO_MSG
+int Buzzer::_messages[7][10] = {{0,0,0,0,0,0,0,0,0,0},//NO_MSG
                                 {500,500,500,500,0,0,0,0,0,0},//PREAHEAT_FINISHED
                                 {2000,500,500,500,500,500,0,0,0,0},//SOAK_FINISHED
+                                {50,100,50,1000,50,100,50,1000,0,0},//LOAD_FILAMENT_TIME_RUNNING_OUT
                                 {100,500,100,500,100,500,0,0,0,0},//OUT_OF_TOL
                                 {1000,1000,1000,1000,1000,1000,1000,1000,1000,1000},//SAFETY
-                                {50,100,50,100,0,0,0,0,0,0},//POWER_ON
+                                {50,100,50,100,0,0,0,0,0,0}//POWER_ON
                                 };
 
 Buzzer::Buzzer()
@@ -32,8 +33,7 @@ void Buzzer::setMsg(Message msg)
 
 void Buzzer::activate()
 {
-  static int msgIndex = 0; //the index of the on or off durration of the current message
-
+  //static int msgIndex = 0; //the index of the on or off durration of the current message
 
   if (_currentMsg != NO_MSG && _changeTime <= millis()){
     if (msgIndex%2 == 0){//The buzzer is entering an on state
@@ -55,5 +55,10 @@ void Buzzer::activate()
       msgIndex++;
     }
   }
+}
+
+void Buzzer::reset(){
+	msgIndex = 0;
+	_currentMsg = NO_MSG;
 }
 

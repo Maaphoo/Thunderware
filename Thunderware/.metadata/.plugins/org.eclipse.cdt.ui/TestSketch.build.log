@@ -1,0 +1,10 @@
+17:49:52 **** Build of configuration Release for project TestSketch ****
+make all 
+Building file: /Applications/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino/CDC.cpp
+Starting C++ compile
+"/bin/avr-g++" -c -g -Os -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -MMD -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=163 -DARDUINO_AVR_MEGA2560 -DARDUINO_ARCH_AVR     -I"/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino" -I"/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/variants/mega" -MMD -MP -MF"arduino/CDC.cpp.d" -MT"arduino/CDC.cpp.o" -D__IN_ECLIPSE__=1 -x c++ "/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino/CDC.cpp"  -o  "arduino/CDC.cpp.o"   -Wall
+/bin/sh: /bin/avr-g++: No such file or directory
+make: *** [arduino/CDC.cpp.o] Error 127
+
+17:49:52 Build Finished (took 177ms)
+

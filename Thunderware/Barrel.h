@@ -12,7 +12,7 @@
 
 #include "Arduino.h"
 #include "Thermistor.h"
-#include <PID_v1.h>
+#include "PID_v1.h"
 #include "Configuration.h"
 
 class Thermistor;

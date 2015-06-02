@@ -10,7 +10,7 @@
 #include "Arduino.h"
 //#include "MenuData.h"
 #include <LiquidCrystal.h>
-#include <Keypad.h>
+#include "Keypad.h"
 
 
 class LiquidCrystal;
@@ -52,6 +52,8 @@ class Menu
     void down();
     void back();
     void select();
+	void increase();
+	void decrease();
     void reset();
     void display();
     int getPrevious(int item);

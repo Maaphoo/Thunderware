@@ -16,13 +16,12 @@ void Configuration::loadDefaultProfile()
 {
   //General
   profile.profileNumber = -1;
-  strcpy(profile.name, "1.75 ABS");
-  profile.diaSetPoint = 2.85;
+  strcpy(profile.name, "Default 1.75 ABS");
+  profile.diaSetPoint = 1.75;
   profile.tolerance = 0.05;
 
   //Starve Feeder
-  //    profile.starveFeederRPM = 17;
-  profile.starveFeederTargetFeedRate = 7.5;
+  profile.gramsPerMin = 10.0;
 
   //Auger
   profile.augerRPM = 40.0;
@@ -59,24 +58,21 @@ void Configuration::loadDefaultConfig()
   physical.loadAutomatically = false;
 
   //StarveFeeder
-  //  physical.starveFeederPinSet = 3;
-  //  physical.starveFeederStepMode = 32;//Something is wrong somewhere b/c this should be 16
-  //  physical.starveFeederDirection = 0;
-  //  physical.starveFeederEnable = 0;
-
-  physical.starveFeederLumpMass = 6.5;
-  physical.starveFeederDumpPosition = 160 / 1.8 * 16;
-  physical.starveFeederStepDelay = 120;
-  physical.starveFeederHomeDelay = 2600;
-  physical.starveFeederOverRotation = 97;
-  physical.starveFeederDirection = 1;
-  physical.starveFeederMaxDutyCycle = 120;
-  physical.starveFeederMinDutyCycle = 0;
-  physical.starveFeederSensorPin = 2;
-  physical.starveFeederDirectionPin = 11;
-  physical.starveFeederStepPin = 12;
-  physical.starveFeederEnablePin = 13;
-  physical.starveFeederVibPin = 8;
+  physical.starveFeederSlaveAddress = 2;
+  physical.starveFeederLumpMass = 7.6;
+  physical.starveFeederMinFillTime = 1000;
+  physical.starveFeederMaxFillTime = 10000;
+  physical.starveFeederStartupTime = 1200;
+  physical.starveFeederDebounceTime = 80;
+  physical.starveFeederHomePosition = 100;
+  physical.starveFeederDumpPosition = 1600;
+  physical.starveFeederStepDelay = 75;
+  physical.starveFeederHomingStepDelay = 2000;
+  physical.starveFeederOverRotation = 90;
+  physical.starveFeederDirection = 0;
+  physical.starveFeederVibDutyCycle = 85;
+  physical.starveFeederMaxDutyCycle = 160;
+  physical.starveFeederStartupDutyCycle = 120;
 
   //auger
   physical.augerPinSet = 0;
@@ -124,7 +120,7 @@ void Configuration::loadDefaultConfig()
   physical.barrelTSeriesResistor = 9890;
 
   //nozzle
-  physical.nozzlePin = 4;
+  physical.nozzlePin = 5;
   physical.nozzleMax = 255;//The max dutyCycle for the nozzle
   physical.nozzleMin = 0;//The min dutyCycle for the nozzle
   physical.nozzleKp = 3.5;
@@ -150,22 +146,13 @@ void Configuration::loadDefaultConfig()
 Configuration::Configuration()
 {
   loadProfileNames();
-  //EEPROM_readAnything(0,physical.configStored);
-  //if (physical.configStored){
-  //  //Read the stored profile from the EEPROM
-  //  EEPROM_readAnything(0,physical);
-  //} else {
-  //  loadDefaultConfig();
-  //}
-  loadDefaultConfig();
-  loadDefaultProfile();
-  //Serial.println(physical.starveFeederPinSet);
-
+  loadConfig();
 }
 
 
 void Configuration::saveConfig()
 {
+	Serial.println(F("Saving Config."));
   physical.configStored = true;//Make sure that the config is marked as stored
   EEPROM_writeAnything(0, physical); //Write to EEPROM
 }
@@ -178,16 +165,9 @@ void Configuration::deleteConfig()
 }
 
 
-boolean Configuration::loadConfig()
+void Configuration::loadConfig()
 {
-  EEPROM_readAnything(0, physical.configStored);
-  if (physical.configStored) {
-    //Read the stored profile from the EEPROM
     EEPROM_readAnything(0, physical);
-    return true;
-  } else {
-    return false;
-  }
 }
 
 

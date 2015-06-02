@@ -3,442 +3,918 @@
 
 
 
-void test()
-{
-  static unsigned long now;
-  static unsigned long reportTime;
-  static int interval;
-  static boolean flag = true;
-  now = millis();
-//  //Test current draw on 12 v power supply by running everything at once
-//  if (flag){
-//    auger.enable();
-//    starveFeeder.enable();
-//    outfeed.enable();
-//    spooler.enable();
-//    
-//    auger.setRPM(30);
-//    starveFeeder.setRPM(30);
-//    outfeed.setRPM(30);
-//    spooler.setRPM(30);
-//    flag = false;
-//  }
-//  nozzle.activate();
-//  barrel.activate();
-//  outfeed.activate();
-//  if (now >= reportTime){
-//    nozzle.setDutyCycle(255);
-//    barrel.setDutyCycle(100);
-//    outfeed.getRawADC();
-//    lcd.clear();
-//    lcd.write("Nozzle Test: ");
-//
-//    lcd.setCursor(7,1);
-//    lcd.write("(SP) (ACT)");
-//
-//    lcd.setCursor(18,2);
-//    lcd.write("C");
-//    lcd.setCursor(18,3);
-//    lcd.write("C");
-//
-//    lcd.setCursor(0,2);
-//    lcd.write("Barrel ");
-//    char tempString[10];
-//    dtostrf(configuration.profile.barrelTemp, 3,0,tempString);
-//    lcd.write(tempString);
-//
-//    dtostrf(barrel.getTemp(), 3,0,tempString);
-//    lcd.setCursor(12,2);
-//    lcd.write(tempString);
-//
-//    lcd.setCursor(0,3);
-//    lcd.write("Nozzle ");
-//    dtostrf(configuration.profile.nozzleTemp, 3,0,tempString);
-//    lcd.write(tempString);
-//
-//    dtostrf(nozzle.getTemp(), 3,0,tempString);
-//    lcd.setCursor(12,3);
-//    lcd.write(tempString);
-//    reportTime += 1000;
-//  }
-
-  ////Spooler Calibration
-  //lcd.clear();
-  //lcd.write("Spooler Calibration");
-  //lcd.setCursor(0,1);
-  //lcd.write("Mark the Spool disk");
-  //lcd.setCursor(0,2);
-  //lcd.write("at the roller.");
-  //lcd.setCursor(0,3);
-  //lcd.write("Press any key...");
-  //kpd.waitForKey();
-  //spooler.setRPM(60);
-  //unsigned long durration = configuration.physical.spoolerDiskRadius/configuration.physical.spoolerMotorRollerRaduis*1000.0;
-  //unsigned long startTime = millis();
-  //unsigned long endTime = startTime+durration;
-  //spooler.enable();
-  //unsigned long now;
-  //while (now < endTime){
-  //  now = millis();
-  //}
-  //spooler.disable();
-  ////Add in Adjustment pressing 1 for more, 4 for less, 2 for even more, 4 for even less. etc.
-  ////Then report and record the setting. and repeat to double check.
-
-
-
-
-
-  //  Serial.println(configuration.physical.outfeedDirection);
-  // outfeed.enable();
-  // spooler.enable();
-  // while(1){
-  //   //it is as if spooler._outfeed is pointing to a null Outfeed object.
-  // outfeed.setRPM(60);//Doesen't work. spooler can't access outfeed.getRPM() all it gets is zero. 
-  // spooler.setRPM();
-  //
-  // Serial.print("beginning to outfeed: ");
-  // Serial.println(outfeed.getMmExtruded());
-  // delay(10000); 
-  //
-  //  Serial.print("done outfeed: ");
-  //  Serial.println(outfeed.getMmExtruded());
-  //  outfeed.reset();
-  //  outfeed.setRPM(0);
-  //  spooler.setRPM();
-  // delay(10000); 
-  // }
-
-  ////Auger Enable test
-  //auger.enable();
-  //delay(5000);
-  //auger.disable();
-  //delay(1000);
-
-// //Auger Direction test
-// auger.enable();
-// auger.setRPM(4);//This is 1 rpm for the motor b/c the gear ratio is 1:3
-// delay(5000);
-// auger.disable();
-// delay(1000);
-
-//// Small Stepper Enable Tests
-// outfeed.enable();
-// spooler.enable();
-// starveFeeder.enable();
-// delay (5000);
-// outfeed.disable();
-// spooler.disable();
-// starveFeeder.disable();
-// delay (1000);
-
-//  //Small Stepper Direction and pot adjust tests
-// outfeed.enable();
-// spooler.enable();
-// starveFeeder.enable();
-// outfeed.setRPM(60);
-// starveFeeder.setRPM(60);
-// spooler.setRPM(60);
-// delay(5000);
-// outfeed.disable();
-// spooler.disable();
-// starveFeeder.disable();
-// delay(1000);
-
-
-  ////buzzer Test
-  //buzzer.setMsg(Buzzer::SOAK_FINISHED);
-  //while(millis()<10000){
-  //  buzzer.activate();
-  //}
-
-//  //Test ADC in caliper. Second arduino must be powered for this to work.
-//  Serial.println(outfeed.getRawADC());
-//  lcd.clear();
-//  lcd.write("Raw ADC: ");
-//  char tempString[10];
-//  dtostrf(outfeed.getRawADC(), 3,0,tempString);
-//  lcd.write(tempString);
-//  delay (1000);
-
-////Nozzle Testing
-//  nozzle.activate();
-//  barrel.activate();
-//  if (now >= reportTime){
-//    nozzle.setDutyCycle(255);
-//    barrel.setDutyCycle(0);
-//    Serial.print("nozzle Temp set point: ");
-//    Serial.println(configuration.profile.nozzleTemp);
-//    Serial.print("nozzle Temp");
-//    Serial.println(nozzle.getTemp());
-//    Serial.print("nozzle dutyCycle");
-//    Serial.println(nozzle.getDutyCycle());  
-//    Serial.println();
-//    
-//    lcd.clear();
-//    lcd.write("Nozzle Test: ");
-//
-//    lcd.setCursor(7,1);
-//    lcd.write("(SP) (ACT)");
-//
-//    lcd.setCursor(18,2);
-//    lcd.write("C");
-//    lcd.setCursor(18,3);
-//    lcd.write("C");
-//
-//    lcd.setCursor(0,2);
-//    lcd.write("Barrel ");
-//    char tempString[10];
-//    dtostrf(configuration.profile.barrelTemp, 3,0,tempString);
-//    lcd.write(tempString);
-//
-//    dtostrf(barrel.getTemp(), 3,0,tempString);
-//    lcd.setCursor(12,2);
-//    lcd.write(tempString);
-//
-//    lcd.setCursor(0,3);
-//    lcd.write("Nozzle ");
-//    dtostrf(configuration.profile.nozzleTemp, 3,0,tempString);
-//    lcd.write(tempString);
-//
-//    dtostrf(nozzle.getTemp(), 3,0,tempString);
-//    lcd.setCursor(12,3);
-//    lcd.write(tempString);
-//    reportTime += 1000;
-//  }
-
-  //  ////Barrel Testing
-  //  nozzle.activate();
-  //  barrel.activate();
-  //  if (now >= reportTime){
-  //    nozzle.setDutyCycle(0);
-  //    barrel.setDutyCycle(50);
-  //    Serial.print("nozzle Temp set point: ");
-  //    Serial.println(configuration.profile.nozzleTemp);
-  //    Serial.print("nozzle Temp");
-  //    Serial.println(nozzle.getTemp());
-  //    Serial.print("nozzle dutyCycle");
-  //    Serial.println(nozzle.getDutyCycle());  
-  //    Serial.println();
-  //    
-  //    lcd.clear();
-  //    lcd.write("Barrel Test: ");
-  //
-  //    lcd.setCursor(7,1);
-  //    lcd.write("(SP) (ACT)");
-  //
-  //    lcd.setCursor(18,2);
-  //    lcd.write("C");
-  //    lcd.setCursor(18,3);
-  //    lcd.write("C");
-  //
-  //    lcd.setCursor(0,2);
-  //    lcd.write("Barrel ");
-  //    char tempString[10];
-  //    dtostrf(configuration.profile.barrelTemp, 3,0,tempString);
-  //    lcd.write(tempString);
-  //
-  //    dtostrf(barrel.getTemp(), 3,0,tempString);
-  //    lcd.setCursor(12,2);
-  //    lcd.write(tempString);
-  //
-  //    lcd.setCursor(0,3);
-  //    lcd.write("Nozzle ");
-  //    dtostrf(configuration.profile.nozzleTemp, 3,0,tempString);
-  //    lcd.write(tempString);
-  //
-  //    dtostrf(nozzle.getTemp(), 3,0,tempString);
-  //    lcd.setCursor(12,3);
-  //    lcd.write(tempString);
-  //    reportTime += 1000;
-  //  }
-
-  //  //Thermistor Testing
-  //  //Just keeps up dating the currently measured temps
-  //  barrel.sampleTemp();
-  //  nozzle.sampleTemp();
-  //  if (now>reportTime){
-  //    lcd.clear();
-  //    lcd.write("Thermistor Temps:");
-  //    lcd.setCursor(0,1);
-  //    lcd.write("Barrel: ");
-  //    char barrelTempString[10];
-  //    dtostrf(barrel.getTemp(), 1,2,barrelTempString);
-  //    lcd.write(barrelTempString);
-  //    lcd.setCursor(0,2);
-  //    lcd.write("Nozzle: ");
-  //    char nozzleTempString[10];
-  //    dtostrf(nozzle.getTemp(), 1,2,nozzleTempString);
-  //    lcd.write(nozzleTempString); 
-  //    Serial.print("Barrel Temp: ");
-  //    Serial.println(barrel.getTemp());
-  //    Serial.print("Nozzle Temp: ");
-  //    Serial.println(nozzle.getTemp());
-  //    reportTime = now+1000L;
-  //  }
-
-////Keypad Testing
-//  while (key != 'D'){
-//    key = kpd.waitForKey();
-//    Serial.println(key);
-//    lcd.write(key);
-//  }
-  //  boolean assignedKeys[ROWS][COLS];
-  //  //char targetKeys[ROWS*COLS] = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', '*', '#'];
-  //  char targetKeys[ROWS*COLS];
-  //  //make 1D array of all Characters on keypad
-  //  for (int i=0; i<ROWS; i++){
-  //    for (int j=0; j<COLS;j++){
-  //      targetKeys[COLS*i+j] = keys[i][j];
-  //    }
-  //  }
-  //  boolean keyFound;
-  //    lcd.clear();
-  //    for (int k=0;k<ROWS*COLS;k++){
-  //    lcd.write("Press '");
-  //    lcd.write(targetKeys[k]);
-  //    lcd.write("'");
-  //    keyFound = false;
-  //    key = kpd.waitForKey();
-  //    for (int i=0; i<ROWS; i++){
-  //      for (int j=0; j<COLS;j++){
-  //        if (keys[i][j] == key && !assignedKeys[i][j]){
-  //          assignedKeys[i][j] = true;
-  //          keys[i][j] = targetKeys[k];
-  //          keyFound = true;
-  //          lcd.clear();
-  //          for (int i=0;i<ROWS;i++){
-  //            for (int j=0; j<COLS;j++){
-  //              lcd.setCursor(12+j,i);
-  //              lcd.write(keys[i][j]);
-  //            }
-  //          }
-  //        }
-  //      }
-  //    }
-  //    if (!keyFound){
-  //      lcd.clear();
-  //      lcd.setCursor(0,0);
-  //      lcd.write("ERROR: Key not found");
-  //      lcd.setCursor(0,2);     
-  //      lcd.write("Check the keys array.");
-  //    }
-  //  }
-  //
-  //  // The keys array is now correct. 
-  //  // Store it in the EEPROM
-  //
-  //
-  //  lcd.clear();
-  //  lcd.setCursor(0,0);
-  //  lcd.write("keys array:");
-  //  for (int i=0;i<ROWS;i++){
-  //    for (int j=0; j<COLS;j++){
-  //      lcd.setCursor(12+j,i);
-  //      lcd.write(keys[i][j]);
-  //    }
-  //  }
-  //  key = kpd.waitForKey();
-  //  return;
-
-
-
-
-  ////LCD Testing
-  //  lcd.clear();
-  //  lcd.setCursor(0,0);
-  //  lcd.write("This is a Test.");
-  //  lcd.setCursor(0,1);
-  //  lcd.write("1: Only a test");
-  //  lcd.setCursor(0,2);
-  //  lcd.write("2:Not the Real thing");
-  //  lcd.setCursor(0,3);
-  //  lcd.write("3: But close");
-  //delay (5000);
-
-  ////Optical Caliper testing
-  //  lcd.clear();
-  //  lcd.write("Sensor Value");
-  //
-  //  double rawADC;
-  //  while(1){
-  //    rawADC = outfeed.getRawADC();
-  //    lcd.setCursor(7,1);
-  //    writeDouble(rawADC,0,7,1);
-  //    Serial.println(rawADC);
-  //    delay(1000);
-  //
-  //  }
-
-  //  delay(5000);
-  //    Serial.println("Saving new name to profile 1: Prof1Name");
-  //    configuration.loadProfile(1);
-  //    strcpy(configuration.profile.name, "Prof1Name");
-  //    configuration.saveProfile(1);
-  //    delay(200);
-  //  Serial.println("Deleting Profile 2");
-  //  configuration.deleteProfile(2);
-  //  Serial.println();
-  //  delay(2000);  
-  //  Serial.println("Attempting to load profile 2");
-  //  if (configuration.loadProfile(2)){
-  //    Serial.println("Able to load profile 2");
-  //  } else {
-  //    Serial.println("Unable to load profile 2");
-  //  }
-  //  delay(2000);  
-  //  Serial.println("loading Profile 1");
-  //  configuration.loadProfile(1);
-  //  Serial.print("It's name is: ");
-  //  Serial.println(configuration.profile.name);
-  //  Serial.println();
-  //  Serial.println("Done with test");
-  //  delay(1000000);
-
-
-
-
-
-
-
-
-
-  //      Serial.print("Getting Just the name: ");
-  //      Serial.println(configuration.getName(1));
-  //    }else{
-  //      Serial.println("loading Unsuccessful");
-  //    } 
-  //  configuration.physical.nozzleTBCoefficient = 55;
-  //  configuration.saveConfig();
-}
+//void test(){}
 
 void testAuger(){
-  
-}
+	lcd.clear();
+	lcd.print(F("WARNING: The Auger"));
+	lcd.setCursor(0,1);
+	lcd.print(F("must be free to move"));
+	lcd.setCursor(0,2);
+	lcd.print(F("to perform the"));
+	lcd.setCursor(0,3);
+	lcd.print(F("following tests."));
+	delay(5000);
+	lcd.clear();
+	lcd.print(F("Continue?"));
+	lcd.setCursor(0,1);
+	lcd.print(F("A) Yes"));
+	lcd.setCursor(0,2);
+	lcd.print(F("B) No"));
+	boolean waitForResponse = true;
+	while (waitForResponse) {
+		key = kpd.getKey();
 
-void testBarrel(){
-  
-}
+		//Allow for keyboard input as well
+		if (Serial.available() > 0) {
+			key = (char)Serial.read();
+		}
 
-void testNozzle(){
-  
+		if (key == 'A') {
+			waitForResponse = false;
+		}
+
+		if (key == 'B') {
+			activeMenu->display();
+			return;
+			waitForResponse = false;
+		}
+	}
+	lcd.clear();
+	lcd.print(F("A) Enable/Disable"));
+	lcd.setCursor(0,1);
+	lcd.print(F("C) When Disabled"));
+	lcd.setCursor(0,2);
+	lcd.print(F("D) EXIT"));
+
+	waitForResponse = true;
+	boolean flag = true;
+	while (waitForResponse) {
+		key = kpd.getKey();
+
+		//Allow for keyboard input as well
+		if (Serial.available() > 0) {
+			key = (char)Serial.read();
+		}
+
+		switch (key){
+			case 'A':
+			if (flag){
+				auger.enable();
+				flag = false;
+				} else {
+				auger.disable();
+				flag = true;
+			}
+			break;
+
+			case 'C':
+
+			if (!flag){
+				configuration.physical.augerEnable = !configuration.physical.augerEnable;
+			}
+			waitForResponse = false;
+			break;
+
+			case 'D':
+			activeMenu->display();
+			return;
+			break;
+
+		}
+	}
+
+	//Auger Direction test
+	lcd.clear();
+	lcd.print(F("Auger Direction Test"));
+	delay(5000);
+	lcd.clear();
+	lcd.print(F("Continue?"));
+	lcd.setCursor(0,1);
+	lcd.print(F("A) Yes"));
+	lcd.setCursor(0,2);
+	lcd.print(F("B) No"));
+	waitForResponse = true;
+	while (waitForResponse) {
+		key = kpd.getKey();
+
+		//Allow for keyboard input as well
+		if (Serial.available() > 0) {
+			key = (char)Serial.read();
+		}
+
+		if (key == 'A') {
+			waitForResponse = false;
+		}
+
+		if (key == 'B') {
+			activeMenu->display();
+			return;
+		}
+	}
+
+	auger.enable();
+	auger.setRPM(1);
+
+	lcd.clear();
+	lcd.print(F("Auger direction OK?"));
+	lcd.setCursor(0,1);
+	lcd.print(F("A) Yes"));
+	lcd.setCursor(0,2);
+	lcd.print(F("B) No"));
+	lcd.setCursor(0,3);
+	lcd.print(F("D) Exit"));
+	waitForResponse = true;
+	while (waitForResponse) {
+		key = kpd.getKey();
+
+		//Allow for keyboard input as well
+		if (Serial.available() > 0) {
+			key = (char)Serial.read();
+		}
+
+		switch (key){
+			case 'A':
+			if (flag){
+				auger.disable();
+				waitForResponse = false;
+			}
+			break;
+
+			case 'B':
+			configuration.physical.augerDirection = !configuration.physical.augerDirection;
+			auger.setDirection();
+
+			break;
+
+			case 'D':
+			auger.disable();
+			activeMenu->display();
+			return;
+			break;
+
+		}
+	}
+
+	// MicroStepping test
+	lcd.clear();
+	lcd.print(F("Microsteping Test"));
+	delay(5000);
+	lcd.clear();
+	lcd.print(F("Mark the shaft. "));
+	lcd.setCursor(0,1);
+	lcd.print(F("Attempting 1 rev"));
+	lcd.setCursor(0,2);
+	lcd.print(F("A) Begin"));
+	lcd.setCursor(0,3);
+	lcd.print(F("B) Exit"));
+	waitForResponse = true;
+	while (waitForResponse) {
+		key = kpd.getKey();
+
+		//Allow for keyboard input as well
+		if (Serial.available() > 0) {
+			key = (char)Serial.read();
+		}
+
+		if (key == 'A') {
+			waitForResponse = false;
+		}
+
+		if (key == 'B') {
+			activeMenu->display();
+			return;
+		}
+	}
+	lcd.clear();
+	lcd.print(F("Rotating 1 rev..."));
+	auger.enable();
+	pinMode(6,OUTPUT);
+
+	auger.enable();
+	int rpm = 10;
+	auger.setRPM(rpm);
+	delay(1000.0*60.0/rpm);
+	auger.disable();
+
+	lcd.clear();
+	lcd.print(F("If the auger didn't"));
+	lcd.setCursor(0,1);
+	lcd.print(F("make 1 rev, check"));
+	lcd.setCursor(0,2);
+	lcd.print(F("the wiring and"));
+	lcd.setCursor(0,3);
+	lcd.print(F("microstep settings"));
+	delay(5000);
+
+	//Save the settings
+	lcd.clear();
+	lcd.print(F("Save Settings?"));
+	lcd.setCursor(0,1);
+	lcd.print(F("A) Yes"));
+	lcd.setCursor(0,2);
+	lcd.print(F("B) No"));
+	waitForResponse = true;
+	while (waitForResponse) {
+		key = kpd.getKey();
+
+		//Allow for keyboard input as well
+		if (Serial.available() > 0) {
+			key = (char)Serial.read();
+		}
+
+		if (key == 'A') {
+			configuration.saveConfig();
+			waitForResponse = false;
+		}
+
+		if (key == 'B') {
+			waitForResponse = false;
+		}
+	}
+	activeMenu->display();
 }
 
 void testOutfeed(){
-  
+	lcd.clear();
+	lcd.print(F("WARNING: The Outfeed"));
+	lcd.setCursor(0,1);
+	lcd.print(F("must be free to move"));
+	lcd.setCursor(0,2);
+	lcd.print(F("to perform the"));
+	lcd.setCursor(0,3);
+	lcd.print(F("following tests."));
+	delay(5000);
+	lcd.clear();
+	lcd.print(F("Continue?"));
+	lcd.setCursor(0,1);
+	lcd.print(F("A) Yes"));
+	lcd.setCursor(0,2);
+	lcd.print(F("B) No"));
+	boolean waitForResponse = true;
+	while (waitForResponse) {
+		key = kpd.getKey();
+
+		//Allow for keyboard input as well
+		if (Serial.available() > 0) {
+			key = (char)Serial.read();
+		}
+
+		if (key == 'A') {
+			waitForResponse = false;
+		}
+
+		if (key == 'B') {
+			activeMenu->display();
+			return;
+			waitForResponse = false;
+		}
+	}
+	lcd.clear();
+	lcd.print(F("A) Enable/Disable"));
+	lcd.setCursor(0,1);
+	lcd.print(F("C) When Disabled"));
+	lcd.setCursor(0,2);
+	lcd.print(F("D) EXIT"));
+
+	waitForResponse = true;
+	boolean flag = true;
+	while (waitForResponse) {
+		key = kpd.getKey();
+
+		//Allow for keyboard input as well
+		if (Serial.available() > 0) {
+			key = (char)Serial.read();
+		}
+
+		switch (key){
+			case 'A':
+			if (flag){
+				outfeed.enable();
+				flag = false;
+				} else {
+				outfeed.disable();
+				flag = true;
+			}
+			break;
+
+			case 'C':
+
+			if (!flag){
+				configuration.physical.outfeedEnable = !configuration.physical.outfeedEnable;
+			}
+			waitForResponse = false;
+			break;
+
+			case 'D':
+			activeMenu->display();
+			return;
+			break;
+
+		}
+	}
+
+	//OUtfeed Direction test
+	lcd.clear();
+	lcd.print(F("Outfeed Direction..."));
+	delay(5000);
+	lcd.clear();
+	lcd.print(F("Continue?"));
+	lcd.setCursor(0,1);
+	lcd.print(F("A) Yes"));
+	lcd.setCursor(0,2);
+	lcd.print(F("B) No"));
+	waitForResponse = true;
+	while (waitForResponse) {
+		key = kpd.getKey();
+
+		//Allow for keyboard input as well
+		if (Serial.available() > 0) {
+			key = (char)Serial.read();
+		}
+
+		if (key == 'A') {
+			waitForResponse = false;
+		}
+
+		if (key == 'B') {
+			activeMenu->display();
+			return;
+		}
+	}
+
+	outfeed.enable();
+	outfeed.setRPM(1);
+
+	lcd.clear();
+	lcd.print(F("Outfeed dir OK?"));
+	lcd.setCursor(0,1);
+	lcd.print(F("A) Yes"));
+	lcd.setCursor(0,2);
+	lcd.print(F("B) No"));
+	lcd.setCursor(0,3);
+	lcd.print(F("D) Exit"));
+	waitForResponse = true;
+	while (waitForResponse) {
+		key = kpd.getKey();
+
+		//Allow for keyboard input as well
+		if (Serial.available() > 0) {
+			key = (char)Serial.read();
+		}
+
+		switch (key){
+			case 'A':
+			if (flag){
+				outfeed.disable();
+				waitForResponse = false;
+			}
+			break;
+
+			case 'B':
+			configuration.physical.outfeedDirection = !configuration.physical.outfeedDirection;
+			outfeed.setDirection();
+
+			break;
+
+			case 'D':
+			outfeed.disable();
+			activeMenu->display();
+			return;
+			break;
+
+		}
+	}
+
+	// MicroStepping test
+	lcd.clear();
+	lcd.print(F("Microsteping Test"));
+	delay(5000);
+	lcd.clear();
+	lcd.print(F("Mark the Roller. "));
+	lcd.setCursor(0,1);
+	lcd.print(F("Attempting 1 rev"));
+	lcd.setCursor(0,2);
+	lcd.print(F("A) Begin"));
+	lcd.setCursor(0,3);
+	lcd.print(F("B) Exit"));
+	waitForResponse = true;
+	while (waitForResponse) {
+		key = kpd.getKey();
+
+		//Allow for keyboard input as well
+		if (Serial.available() > 0) {
+			key = (char)Serial.read();
+		}
+
+		if (key == 'A') {
+			waitForResponse = false;
+		}
+
+		if (key == 'B') {
+			activeMenu->display();
+			return;
+		}
+	}
+	lcd.clear();
+	lcd.print(F("Rotating 1 rev..."));
+	outfeed.enable();
+	pinMode(6,OUTPUT);
+
+	outfeed.enable();
+	float rpm = 10.0;
+	outfeed.setRPM(rpm);
+	delay(1000.0*60.0/rpm);
+	outfeed.disable();
+
+	lcd.clear();
+	lcd.print(F("If outfeed didn't"));
+	lcd.setCursor(0,1);
+	lcd.print(F("make 1 rev, check"));
+	lcd.setCursor(0,2);
+	lcd.print(F("the wiring and"));
+	lcd.setCursor(0,3);
+	lcd.print(F("microstep settings"));
+	delay(5000);
+
+	//Test Roller diameter
+	lcd.clear();
+	lcd.print(F("Roller Diameter Test"));
+	delay(5000);
+	lcd.clear();
+	lcd.print(F("Load 10ft filament."));
+	lcd.setCursor(0,1);
+	lcd.print(F("press Stop at 10Ft."));
+	lcd.setCursor(0,2);
+	lcd.print(F("A) Begin"));
+	lcd.setCursor(0,3);
+	lcd.print(F("B) Exit"));
+	waitForResponse = true;
+	while (waitForResponse) {
+		key = kpd.getKey();
+
+		//Allow for keyboard input as well
+		if (Serial.available() > 0) {
+			key = (char)Serial.read();
+		}
+
+		if (key == 'A') {
+			waitForResponse = false;
+		}
+
+		if (key == 'B') {
+			activeMenu->display();
+			return;
+		}
+	}
+	outfeed.enable();
+	rpm = 20.0;
+	outfeed.setRPM(rpm);
+	unsigned long startTime = millis();
+	lcd.clear();
+	lcd.print(F("press Stop at 10ft."));
+	lcd.setCursor(0,1);
+	lcd.print(F("A) Stop"));
+	lcd.setCursor(0,2);
+	lcd.print(F("B) Exit"));
+	waitForResponse = true;
+	while (waitForResponse) {
+		key = kpd.getKey();
+
+		//Allow for keyboard input as well
+		if (Serial.available() > 0) {
+			key = (char)Serial.read();
+		}
+
+		if (key == 'A') {
+			waitForResponse = false;
+		}
+
+		if (key == 'B') {
+			outfeed.disable();
+			activeMenu->display();
+			return;
+		}
+	}
+
+	outfeed.disable();
+	unsigned long stopTime = millis();
+	configuration.physical.outfeedRollerRadius = (300.0*60.0*1000.0)/((float)(stopTime-startTime)*rpm*2.0*3.14159);
+
+	//Save the settings
+	lcd.clear();
+	lcd.print(F("Save Settings?"));
+	lcd.setCursor(0,1);
+	lcd.print(F("A) Yes"));
+	lcd.setCursor(0,2);
+	lcd.print(F("B) No"));
+	waitForResponse = true;
+	while (waitForResponse) {
+		key = kpd.getKey();
+
+		//Allow for keyboard input as well
+		if (Serial.available() > 0) {
+			key = (char)Serial.read();
+		}
+
+		if (key == 'A') {
+			configuration.saveConfig();
+			waitForResponse = false;
+		}
+
+		if (key == 'B') {
+			waitForResponse = false;
+		}
+	}
+	activeMenu->display();
 }
 
 void testStarveFeeder(){
-  
+
 }
 
 void testSpooler(){
-  
+	lcd.clear();
+	lcd.print(F("WARNING: The Spooler"));
+	lcd.setCursor(0,1);
+	lcd.print(F("must be free to move"));
+	lcd.setCursor(0,2);
+	lcd.print(F("to perform the"));
+	lcd.setCursor(0,3);
+	lcd.print(F("following tests."));
+	delay(5000);
+	lcd.clear();
+	lcd.print(F("Continue?"));
+	lcd.setCursor(0,1);
+	lcd.print(F("A) Yes"));
+	lcd.setCursor(0,2);
+	lcd.print(F("B) No"));
+	boolean waitForResponse = true;
+	while (waitForResponse) {
+		key = kpd.getKey();
+
+		//Allow for keyboard input as well
+		if (Serial.available() > 0) {
+			key = (char)Serial.read();
+		}
+
+		if (key == 'A') {
+			waitForResponse = false;
+		}
+
+		if (key == 'B') {
+			activeMenu->display();
+			return;
+			waitForResponse = false;
+		}
+	}
+	lcd.clear();
+	lcd.print(F("A) Enable/Disable"));
+	lcd.setCursor(0,1);
+	lcd.print(F("C) When Disabled"));
+	lcd.setCursor(0,2);
+	lcd.print(F("D) EXIT"));
+
+	waitForResponse = true;
+	boolean flag = true;
+	while (waitForResponse) {
+		key = kpd.getKey();
+
+		//Allow for keyboard input as well
+		if (Serial.available() > 0) {
+			key = (char)Serial.read();
+		}
+
+		switch (key){
+			case 'A':
+			if (flag){
+				spooler.enable();
+				flag = false;
+				} else {
+				spooler.disable();
+				flag = true;
+			}
+			break;
+
+			case 'C':
+
+			if (!flag){
+				configuration.physical.spoolerEnable = !configuration.physical.spoolerEnable;
+			}
+			waitForResponse = false;
+			break;
+
+			case 'D':
+			activeMenu->display();
+			return;
+			break;
+
+		}
+	}
+
+	//spooler Direction test
+	lcd.clear();
+	lcd.print(F("spooler Direction..."));
+	delay(5000);
+	lcd.clear();
+	lcd.print(F("Continue?"));
+	lcd.setCursor(0,1);
+	lcd.print(F("A) Yes"));
+	lcd.setCursor(0,2);
+	lcd.print(F("B) No"));
+	waitForResponse = true;
+	while (waitForResponse) {
+		key = kpd.getKey();
+
+		//Allow for keyboard input as well
+		if (Serial.available() > 0) {
+			key = (char)Serial.read();
+		}
+
+		if (key == 'A') {
+			waitForResponse = false;
+		}
+
+		if (key == 'B') {
+			activeMenu->display();
+			return;
+		}
+	}
+
+	spooler.enable();
+	spooler.setRPM(1);
+
+	lcd.clear();
+	lcd.print(F("spooler dir OK?"));
+	lcd.setCursor(0,1);
+	lcd.print(F("A) Yes"));
+	lcd.setCursor(0,2);
+	lcd.print(F("B) No"));
+	lcd.setCursor(0,3);
+	lcd.print(F("D) Exit"));
+	waitForResponse = true;
+	while (waitForResponse) {
+		key = kpd.getKey();
+
+		//Allow for keyboard input as well
+		if (Serial.available() > 0) {
+			key = (char)Serial.read();
+		}
+
+		switch (key){
+			case 'A':
+			if (flag){
+				spooler.disable();
+				waitForResponse = false;
+			}
+			break;
+
+			case 'B':
+			configuration.physical.spoolerDirection = !configuration.physical.spoolerDirection;
+			spooler.setDirection();
+
+			break;
+
+			case 'D':
+			spooler.disable();
+			activeMenu->display();
+			return;
+			break;
+
+		}
+	}
+
+	// MicroStepping test
+	lcd.clear();
+	lcd.print(F("Microsteping Test"));
+	delay(5000);
+	lcd.clear();
+	lcd.print(F("Mark the Roller. "));
+	lcd.setCursor(0,1);
+	lcd.print(F("Attempting 1 rev"));
+	lcd.setCursor(0,2);
+	lcd.print(F("A) Begin"));
+	lcd.setCursor(0,3);
+	lcd.print(F("B) Exit"));
+	waitForResponse = true;
+	while (waitForResponse) {
+		key = kpd.getKey();
+
+		//Allow for keyboard input as well
+		if (Serial.available() > 0) {
+			key = (char)Serial.read();
+		}
+
+		if (key == 'A') {
+			waitForResponse = false;
+		}
+
+		if (key == 'B') {
+			activeMenu->display();
+			return;
+		}
+	}
+	lcd.clear();
+	lcd.print(F("Rotating 1 rev..."));
+	spooler.enable();
+	pinMode(6,OUTPUT);
+
+	spooler.enable();
+	float rpm = 10.0;
+	spooler.setRPM(rpm);
+	delay(1000.0*60.0/rpm);
+	spooler.disable();
+
+	lcd.clear();
+	lcd.print(F("If spooler didn't"));
+	lcd.setCursor(0,1);
+	lcd.print(F("make 1 rev, check"));
+	lcd.setCursor(0,2);
+	lcd.print(F("the wiring and"));
+	lcd.setCursor(0,3);
+	lcd.print(F("microstep settings"));
+	delay(5000);
+
+	//Test Roller/spool ratio diameter
+	lcd.clear();
+	lcd.print(F("Roller/Disk Test"));
+	delay(5000);
+	lcd.clear();
+	lcd.print(F("Place roller on Disk"));
+	lcd.setCursor(0,1);
+	lcd.print(F("press Stop at 1 rev."));
+	lcd.setCursor(0,2);
+	lcd.print(F("A) Begin"));
+	lcd.setCursor(0,3);
+	lcd.print(F("B) Exit"));
+	waitForResponse = true;
+	while (waitForResponse) {
+		key = kpd.getKey();
+
+		//Allow for keyboard input as well
+		if (Serial.available() > 0) {
+			key = (char)Serial.read();
+		}
+
+		if (key == 'A') {
+			waitForResponse = false;
+		}
+
+		if (key == 'B') {
+			activeMenu->display();
+			return;
+		}
+	}
+	spooler.enable();
+	rpm = 20.0;
+	spooler.setRPM(rpm);
+	unsigned long startTime = millis();
+	lcd.clear();
+	lcd.print(F("press Stop at 1 rev."));
+	lcd.setCursor(0,1);
+	lcd.print(F("A) Stop"));
+	lcd.setCursor(0,2);
+	lcd.print(F("B) Exit"));
+	waitForResponse = true;
+	while (waitForResponse) {
+		key = kpd.getKey();
+
+		//Allow for keyboard input as well
+		if (Serial.available() > 0) {
+			key = (char)Serial.read();
+		}
+
+		if (key == 'A') {
+			waitForResponse = false;
+		}
+
+		if (key == 'B') {
+			outfeed.disable();
+			activeMenu->display();
+			return;
+		}
+	}
+
+	spooler.disable();
+	unsigned long stopTime = millis();
+	configuration.physical.spoolerMotorRollerRadius = 1.0;
+	configuration.physical.spoolerDiskRadius = (rpm*(float)(stopTime-startTime))/(1000.0*60.0);
+
+	//Don't forget to check spool dimensions
+	lcd.clear();
+	lcd.print(F("Don't forget to set "));
+	lcd.setCursor(0,1);
+	lcd.print(F("the spool Dimensions"));
+	lcd.setCursor(0,2);
+	lcd.print(F("in the spooler menu"));
+	delay(5000);
+
+	//Save the settings
+	lcd.clear();
+	lcd.print(F("Save Settings?"));
+	lcd.setCursor(0,1);
+	lcd.print(F("A) Yes"));
+	lcd.setCursor(0,2);
+	lcd.print(F("B) No"));
+	waitForResponse = true;
+	while (waitForResponse) {
+		key = kpd.getKey();
+
+		//Allow for keyboard input as well
+		if (Serial.available() > 0) {
+			key = (char)Serial.read();
+		}
+
+		if (key == 'A') {
+			configuration.saveConfig();
+			waitForResponse = false;
+		}
+
+		if (key == 'B') {
+			waitForResponse = false;
+		}
+	}
+	activeMenu->display();
 }
 #endif
 
+void beginBarrelTest(){
+	activeMenu = &barrelTestMenu;
+	activeMenu->reset();
+	barrel.setMode(MANUAL);
+	strcpy(barrelMode, "Off");
+	barrel.setDutyCycle(0);
+	currentState = BARREL_TEST;
+}
+void barrelTest(){
+	barrel.activate();
+}
 
+void exitBarrelTest(){
+	barrel.off();
+	strcpy(barrelMode,"Off");
+	currentState = STANDBY;
+	activeMenu = &mainMenu;
+}
 
+void beginNozzleTest(){
+	activeMenu = &nozzleTestMenu;
+	activeMenu->reset();
+	nozzle.setMode(MANUAL);
+	strcpy(nozzleMode, "Off");
+	nozzle.setDutyCycle(0);
+	currentState = NOZZLE_TEST;
+}
+void nozzleTest(){
+	nozzle.activate();
+}
+
+void exitNozzleTest(){
+	nozzle.off();
+	strcpy(nozzleMode, "Off");
+	currentState = STANDBY;
+	activeMenu = &mainMenu;
+}
+
+void beginStarveFeederTest(){
+	activeMenu = &starveFeederTestMenu;
+	activeMenu->reset();
+	starveFeeder.loadConfig();
+	currentState = STANDBY;
+}
+
+void sendCyclesToStarveFeeder(){
+	starveFeeder.loadConfig();
+	starveFeeder.setCycles(cyclesToSendToStarveFeeder);
+}
+
+void sendTimeToStarveFeeder(){
+	starveFeeder.loadConfig();
+	starveFeederStopTime = millis()+(unsigned long)timeToSendToStarveFeeder*60L*1000L;
+	Serial.print("StarveFeederStopTime: ");
+	Serial.println(starveFeederStopTime);	
+	starveFeeder.on();
+	currentState = STARVE_FEEDER_TEST;
+}
+
+void starveFeederTest(){
+	if (millis() >= starveFeederStopTime){
+		Serial.println("Turning Starve feeder off");
+		starveFeeder.off();
+		currentState = STANDBY;
+	}
+}
+
+void stopStarveFeeder(){
+	starveFeeder.off();
+	currentState = STANDBY;
+}
+
+void exitStarveFeederTest(){
+	starveFeeder.off();
+	currentState = STANDBY;
+	activeMenu = &mainMenu;
+}
 
 
 

@@ -22,11 +22,13 @@ class Spooler
   public:
 
     Spooler(Configuration* configuration, Outfeed* outfeed);//constructor
+	void setConstatns();
     void setRPM();
     float  getRPM();
     void setRPM(float rpm);
     void enable();
     void disable(); 
+	void setDirection();
     Outfeed* _outfeed;
     
   private:

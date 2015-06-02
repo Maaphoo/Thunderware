@@ -33,11 +33,15 @@ class StepperMotor
     float getRPM();
     void disable();
     void enable();
+	void setDirection();
+	float getFrequency();
     double _rpm;
+    int _ratio;//Stepmode And gear ratio (if it exists)
 
+	
   private:
     FastPWM _timer;
-    int _ratio;//Stepmode And gear ratio (if it exists)
+
     int _pinSet;
     Configuration* _configuration;
 };

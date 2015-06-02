@@ -15,7 +15,7 @@ FastPWM::FastPWM(int pinSet)
 {
  _pinSet = pinSet;
  switch (_pinSet){
-   case 0://SET_3_14_8
+   case 0://SET_6_14_8
      _timerNumber = 4;
      break;
    case 1://SET_11_15_12
@@ -50,12 +50,14 @@ int prescaler;
     int prescalers[] = {1,8,32,64,128,256,1024};
     
       //Select Prescaler assumes using 16bit fast PWM
+	
     for (int i=0; i<7;i++){
       if (16000000/(2*frequency* *(prescalers+i))< 255){
         prescaler = *(prescalers+i);
         break;
       }
     }
+		
       
     byte clockMode = 0 ; // 0 means no clocking - the counter is frozen.
     switch (prescaler)
@@ -120,7 +122,6 @@ int prescaler;
       //the clockMode (prescaler setting) takes up the last 3 bits of TCCR4B
       //Capture mode is first 2 bits of TCCR4B so shift 6;
       //The format is the same for the other timers.
-  
       TCCR4A = (outModeA << 6) | (outModeB << 4) | (mode & 3);
       TCCR4B = (captureMode << 6) | ((mode & 0xC) << 1) | clockMode;
       OCR4A = (short)(16000000.0/(2*frequency * prescaler));//OCR4A because signal will be on pin 6 PH3 

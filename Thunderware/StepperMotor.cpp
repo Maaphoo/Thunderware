@@ -11,7 +11,7 @@
 
 #include "Arduino.h"
 #include "StepperMotor.h"
-#include "config.h"
+//#include "config.h"
 #include "Configuration.h"
 
 class Configuration;
@@ -22,12 +22,12 @@ StepperMotor::StepperMotor(Configuration* configuration, int pinSet) : _timer(pi
   _configuration = configuration;
   //Set Direction, Step and Enable pins to output
   switch (_pinSet){
-    case 0://SET_3_14_6
+    case 0://SET_8_14_6
       _ratio = _configuration->physical.augerStepMode*_configuration->physical.augerGearRatio;
 
       DDRJ |= B00000010; //Direction, Pin 14 to output
       DDRH |= B00001000; // Step pin 6 to output
-      DDRE |= B00100000;//Enable pin 3 to output
+      DDRH |= B00100000;//Enable pin 8 to output
 
       //set Auger Stepper direction (pin 14)
       if (_configuration->physical.augerDirection){
@@ -51,7 +51,7 @@ StepperMotor::StepperMotor(Configuration* configuration, int pinSet) : _timer(pi
       }else{
         PORTJ &= B11111110; // Direction is backward so set the pin LOW
       }
-     
+
       break;
 
     case 2://SET_10_16_9
@@ -69,7 +69,7 @@ StepperMotor::StepperMotor(Configuration* configuration, int pinSet) : _timer(pi
       }
 
       break;
-      
+
     case 3://SET_46_48_5
 //      _ratio = configuration->physical.starveFeederStepMode;
 //
@@ -87,6 +87,11 @@ StepperMotor::StepperMotor(Configuration* configuration, int pinSet) : _timer(pi
     }
     disable(); // Make sure that the steppers begin disabled
  }
+
+float StepperMotor::getFrequency(){
+
+	return _timer.getFrequency();
+}
 
 void StepperMotor::setRPM(double RPM){
   _rpm = RPM;
@@ -109,9 +114,9 @@ void StepperMotor::enable() {
       //Auger Stepper pin 8
       //disable is backwards for the KL stepper driver being used. Set LOW
       if (_configuration->physical.augerEnable){
-      PORTE |= B00100000;
+      PORTH |= B00100000;
       }else{
-      PORTE &= B11011111;
+      PORTH &= B11011111;
       }
       break;
 
@@ -132,9 +137,9 @@ void StepperMotor::enable() {
         PORTH |= B01000000;
       }else{
         PORTH &= B10111111;
-      }          
+      }
       break;
-       
+
     case 3://SET_46_48_5
        //StarveFeeder Stepper pin 48
        //enable StarveFeeder stepper by setting the enable pin HIGH
@@ -142,8 +147,8 @@ void StepperMotor::enable() {
 //       PORTL |= B00000010;
 //      }else{
 //       PORTL &= B11111101;
-//      }   
-       break;  
+//      }
+       break;
      }
 }
 
@@ -152,11 +157,11 @@ void StepperMotor::disable() {
     case 0://SET_3_14_8
       //Auger Stepper pin 3
       if (!_configuration->physical.augerEnable){
-        PORTE |= B00100000;
+        PORTH |= B00100000;
       }else{
-        PORTE &= B11011111;
+        PORTH &= B11011111;
       }
-      
+
       break;
 
     case 1://SET_11_15_12
@@ -166,7 +171,7 @@ void StepperMotor::disable() {
       PORTB |= B01000000;
       }else{
       PORTB &= B10111111;
-      }      
+      }
       break;
 
     case 2://SET_10_16_9
@@ -176,9 +181,9 @@ void StepperMotor::disable() {
          PORTH |= B01000000;
       }else{
        PORTH &= B10111111;
-      }              
+      }
       break;
-       
+
     case 3://SET_46_48_5
        //StarveFeeder Stepper pin 48
        //disable StarveFeeder stepper by setting the enable pin low
@@ -186,9 +191,64 @@ void StepperMotor::disable() {
 //       PORTL |= B00000010;
 //      }else{
 //       PORTL &= B11111101;
-//      }           
-      
+//      }
+
       break;
   }
+  setRPM(0.0);// turn the PWM to the pin off for safety
+}
+
+
+void StepperMotor::setDirection(){
+
+	  switch (_pinSet){
+		  case 0://SET_8_14_6
+		  //set Auger Stepper direction (pin 14)
+		  if (_configuration->physical.augerDirection){
+			  PORTJ |= B00000010;// Direction is forward so set the pin HIGH
+			  }else{
+			  PORTJ &= B11111101; // Direction is Backward so set the pin LOW
+		  }
+
+		  break;
+
+		  case 1://SET_11_15_12
+
+		  //set outfeed Stepper direction (pin 15)
+		  if (_configuration->physical.outfeedDirection){
+			  PORTJ |= B00000001;// Direction is forward so set the pin HIGH
+			  }else{
+			  PORTJ &= B11111110; // Direction is backward so set the pin LOW
+		  }
+
+		  break;
+
+		  case 2://SET_10_16_9
+
+		  //set spool Stepper direction pin (pin 16)
+		  if (_configuration->physical.spoolerDirection){
+			  PORTH = PORTH | B00000010;// Direction is backward so set the pin HIGH
+			  }else{
+			  PORTH = PORTH & B11111101; // Direction is forward so set the pin LOW
+		  }
+
+		  break;
+
+		  case 3://SET_46_48_5
+		  //      _ratio = configuration->physical.starveFeederStepMode;
+		  //
+		  //      DDRL |= B00001000; //Direction, pin 46 to output
+		  //      DDRL |= B00000010; //Enable, pin 48 to output
+		  //      DDRE |= B00001000;//Step, pin 5 to output
+
+		  //set Starve Feeder Stepper direction pin (pin 46)
+		  //      if (configuration->physical.starveFeederDirection){
+		  //        PORTL = PORTL | B00001000;// Direction is backward so set the pin HIGH
+		  //      }else{
+		  //        PORTL = PORTL & B11110111; // Direction is forward so set the pin LOW
+		  //      }
+		  break;
+	  }
+
 }
 
