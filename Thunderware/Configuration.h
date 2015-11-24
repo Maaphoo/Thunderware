@@ -26,8 +26,9 @@ class Configuration
       //General
       int profileNumber;
       char name[20];
-      double diaSetPoint;
-      float tolerance;
+      double diaSetPoint;//mm
+	  float density; //g/cm3
+      float tolerance;//mm
 
       //Starve Feeder
       float gramsPerMin;
@@ -113,10 +114,10 @@ class Configuration
       float spoolerTraverseLength;
       float spoolerMotorRollerRadius;
 
-      float rsc1; // Inner radius of spool core
-      float rsc2; // Outer radius of spool core
-      float rsm; // radius of spool stepper motor roller
-      float ts; // Traverse Length in mm
+//       float rsc1; // Inner radius of spool core
+//       float rsc2; // Outer radius of spool core
+//       float rsm; // radius of spool stepper motor roller
+//       float ts; // Traverse Length in mm
 
 
       //Barrel

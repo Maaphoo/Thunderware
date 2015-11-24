@@ -10,7 +10,6 @@ Released into the public domain.
 
 #include "Arduino.h"
 #include "Spooler.h"
-//#include "config.h"
 
 Spooler::Spooler(Configuration* configuration, Outfeed* outfeed) :   _motor(configuration, configuration->physical.spoolerPinSet)
 {
@@ -18,10 +17,10 @@ Spooler::Spooler(Configuration* configuration, Outfeed* outfeed) :   _motor(conf
 	_diaSetPoint = _configuration->profile.diaSetPoint;
 	_configuration = configuration;
 	c1 = (_configuration->physical.outfeedRollerRadius
-	*_configuration->physical.spoolerDiskRadius
-	*_configuration->physical.spoolerStepMode
-	/(_configuration->physical.spoolerMotorRollerRadius
-	*_configuration->physical.outfeedStepMode));
+		*_configuration->physical.spoolerDiskRadius
+		*_configuration->physical.spoolerStepMode
+		/(_configuration->physical.spoolerMotorRollerRadius
+		*_configuration->physical.outfeedStepMode));
 	c2 = (_configuration->profile.diaSetPoint/(PI*_configuration->physical.spoolerTraverseLength));
 	c3 = (_configuration->physical.spoolerCoreRadius*_configuration->physical.spoolerCoreRadius);
 	c4 = (PI*_configuration->physical.outfeedRollerRadius/((double)_configuration->physical.outfeedStepMode*100.0));

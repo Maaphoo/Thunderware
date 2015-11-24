@@ -232,7 +232,8 @@ void loop() {
 		nozzleTemp = nozzle.getTemp();
 
 		//diameter
-
+		//diameter = outfeed.getDia();
+		
 		//soakTime remaining
 		if (currentState == SOAK){
 			makeTimeString(soakTimeRemaining,soakEndTime-millis());
@@ -565,11 +566,21 @@ void setAugerRPM(){
 }
 
 void setOutfeedRPM(){
+	outfeed.enable();
 	outfeed.setRPM(configuration.profile.outfeedRPM);
 }
 
 void setOutfeedTunings(){
 	outfeed.setTunings();
+}
+
+void baseOutfeedRPMonGPM(){
+	//(g/min)*(1/density)*(127.32/D^2)*(1Rev/Pi*D) or (Gpm*40.528/(Density*Dia*Dia*DiaRoller)
+	float cm3PerMin = configuration.profile.gramsPerMin/configuration.profile.density;
+	float cmPerMin = cm3PerMin*400/(3.14159*configuration.profile.diaSetPoint*configuration.profile.diaSetPoint);
+	float revPerMin = cmPerMin*10/(2*3.14159*configuration.physical.outfeedRollerRadius);
+	configuration.profile.outfeedRPM = revPerMin;
+	outfeed.setRPM(revPerMin);
 }
 
 #include "test.h"

@@ -292,12 +292,12 @@ void Menu::display()
 				_getValueStr(&_text[valueIndex], _displayed[i]);
 
 			}
-			//Serial.println(_text);
+			Serial.println(_text);
 			_lcd->setCursor(0, i);
 			_lcd->print(_text);
 		}
 	}
-	//Serial.println("");
+	Serial.println("");
 }
 
 

@@ -14,7 +14,7 @@ Outfeed::Outfeed(Configuration* configuration)
 :  _motor(configuration, configuration->physical.outfeedPinSet),
 _caliper(configuration),
 _pid(&_caliper.dia,
-&_motor._rpm,//&_rpm, // I think that the outfeed PID problem is here. Should be _motor.r
+&_motor._rpm,
 &configuration->profile.diaSetPoint,
 configuration->profile.outfeedKp,
 configuration->profile.outfeedKi,
@@ -41,7 +41,7 @@ void Outfeed::linReg(float *slope, float *yIntercept, float *xVals, float *yVals
 
 void Outfeed::setRPM(float rpm)
 {
-	activate();
+	/*activate();*/
 	_motor.setRPM(rpm);
 }
 
@@ -100,7 +100,7 @@ void Outfeed::activate()
 	_mmExtruded += _configuration->physical.outfeedRollerRadius*_motor.getRPM()*2.0*PI/60.0*(_now-_previousTime)/1000.0;
 
 	if (_now >= _computeTime){
-		_caliper.update();
+		//_caliper.update();
 		if (_pid.GetMode() == AUTOMATIC) {
 			_pid.Compute();
 			_motor.setRPM(_motor._rpm);

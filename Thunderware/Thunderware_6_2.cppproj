@@ -2,7 +2,7 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectVersion>7.0</ProjectVersion>
+    <ProjectVersion>6.2</ProjectVersion>
     <ToolchainName>com.Atmel.AVRGCC8.CPP</ToolchainName>
     <ProjectGuid>{07b459b4-8d76-4638-bc6d-a459ba2d616b}</ProjectGuid>
     <avrdevice>atmega2560</avrdevice>
@@ -33,7 +33,7 @@
         <documentation help="" />
         <offline-documentation help="" />
         <dependencies>
-          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.18.1" />
+          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.10.1" />
         </dependencies>
       </framework-data>
     </AsfFrameworkConfig>
@@ -49,12 +49,10 @@
       </ToolNumber>
       <ToolName xmlns="">Simulator</ToolName>
     </com_atmel_avrdbg_tool_simulator>
-    <ExternalProgrammingToolCommand />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
       <AvrGccCpp>
-  <avrgcc.common.Device>-mmcu=atmega2560 -B "%24(PackRepoDir)\atmel\ATmega_DFP\1.0.90\gcc\dev\atmega2560"</avrgcc.common.Device>
   <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
   <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
   <avrgcc.common.outputfiles.eep>True</avrgcc.common.outputfiles.eep>
@@ -73,19 +71,21 @@
   </avrgcc.compiler.symbols.DefSymbols>
   <avrgcc.compiler.directories.IncludePaths>
     <ListValues>
-      <Value>{runtime.tools.avr-gcc.path}/lib/gcc/avr/4.8.1/include</Value>
-      <Value>{runtime.tools.avr-gcc.path}//avr/include/avr/</Value>
-      <Value>{runtime.tools.avr-gcc.path}/avr/include/</Value>
+      <Value></Value>
+      <Value>c:/program files (x86)/arduino/hardware/tools/avr/lib/gcc/avr/4.8.1/include/</Value>
+      <Value>c:/program files (x86)/arduino/hardware/tools/avr/avr/</Value>
+      <Value>c:/program files (x86)/arduino/hardware/tools/avr/avr/include/avr/</Value>
+      <Value>c:/program files (x86)/arduino/hardware/tools/avr/avr/include/</Value>
       <Value>C:/Users/Matt Rogge/Documents/Arduino/libraries</Value>
-      <Value>C:/Program Files (x86)/Atmel/Studio/7.0/Extensions/m2zu5bhx.ecj/Micro Platforms/default/debuggers</Value>
+      <Value>C:/Program Files (x86)/Visual Micro/Visual Micro for Arduino/Micro Platforms/default/debuggers</Value>
       <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries</Value>
       <Value>C:/Program Files (x86)/Arduino/libraries</Value>
+      <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/EEPROM/utility</Value>
+      <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/EEPROM</Value>
       <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/Wire/utility</Value>
       <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/Wire</Value>
       <Value>C:/Program Files (x86)/Arduino/libraries/LiquidCrystal/src/utility</Value>
       <Value>C:/Program Files (x86)/Arduino/libraries/LiquidCrystal/src</Value>
-      <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/EEPROM/utility</Value>
-      <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/EEPROM</Value>
       <Value>../../Thunderware</Value>
       <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/variants/mega</Value>
       <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/cores/arduino</Value>
@@ -109,19 +109,21 @@
   </avrgcccpp.compiler.symbols.DefSymbols>
   <avrgcccpp.compiler.directories.IncludePaths>
     <ListValues>
-      <Value>{runtime.tools.avr-gcc.path}/lib/gcc/avr/4.8.1/include</Value>
-      <Value>{runtime.tools.avr-gcc.path}//avr/include/avr/</Value>
-      <Value>{runtime.tools.avr-gcc.path}/avr/include/</Value>
+      <Value></Value>
+      <Value>c:/program files (x86)/arduino/hardware/tools/avr/lib/gcc/avr/4.8.1/include/</Value>
+      <Value>c:/program files (x86)/arduino/hardware/tools/avr/avr/</Value>
+      <Value>c:/program files (x86)/arduino/hardware/tools/avr/avr/include/avr/</Value>
+      <Value>c:/program files (x86)/arduino/hardware/tools/avr/avr/include/</Value>
       <Value>C:/Users/Matt Rogge/Documents/Arduino/libraries</Value>
-      <Value>C:/Program Files (x86)/Atmel/Studio/7.0/Extensions/m2zu5bhx.ecj/Micro Platforms/default/debuggers</Value>
+      <Value>C:/Program Files (x86)/Visual Micro/Visual Micro for Arduino/Micro Platforms/default/debuggers</Value>
       <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries</Value>
       <Value>C:/Program Files (x86)/Arduino/libraries</Value>
+      <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/EEPROM/utility</Value>
+      <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/EEPROM</Value>
       <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/Wire/utility</Value>
       <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/Wire</Value>
       <Value>C:/Program Files (x86)/Arduino/libraries/LiquidCrystal/src/utility</Value>
       <Value>C:/Program Files (x86)/Arduino/libraries/LiquidCrystal/src</Value>
-      <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/EEPROM/utility</Value>
-      <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/EEPROM</Value>
       <Value>../../Thunderware</Value>
       <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/variants/mega</Value>
       <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/cores/arduino</Value>
@@ -135,7 +137,7 @@
   <avrgcccpp.assembler.debugging.DebugLevel>Default (-Wa,-g)</avrgcccpp.assembler.debugging.DebugLevel>
 </AvrGccCpp>
     </ToolchainSettings>
-    <VMSETTING_IncludePaths>C:/Program Files (x86)/Arduino/hardware/arduino/avr/cores/arduino;C:/Program Files (x86)/Arduino/hardware/arduino/avr/variants/mega;../../Thunderware;C:/Program Files (x86)/Arduino/libraries/LiquidCrystal/src;C:/Program Files (x86)/Arduino/libraries/LiquidCrystal/src/utility;C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/EEPROM;C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/EEPROM/utility;C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/Wire;C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/Wire/utility;C:/Program Files (x86)/Arduino/libraries;C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries;C:/Program Files (x86)/Visual Micro/Visual Micro for Arduino/Micro Platforms/default/debuggers;C:/Users/Matt Rogge/Documents/Arduino/libraries;c:/program files (x86)/arduino/hardware/tools/avr/avr/include/;c:/program files (x86)/arduino/hardware/tools/avr/avr/include/avr/;c:/program files (x86)/arduino/hardware/tools/avr/avr/;c:/program files (x86)/arduino/hardware/tools/avr/lib/gcc/avr/4.8.1/include/;;C:/Program Files (x86)/Atmel/Studio/7.0/Extensions/m2zu5bhx.ecj/Micro Platforms/default/debuggers;{runtime.tools.avr-gcc.path}/avr/include/;{runtime.tools.avr-gcc.path}//avr/include/avr/;{runtime.tools.avr-gcc.path}/lib/gcc/avr/4.8.1/include;</VMSETTING_IncludePaths>
+    <VMSETTING_IncludePaths>C:/Program Files (x86)/Arduino/hardware/arduino/avr/cores/arduino;C:/Program Files (x86)/Arduino/hardware/arduino/avr/variants/mega;../../Thunderware;C:/Program Files (x86)/Arduino/libraries/LiquidCrystal/src;C:/Program Files (x86)/Arduino/libraries/LiquidCrystal/src/utility;C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/EEPROM;C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/EEPROM/utility;C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/Wire;C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/Wire/utility;C:/Program Files (x86)/Arduino/libraries;C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries;C:/Program Files (x86)/Visual Micro/Visual Micro for Arduino/Micro Platforms/default/debuggers;C:/Users/Matt Rogge/Documents/Arduino/libraries;c:/program files (x86)/arduino/hardware/tools/avr/avr/include/;c:/program files (x86)/arduino/hardware/tools/avr/avr/include/avr/;c:/program files (x86)/arduino/hardware/tools/avr/avr/;c:/program files (x86)/arduino/hardware/tools/avr/lib/gcc/avr/4.8.1/include/;;</VMSETTING_IncludePaths>
     <VisualMicroSettings>
       <VisualMicroSettings xmlns="">
         <arduino.upload.port>COM4</arduino.upload.port>
@@ -145,7 +147,6 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ToolchainSettings>
       <AvrGccCpp>
-  <avrgcc.common.Device>-mmcu=atmega2560 -B "%24(PackRepoDir)\atmel\ATmega_DFP\1.0.90\gcc\dev\atmega2560"</avrgcc.common.Device>
   <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
   <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
   <avrgcc.common.outputfiles.eep>True</avrgcc.common.outputfiles.eep>
@@ -164,19 +165,21 @@
   </avrgcc.compiler.symbols.DefSymbols>
   <avrgcc.compiler.directories.IncludePaths>
     <ListValues>
-      <Value>{runtime.tools.avr-gcc.path}/lib/gcc/avr/4.8.1/include</Value>
-      <Value>{runtime.tools.avr-gcc.path}//avr/include/avr/</Value>
-      <Value>{runtime.tools.avr-gcc.path}/avr/include/</Value>
+      <Value></Value>
+      <Value>c:/program files (x86)/arduino/hardware/tools/avr/lib/gcc/avr/4.8.1/include/</Value>
+      <Value>c:/program files (x86)/arduino/hardware/tools/avr/avr/</Value>
+      <Value>c:/program files (x86)/arduino/hardware/tools/avr/avr/include/avr/</Value>
+      <Value>c:/program files (x86)/arduino/hardware/tools/avr/avr/include/</Value>
       <Value>C:/Users/Matt Rogge/Documents/Arduino/libraries</Value>
-      <Value>C:/Program Files (x86)/Atmel/Studio/7.0/Extensions/m2zu5bhx.ecj/Micro Platforms/default/debuggers</Value>
+      <Value>C:/Program Files (x86)/Visual Micro/Visual Micro for Arduino/Micro Platforms/default/debuggers</Value>
       <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries</Value>
       <Value>C:/Program Files (x86)/Arduino/libraries</Value>
+      <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/EEPROM/utility</Value>
+      <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/EEPROM</Value>
       <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/Wire/utility</Value>
       <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/Wire</Value>
       <Value>C:/Program Files (x86)/Arduino/libraries/LiquidCrystal/src/utility</Value>
       <Value>C:/Program Files (x86)/Arduino/libraries/LiquidCrystal/src</Value>
-      <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/EEPROM/utility</Value>
-      <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/EEPROM</Value>
       <Value>../../Thunderware</Value>
       <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/variants/mega</Value>
       <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/cores/arduino</Value>
@@ -200,19 +203,21 @@
   </avrgcccpp.compiler.symbols.DefSymbols>
   <avrgcccpp.compiler.directories.IncludePaths>
     <ListValues>
-      <Value>{runtime.tools.avr-gcc.path}/lib/gcc/avr/4.8.1/include</Value>
-      <Value>{runtime.tools.avr-gcc.path}//avr/include/avr/</Value>
-      <Value>{runtime.tools.avr-gcc.path}/avr/include/</Value>
+      <Value></Value>
+      <Value>c:/program files (x86)/arduino/hardware/tools/avr/lib/gcc/avr/4.8.1/include/</Value>
+      <Value>c:/program files (x86)/arduino/hardware/tools/avr/avr/</Value>
+      <Value>c:/program files (x86)/arduino/hardware/tools/avr/avr/include/avr/</Value>
+      <Value>c:/program files (x86)/arduino/hardware/tools/avr/avr/include/</Value>
       <Value>C:/Users/Matt Rogge/Documents/Arduino/libraries</Value>
-      <Value>C:/Program Files (x86)/Atmel/Studio/7.0/Extensions/m2zu5bhx.ecj/Micro Platforms/default/debuggers</Value>
+      <Value>C:/Program Files (x86)/Visual Micro/Visual Micro for Arduino/Micro Platforms/default/debuggers</Value>
       <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries</Value>
       <Value>C:/Program Files (x86)/Arduino/libraries</Value>
+      <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/EEPROM/utility</Value>
+      <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/EEPROM</Value>
       <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/Wire/utility</Value>
       <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/Wire</Value>
       <Value>C:/Program Files (x86)/Arduino/libraries/LiquidCrystal/src/utility</Value>
       <Value>C:/Program Files (x86)/Arduino/libraries/LiquidCrystal/src</Value>
-      <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/EEPROM/utility</Value>
-      <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/EEPROM</Value>
       <Value>../../Thunderware</Value>
       <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/variants/mega</Value>
       <Value>C:/Program Files (x86)/Arduino/hardware/arduino/avr/cores/arduino</Value>
@@ -226,7 +231,7 @@
   <avrgcccpp.assembler.debugging.DebugLevel>Default (-Wa,-g)</avrgcccpp.assembler.debugging.DebugLevel>
 </AvrGccCpp>
     </ToolchainSettings>
-    <VMSETTING_IncludePaths>C:/Program Files (x86)/Arduino/hardware/arduino/avr/cores/arduino;C:/Program Files (x86)/Arduino/hardware/arduino/avr/variants/mega;../../Thunderware;C:/Program Files (x86)/Arduino/libraries/LiquidCrystal/src;C:/Program Files (x86)/Arduino/libraries/LiquidCrystal/src/utility;C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/EEPROM;C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/EEPROM/utility;C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/Wire;C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/Wire/utility;C:/Program Files (x86)/Arduino/libraries;C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries;C:/Program Files (x86)/Visual Micro/Visual Micro for Arduino/Micro Platforms/default/debuggers;C:/Users/Matt Rogge/Documents/Arduino/libraries;c:/program files (x86)/arduino/hardware/tools/avr/avr/include/;c:/program files (x86)/arduino/hardware/tools/avr/avr/include/avr/;c:/program files (x86)/arduino/hardware/tools/avr/avr/;c:/program files (x86)/arduino/hardware/tools/avr/lib/gcc/avr/4.8.1/include/;;C:/Program Files (x86)/Atmel/Studio/7.0/Extensions/m2zu5bhx.ecj/Micro Platforms/default/debuggers;{runtime.tools.avr-gcc.path}/avr/include/;{runtime.tools.avr-gcc.path}//avr/include/avr/;{runtime.tools.avr-gcc.path}/lib/gcc/avr/4.8.1/include;</VMSETTING_IncludePaths>
+    <VMSETTING_IncludePaths>C:/Program Files (x86)/Arduino/hardware/arduino/avr/cores/arduino;C:/Program Files (x86)/Arduino/hardware/arduino/avr/variants/mega;../../Thunderware;C:/Program Files (x86)/Arduino/libraries/LiquidCrystal/src;C:/Program Files (x86)/Arduino/libraries/LiquidCrystal/src/utility;C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/EEPROM;C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/EEPROM/utility;C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/Wire;C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries/Wire/utility;C:/Program Files (x86)/Arduino/libraries;C:/Program Files (x86)/Arduino/hardware/arduino/avr/libraries;C:/Program Files (x86)/Visual Micro/Visual Micro for Arduino/Micro Platforms/default/debuggers;C:/Users/Matt Rogge/Documents/Arduino/libraries;c:/program files (x86)/arduino/hardware/tools/avr/avr/include/;c:/program files (x86)/arduino/hardware/tools/avr/avr/include/avr/;c:/program files (x86)/arduino/hardware/tools/avr/avr/;c:/program files (x86)/arduino/hardware/tools/avr/lib/gcc/avr/4.8.1/include/;;</VMSETTING_IncludePaths>
     <VisualMicroSettings>
       <VisualMicroSettings xmlns="">
         <arduino.upload.port>COM4</arduino.upload.port>

@@ -6,25 +6,27 @@
 
   Created by Matthew P. Rogge, Februrary 12, 2014.
   Released into the public domain.
+
 */
 
 #include "Arduino.h"
 #include "EEPROMAnything.h"
 #include "Configuration.h"
 
-void Configuration::loadDefaultProfile()
-{
+void Configuration::loadDefaultProfile(){
+	
   //General
   profile.profileNumber = -1;
-  strcpy(profile.name, "Default 1.75 ABS");
-  profile.diaSetPoint = 1.75;
+  strcpy(profile.name, "PET 1.85mm");
+  profile.diaSetPoint = 1.85;
+  profile.density = 1.38;
   profile.tolerance = 0.05;
 
   //Starve Feeder
-  profile.gramsPerMin = 10.0;
+  profile.gramsPerMin = 5.0;
 
   //Auger
-  profile.augerRPM = 40.0;
+  profile.augerRPM = 30.0;
 
   //Outfeed
   profile.outfeedRPM = 60;
@@ -38,15 +40,15 @@ void Configuration::loadDefaultProfile()
 
   //Barrel
   profile.soakTime = 8.0;// minutes for barrel to remain at setpoint before extruding
-  profile.barrelTemp = 200.0;
+  profile.barrelTemp = 270.0;
 
   //nozzle
-  profile.nozzleTemp = 200.0;
+  profile.nozzleTemp = 265.0;
 
   //Safety parameters
   profile.minExtrudeTemp = 180; //The minimum temp allowed for extrusion
-  profile.maxTemp = 240; //The max temp allowed for the barrel or the nozzle.
-  profile.maxPreheatTime = 10; // The max number of minutes allowed for the preheat state.
+  profile.maxTemp = 285; //The max temp allowed for the barrel or the nozzle.
+  profile.maxPreheatTime = 15; // The max number of minutes allowed for the preheat state.
 }
 
 
@@ -59,25 +61,26 @@ void Configuration::loadDefaultConfig()
 
   //StarveFeeder
   physical.starveFeederSlaveAddress = 2;
-  physical.starveFeederLumpMass = 7.6;
-  physical.starveFeederMinFillTime = 1000;
-  physical.starveFeederMaxFillTime = 10000;
-  physical.starveFeederStartupTime = 1200;
-  physical.starveFeederDebounceTime = 80;
+  physical.starveFeederLumpMass = 1.00;
   physical.starveFeederHomePosition = 100;
   physical.starveFeederDumpPosition = 1600;
   physical.starveFeederStepDelay = 75;
   physical.starveFeederHomingStepDelay = 2000;
   physical.starveFeederOverRotation = 90;
-  physical.starveFeederDirection = 0;
-  physical.starveFeederVibDutyCycle = 85;
+  physical.starveFeederDirection = 1;
+  physical.starveFeederVibDutyCycle = 95;
+  physical.starveFeederStartupDutyCycle = 110;
   physical.starveFeederMaxDutyCycle = 160;
-  physical.starveFeederStartupDutyCycle = 120;
+  physical.starveFeederMinFillTime = 1000;
+  physical.starveFeederMaxFillTime = 10000;
+  physical.starveFeederStartupTime = 200;
+  physical.starveFeederDebounceTime = 80;
+
 
   //auger
   physical.augerPinSet = 0;
   physical.augerStepMode = 16;
-  physical.augerDirection = 1;
+  physical.augerDirection = 0;
   physical.augerEnable = 1;
   physical.augerGearRatio = 3.0;
 
@@ -95,15 +98,15 @@ void Configuration::loadDefaultConfig()
   physical.spoolerStepMode = 16;
   physical.spoolerDirection = 0;
   physical.spoolerEnable = 0;
-  physical.spoolerDiskRadius = 276.6 / 2.0; //Radius of wooden disk
-  physical.spoolerCoreRadius = 94.0 / 2.0; //Radius of spool core
-  physical.spoolerTraverseLength = 62.5 / 2.0;
-  physical.spoolerMotorRollerRadius = 15.0 / 2.0;
+  physical.spoolerDiskRadius = 28.34; //Radius of wooden disk relative to motor roller radius
+  physical.spoolerCoreRadius = 30.0; //Radius of spool core
+  physical.spoolerTraverseLength = 75.00;
+  physical.spoolerMotorRollerRadius = 1.00;//relative to wooden disk radius
 
-  physical.rsc1 = 73.15; // Inner radius of spool core
-  physical.rsc2 = 75.93; // Outer radius of spool core
-  physical.rsm = 14.25; // radius of spool stepper motor roller
-  physical.ts = 56.8; // Traverse Length in mm
+//   physical.rsc1 = 73.15; // Inner radius of spool core
+//   physical.rsc2 = 75.93; // Outer radius of spool core
+//   physical.rsm = 14.25; // radius of spool stepper motor roller
+//   physical.ts = 56.8; // Traverse Length in mm
 
 
   //Barrel
@@ -116,8 +119,8 @@ void Configuration::loadDefaultConfig()
   physical.barrelTRNom = 100000;
   physical.barrelTTNom = 25;
   physical.barrelTNumSamples = 20;
-  physical.barrelTBCoefficient = 4092;
-  physical.barrelTSeriesResistor = 9890;
+  physical.barrelTBCoefficient = 3950;
+  physical.barrelTSeriesResistor = 1000;
 
   //nozzle
   physical.nozzlePin = 5;
@@ -130,8 +133,8 @@ void Configuration::loadDefaultConfig()
   physical.nozzleTRNom = 100000;
   physical.nozzleTTNom = 25;
   physical.nozzleTNumSamples = 20;
-  physical.nozzleTBCoefficient = 4092;
-  physical.nozzleTSeriesResistor = 9910;
+  physical.nozzleTBCoefficient = 3950;
+  physical.nozzleTSeriesResistor = 1000;
 
   //Diameter Sensor
   physical.slope = 0.0005656 ;
