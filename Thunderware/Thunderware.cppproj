@@ -69,6 +69,8 @@
       <Value>ARDUINO_MAIN</Value>
       <Value>F_CPU=16000000L</Value>
       <Value>__AVR__</Value>
+      <Value>ARDUINO_AVR_MEGA2560</Value>
+      <Value>ARDUINO_ARCH_AVR</Value>
     </ListValues>
   </avrgcc.compiler.symbols.DefSymbols>
   <avrgcc.compiler.directories.IncludePaths>
@@ -105,6 +107,8 @@
       <Value>ARDUINO_MAIN</Value>
       <Value>F_CPU=16000000L</Value>
       <Value>__AVR__</Value>
+      <Value>ARDUINO_AVR_MEGA2560</Value>
+      <Value>ARDUINO_ARCH_AVR</Value>
     </ListValues>
   </avrgcccpp.compiler.symbols.DefSymbols>
   <avrgcccpp.compiler.directories.IncludePaths>
@@ -160,6 +164,8 @@
       <Value>ARDUINO_MAIN</Value>
       <Value>F_CPU=16000000L</Value>
       <Value>__AVR__</Value>
+      <Value>ARDUINO_AVR_MEGA2560</Value>
+      <Value>ARDUINO_ARCH_AVR</Value>
     </ListValues>
   </avrgcc.compiler.symbols.DefSymbols>
   <avrgcc.compiler.directories.IncludePaths>
@@ -196,6 +202,8 @@
       <Value>ARDUINO_MAIN</Value>
       <Value>F_CPU=16000000L</Value>
       <Value>__AVR__</Value>
+      <Value>ARDUINO_AVR_MEGA2560</Value>
+      <Value>ARDUINO_ARCH_AVR</Value>
     </ListValues>
   </avrgcccpp.compiler.symbols.DefSymbols>
   <avrgcccpp.compiler.directories.IncludePaths>
@@ -240,12 +248,13 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Visual Micro\" />
+    <Folder Include="__vm\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Barrel.cpp">
+    <Compile Include="Heater.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Barrel.h">
+    <Compile Include="Heater.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Buzzer.cpp">
@@ -360,6 +369,9 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Visual Micro\.Thunderware.vsarduino.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="__vm\.Thunderware.vsarduino.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>

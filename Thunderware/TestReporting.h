@@ -11,10 +11,6 @@ void reportCurrentMeasurementTitles(){
                  "starveFeederRPM,  "
                  "augerRPM, "
                  "Mode, "
-                 "Barrel Temp(C), "
-                 "BarrelDutyCycle(%), "
-                 "Nozzle Temp(C), "
-                 "NozzleDutyCycle(%), "
                  "outfeedKp, "
                  "outfeedKi, "
                  "outfeedKd, "
@@ -44,17 +40,17 @@ void reportCurrentMeasurements(){
    Serial.print(F(", "));
    Serial.print(outfeed.getMode());
 
-   Serial.print(F(", "));
-   Serial.print(barrel.getTemp(),2);
-
-   Serial.print(F(", "));
-   Serial.print(barrel.getDutyCycle());
-
-   Serial.print(F(", "));
-   Serial.print(nozzle.getTemp(),2);
-
-   Serial.print(F(", "));
-   Serial.print(nozzle.getDutyCycle());
+//    Serial.print(F(", "));
+//    Serial.print(barrel.getTemp(),2);
+// 
+//    Serial.print(F(", "));
+//    Serial.print(barrel.getDutyCycle());
+// 
+//    Serial.print(F(", "));
+//    Serial.print(nozzle.getTemp(),2);
+// 
+//    Serial.print(F(", "));
+//    Serial.print(nozzle.getDutyCycle());
  
    Serial.print(", ");
    Serial.print(outfeed.getKp());  

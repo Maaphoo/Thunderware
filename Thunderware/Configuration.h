@@ -15,13 +15,6 @@
 class Configuration
 {
   public:
-    //    enum PinSet {
-    //      SET_3_14_8 = 0,// wired to auger motor, pins: step->3, dir->14, enable->8
-    //      SET_11_15_12,//wired to outfeed motor, pins: step->11, dir->15, enable->12
-    //      SET_10_16_9,//wired to spool motor, pins: step->10, dir->16, enable->9
-    //      //STARVE_FEEDER,
-    //    };
-
     struct Profile {
       //General
       int profileNumber;
@@ -45,20 +38,36 @@ class Configuration
       double outfeedMaxRPM;
       double outfeedMinRPM;
       int outfeedComputeInterval;
-
-      //Barrel
+	  
       double soakTime;
-      double barrelTemp;
-
-      //nozzle
-      double nozzleTemp;
+      
+	  //heating Zones
+	  double zone1SetTemp;
+	  double zone2SetTemp;
+	  double zone3SetTemp;	  
 
       //Safety parameters
       double minExtrudeTemp;
-      double maxTemp; //The maximum temp allowed for barrel or nozzle
+      double maxTemp; //The maximum temp allowed for any heating zone
       unsigned long maxPreheatTime;
     } profile, tempProfile;
 
+	//Heating zone
+	struct HeatingZone{
+      int timeBase;//Time base in milliseconds if zero standard PWM will be used
+      double maxDutyCycle;//The max dutyCycle for the barrel
+      double minDutyCycle;//The min dutyCycle for the barrel
+      double Kp, Ki, Kd;
+      long thermistorRNom;
+      int thermistorTNom;
+      int thermistorNumSamples;
+      int thermistorBCoefficient;
+      int thermistorSeriesResistor;
+	  int thermistorPin;
+	  int heaterPin;
+	  double setTemp;
+	  boolean PWM;
+	};
 
     /*The physicalConfig struct holds information describing *
      *the physical setup of the extruder.                    */
@@ -114,34 +123,10 @@ class Configuration
       float spoolerTraverseLength;
       float spoolerMotorRollerRadius;
 
-//       float rsc1; // Inner radius of spool core
-//       float rsc2; // Outer radius of spool core
-//       float rsm; // radius of spool stepper motor roller
-//       float ts; // Traverse Length in mm
-
-
-      //Barrel
-      int timeBase;//Time base in milliseconds
-      double barrelMax;//The max dutyCycle for the barrel
-      double barrelMin;//The min dutyCycle for the barrel
-      double barrelKp, barrelKi, barrelKd;
-      long barrelTRNom;
-      int barrelTTNom;
-      int barrelTNumSamples;
-      int barrelTBCoefficient;
-      int barrelTSeriesResistor;
-
-      //nozzle
-      int nozzlePin;
-      double nozzleMax;//The max dutyCycle for the nozzle
-      double nozzleMin;//The min dutyCycle for the nozzle
-      double nozzleKp, nozzleKi, nozzleKd;
-      int nozzleSampleTime;
-      long nozzleTRNom;
-      int nozzleTTNom;
-      int nozzleTNumSamples;
-      int nozzleTBCoefficient;
-      int nozzleTSeriesResistor;
+	  //Heating Zones
+	  HeatingZone zone1;
+	  HeatingZone zone2;
+	  HeatingZone zone3;
 
       //Diameter Sensor
       float slope;

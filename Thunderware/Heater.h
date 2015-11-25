@@ -1,5 +1,5 @@
 /*
-  Barrel.h - Library for activating the the barrel heater.
+  Heater.h - Library for activating the the barrel heater.
  The barrel heater is a 120 v 130 w heating element powered
  by an electro-mechanical relay. The relay coil is optically 
  isolated from the logic circuits and is activated by pin 7.
@@ -7,8 +7,8 @@
  Created by Matthew P. Rogge, Februrary 12, 2014.
  Released into the public domain.
  */
-#ifndef Barrel_h
-#define Barrel_h
+#ifndef Heater_h
+#define Heater_h
 
 #include "Arduino.h"
 #include "Thermistor.h"
@@ -19,11 +19,11 @@ class Thermistor;
 class PID;
 class Configuration;
 
-class Barrel
+class Heater
 {
 public:
 
-  Barrel(Configuration* configuration);//constructor
+  Heater(Configuration::HeatingZone* zone);//constructor
   void activate();
   void setDutyCycle(float dutyCycle);
   double getDutyCycle(); 
@@ -36,10 +36,13 @@ private:
 
   Thermistor       _thermistor;
   PID              _pid;
-  //  Configuration*   _config;
   int*             _timeBase;
   double           _dutyCycle;
   double*          _temp;
+  int*			   _heaterPin;
+  boolean*		   _PWM;
+  double*		   _maxDutyCycle;
+  double*		   _minDutyCycle;
 
 };
 

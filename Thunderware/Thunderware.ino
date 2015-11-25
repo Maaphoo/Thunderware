@@ -20,8 +20,7 @@ Released into the public domain.
 #include "Thermistor.h"
 #include "Configuration.h"
 #include "Buzzer.h"
-#include "Nozzle.h"
-#include "Barrel.h"
+#include "Heater.h"
 #include "StepperMotor.h"
 #include "FastPWM.h"
 #include "Spooler.h"
@@ -46,10 +45,7 @@ enum ExtruderStates {
 	BEGIN_LOAD_FILAMENT,
 	LOAD_FILAMENT,
 	BEGIN_EXTRUDE,
-	EXTRUDE,
-	STARVE_FEEDER_TEST,
-	NOZZLE_TEST,
-	BARREL_TEST
+	EXTRUDE
 } currentState;
 
 void standby();
@@ -61,9 +57,6 @@ void beginLoadFilament();
 void loadFilament();
 void beginExtrude();
 void extrude();
-void starveFeederTest();
-void nozzleTest();
-void barrelTest();
 
 //Pointers to State functios
 void (*state_table[])() = {
@@ -75,10 +68,7 @@ void (*state_table[])() = {
 	beginLoadFilament,
 	loadFilament,
 	beginExtrude,
-	extrude,
-	starveFeederTest,
-	nozzleTest,
-	barrelTest
+	extrude
 };
 
 // lcd pins
@@ -127,11 +117,10 @@ Buzzer buzzer;
 
 StarveFeeder starveFeeder(&configuration);
 
-Nozzle nozzle(&configuration);
+Heater zone1(&configuration.physical.zone1);
+Heater zone2(&configuration.physical.zone2);
+Heater zone3(&configuration.physical.zone3);
 
-Barrel barrel(&configuration);
-
-//StarveFeeder starveFeeder(&configuration);
 
 StepperMotor auger(&configuration, configuration.physical.augerPinSet);
 
@@ -139,16 +128,13 @@ Outfeed outfeed(&configuration);
 
 Spooler spooler(&configuration, &outfeed);
 
-Safety safety(&configuration, &barrel, &nozzle);
+Safety safety(&configuration);
 
 Menu mainMenu(mainItems, sizeof(mainItems) / sizeof(mainItems[0]), &lcd, &kpd);
 Menu preheatMenu(preheatItems, sizeof(preheatItems) / sizeof(preheatItems[0]), &lcd, &kpd);
 Menu soakMenu(soakItems, sizeof(soakItems) / sizeof(soakItems[0]), &lcd, &kpd);
 Menu loadFilamentMenu(loadFilamentItems, sizeof(loadFilamentItems) / sizeof(loadFilamentItems[0]), &lcd, &kpd);
 Menu extrudeMenu(extrudeItems, sizeof(extrudeItems) / sizeof(extrudeItems[0]), &lcd, &kpd);
-Menu nozzleTestMenu(nozzleTestItems, sizeof(nozzleTestItems) / sizeof(nozzleTestItems[0]), &lcd, &kpd);
-Menu barrelTestMenu(barrelTestItems, sizeof(barrelTestItems) / sizeof(barrelTestItems[0]), &lcd, &kpd);
-Menu starveFeederTestMenu(starveFeederTestItems, sizeof(starveFeederTestItems) / sizeof(starveFeederTestItems[0]), &lcd, &kpd);
 Menu* activeMenu;
 
 
@@ -228,8 +214,9 @@ void loop() {
 	if (now >= refreshDisplayTime){
 		//update display variables
 		//Temps
-		barrelTemp = barrel.getTemp();
-		nozzleTemp = nozzle.getTemp();
+		zone1Temp = zone1.getTemp();
+		zone2Temp = zone2.getTemp();
+		zone3Temp = zone3.getTemp();
 
 		//diameter
 		//diameter = outfeed.getDia();
@@ -447,8 +434,9 @@ void confirmStopExtruding() {
 			auger.disable();
 			outfeed.disable();
 			starveFeeder.off();
-			barrel.off();
-			nozzle.off();
+			zone1.off();
+			zone2.off();
+			zone3.off();
 			spooler.disable();
 
 			//change the state to standby
@@ -533,32 +521,30 @@ void feed(){
 	}
 }
 
-void changeBarrelMode(){
-	if (barrelMode[1] == 'f'){
-		strcpy(barrelMode, "On");
-		barrel.setMode(AUTOMATIC);
+void toggleHeaterState(){
+	if (heaterState[1] == 'f'){
+		strcpy(heaterState, "On");
+		zone1.setMode(AUTOMATIC);
+		zone2.setMode(AUTOMATIC);
+		zone3.setMode(AUTOMATIC);
 		}else{
-		strcpy(barrelMode,"Off");
-		barrel.setMode(MANUAL);
-		nozzle.setDutyCycle(0);
-	}
-	activeMenu->display();
-}
-
-void changeNozzleMode(){
-	if (nozzleMode[1] == 'f'){
-		strcpy(nozzleMode, "On");
-		nozzle.setMode(AUTOMATIC);
-		}else{
-		strcpy(nozzleMode,"Off");
-		nozzle.setMode(MANUAL);
-		nozzle.setDutyCycle(0);
+		strcpy(heaterState,"Off");
+		zone1.setMode(MANUAL);
+		zone2.setMode(MANUAL);
+		zone3.setMode(MANUAL);
+		zone1.setDutyCycle(0);
+		zone2.setDutyCycle(0);
+		zone3.setDutyCycle(0);
 	}
 	activeMenu->display();
 }
 
 void setGramsPerMin(){
 	starveFeeder.setGPM(configuration.profile.gramsPerMin);
+}
+
+void loadStarveFeederConfig(){
+	starveFeeder.loadConfig();
 }
 
 void setAugerRPM(){

@@ -34,8 +34,9 @@ void beginLoadFilament() {
   //Accelerate auger if accelerating and it is time for a speed up)
   if (accelerating && millis() >= accelerateTime && accInt < 400) {
     //Accelerate Auger
-    barrel.activate();
-    nozzle.activate();
+    zone1.activate();
+    zone2.activate();
+    zone3.activate();
 
     auger.setRPM(configuration.profile.augerRPM / 400.0 * (double)accInt);
     accInt++;
@@ -74,8 +75,9 @@ void beginLoadFilament() {
 void loadFilament() {
   //activate the heaters and outfeed
   buzzer.activate();
-  barrel.activate();
-  nozzle.activate();
+  zone1.activate();
+  zone2.activate();
+  zone3.activate();
   outfeed.activate();
 
   if (millis() > loadFilamentEndTime - 30L * 1000L) {
@@ -113,8 +115,9 @@ void extrude() {
   static unsigned long spoolerAdjustTime;
 
   //activate the heaters and outfeed
-  barrel.activate();
-  nozzle.activate();
+  zone1.activate();
+  zone2.activate();
+  zone3.activate();
   outfeed.activate();
 
   //report sensor data
@@ -131,8 +134,9 @@ void stopExtruding() {
   auger.disable();
   outfeed.disable();
   spooler.disable();
-  barrel.off();
-  nozzle.off();
+  zone1.off();
+  zone2.off();
+  zone3.off();
   //  starveFeeder.disable();
 }
 

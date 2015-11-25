@@ -1090,51 +1090,51 @@ void testSpooler(){
 	activeMenu->display();
 }
 #endif
+// 
+// void beginBarrelTest(){
+// 	activeMenu = &barrelTestMenu;
+// 	activeMenu->reset();
+// 	barrel.setMode(MANUAL);
+// 	strcpy(barrelMode, "Off");
+// 	barrel.setDutyCycle(0);
+// 	currentState = BARREL_TEST;
+// }
+// void barrelTest(){
+// 	barrel.activate();
+// }
+// 
+// void exitBarrelTest(){
+// 	barrel.off();
+// 	strcpy(barrelMode,"Off");
+// 	currentState = STANDBY;
+// 	activeMenu = &mainMenu;
+// }
+// 
+// void beginNozzleTest(){
+// 	activeMenu = &nozzleTestMenu;
+// 	activeMenu->reset();
+// 	nozzle.setMode(MANUAL);
+// 	strcpy(nozzleMode, "Off");
+// 	nozzle.setDutyCycle(0);
+// 	currentState = NOZZLE_TEST;
+// }
+// void nozzleTest(){
+// 	nozzle.activate();
+// }
+// 
+// void exitNozzleTest(){
+// 	nozzle.off();
+// 	strcpy(nozzleMode, "Off");
+// 	currentState = STANDBY;
+// 	activeMenu = &mainMenu;
+// }
 
-void beginBarrelTest(){
-	activeMenu = &barrelTestMenu;
-	activeMenu->reset();
-	barrel.setMode(MANUAL);
-	strcpy(barrelMode, "Off");
-	barrel.setDutyCycle(0);
-	currentState = BARREL_TEST;
-}
-void barrelTest(){
-	barrel.activate();
-}
-
-void exitBarrelTest(){
-	barrel.off();
-	strcpy(barrelMode,"Off");
-	currentState = STANDBY;
-	activeMenu = &mainMenu;
-}
-
-void beginNozzleTest(){
-	activeMenu = &nozzleTestMenu;
-	activeMenu->reset();
-	nozzle.setMode(MANUAL);
-	strcpy(nozzleMode, "Off");
-	nozzle.setDutyCycle(0);
-	currentState = NOZZLE_TEST;
-}
-void nozzleTest(){
-	nozzle.activate();
-}
-
-void exitNozzleTest(){
-	nozzle.off();
-	strcpy(nozzleMode, "Off");
-	currentState = STANDBY;
-	activeMenu = &mainMenu;
-}
-
-void beginStarveFeederTest(){
-	activeMenu = &starveFeederTestMenu;
-	activeMenu->reset();
-	starveFeeder.loadConfig();
-	currentState = STANDBY;
-}
+// void beginStarveFeederTest(){
+// 	activeMenu = &starveFeederTestMenu;
+// 	activeMenu->reset();
+// 	starveFeeder.loadConfig();
+// 	currentState = STANDBY;
+// }
 
 void sendCyclesToStarveFeeder(){
 	starveFeeder.loadConfig();
@@ -1148,14 +1148,6 @@ void sendTimeToStarveFeeder(){
 	Serial.println(starveFeederStopTime);	
 	starveFeeder.on();
 	currentState = STARVE_FEEDER_TEST;
-}
-
-void starveFeederTest(){
-	if (millis() >= starveFeederStopTime){
-		Serial.println("Turning Starve feeder off");
-		starveFeeder.off();
-		currentState = STANDBY;
-	}
 }
 
 void stopStarveFeeder(){

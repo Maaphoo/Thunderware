@@ -9,13 +9,11 @@
 #include "Arduino.h"
 #include "Safety.h"
 
-Safety::Safety(Configuration* configuration, Barrel* barrel, Nozzle* nozzle)
+Safety::Safety(Configuration* configuration)
 {
   _enabled = true;
   _configuration = configuration;
-  _barrel = barrel;
-  _nozzle = nozzle;
-//  _stateMachine = stateMachine;
+
  }
 
 void Safety::check()
@@ -24,30 +22,34 @@ void Safety::check()
   //The following safety checks are always done when check() is called
   
   //Check barrel plastic overtemp
-  if (_barrel->getTemp()>_configuration->profile.maxTemp){
-    strcpy(_safetyMsg1, "The max Plastic Temp");
-    strcpy(_safetyMsg2, "has been exceeded.");
-    shutDown(_safetyMsg1, _safetyMsg2);
-  }
-  //Check for barrel overtemp
-  if (_barrel->getTemp()>_configuration->physical.maxTemp){
-    strcpy(_safetyMsg1, "The max barrel Temp");
-    strcpy(_safetyMsg2, "has been exceeded.");
-    shutDown(_safetyMsg1, _safetyMsg2);
-  }
-  //Check for nozzle plastic overtemp
-  if (_nozzle->getTemp()>_configuration->profile.maxTemp){
-    strcpy(_safetyMsg1, "The max plastic Temp");
-    strcpy(_safetyMsg2, "has been exceeded");
-    shutDown(_safetyMsg1, _safetyMsg2);
-  }
-  //Check for nozzle overtemp
-  if (_nozzle->getTemp()>_configuration->physical.maxTemp){
-    strcpy(_safetyMsg1, "The max nozzle temp");
-    strcpy(_safetyMsg2, "has been exceeded.");
-    shutDown(_safetyMsg1, _safetyMsg2);
-  }
- 
+//   if (_barrel->getTemp()>_configuration->profile.maxTemp){
+//     strcpy(_safetyMsg1, "The max Plastic Temp");
+//     strcpy(_safetyMsg2, "has been exceeded.");
+//     shutDown(_safetyMsg1, _safetyMsg2);
+//   }
+//   //Check for barrel overtemp
+//   if (_barrel->getTemp()>_configuration->physical.maxTemp){
+//     strcpy(_safetyMsg1, "The max barrel Temp");
+//     strcpy(_safetyMsg2, "has been exceeded.");
+//     shutDown(_safetyMsg1, _safetyMsg2);
+//   }
+//   //Check for nozzle plastic overtemp
+//   if (_nozzle->getTemp()>_configuration->profile.maxTemp){
+//     strcpy(_safetyMsg1, "The max plastic Temp");
+//     strcpy(_safetyMsg2, "has been exceeded");
+//     shutDown(_safetyMsg1, _safetyMsg2);
+//   }
+//   //Check for nozzle overtemp
+//   if (_nozzle->getTemp()>_configuration->physical.maxTemp){
+//     strcpy(_safetyMsg1, "The max nozzle temp");
+//     strcpy(_safetyMsg2, "has been exceeded.");
+//     shutDown(_safetyMsg1, _safetyMsg2);
+//   }
+//  
+
+
+
+
 //  //The following safety checks are state dependent
 //  switch( _stateMachine->getState()){
 //  case StateMachine::PREHEAT:
