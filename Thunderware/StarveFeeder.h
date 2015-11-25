@@ -26,6 +26,7 @@ class StarveFeeder
 	void feed();
     void setGPM(double gpm);
     void setCycles(int cycles);
+    void setTime(unsigned long timeToRun);
     void loadConfig();
     void off();
     void on();
@@ -66,7 +67,8 @@ class StarveFeeder
 	  FEED_PLASTIC,
       SET_GPM,
       SET_CYCLES,
-      LOAD_CONFIG
+      LOAD_CONFIG,
+	  SET_TIME
     };
 
 

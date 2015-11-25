@@ -165,7 +165,8 @@ void setup()
 static unsigned long refreshDisplayTime;
 
 void loop() {
-
+	static unsigned long now;
+	
 	//Allow for keyboard input as well
 	key = kpd.getKey();
 	if (Serial.available() > 0) {
@@ -210,7 +211,7 @@ void loop() {
 	}
 	state_table[currentState]();
 
-	unsigned long now = millis();
+	now = millis();
 	if (now >= refreshDisplayTime){
 		//update display variables
 		//Temps

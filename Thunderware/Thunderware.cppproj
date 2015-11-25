@@ -311,12 +311,6 @@
     <Compile Include="MenuData.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Nozzle.cpp">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="Nozzle.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="Outfeed.cpp">
       <SubType>compile</SubType>
     </Compile>

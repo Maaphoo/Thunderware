@@ -106,6 +106,19 @@ void StarveFeeder::setCycles(int cycles)
 
 }
 
+void StarveFeeder::setTime(unsigned long timeToRun)
+{
+	strcpy(_mode, "ON");
+	Wire.beginTransmission(_mainConfig->physical.starveFeederSlaveAddress); // transmit to slave
+	Wire.write((byte) StarveFeeder::SET_TIME);
+	byte* bytePtr;
+	bytePtr = (byte*)&timeToRun;
+	for (int i = 0; i < 2; i++) {
+		Wire.write(*bytePtr);
+		bytePtr++;
+	}
+	Wire.endTransmission();    // stop transmitting
+}
 void StarveFeeder::on() {
 	loadConfig();// load configurations to make sure that any recent changes haven't been missed.
 	strcpy(_mode, "ON");

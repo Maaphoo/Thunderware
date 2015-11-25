@@ -141,7 +141,6 @@ int gramsExtruded;
 float diameter = 1.75;
 int cyclesToSendToStarveFeeder = 10;
 int timeToSendToStarveFeeder = 4;
-unsigned long starveFeederStopTime;
 char feedMode[4] = "Off";//starve feeder feeding plastic or not
 
 //Menu Action methods
