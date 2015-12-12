@@ -13,30 +13,37 @@ Released into the public domain.
 
 Heater::Heater(Configuration::HeatingZone* zone)
 : _thermistor(zone->thermistorPin, //This is the thermistor pin. Should this be set in physical configuration?
-		zone->thermistorRNom,
-		zone->thermistorTNom,
-		zone->thermistorNumSamples,
-		zone->thermistorBCoefficient,
-		zone->thermistorSeriesResistor),
+zone->thermistorRNom,
+zone->thermistorTNom,
+zone->thermistorNumSamples,
+zone->thermistorBCoefficient,
+zone->thermistorSeriesResistor),
 _pid( &_thermistor.temp,
-		&_dutyCycle,
-		&zone->setTemp,
-		zone->Kp,
-		zone->Ki,
-		zone->Kd,
-		DIRECT)
+&_dutyCycle,
+&zone->setTemp,
+zone->Kp,
+zone->Ki,
+zone->Kd,
+DIRECT)
 {
 
 	_timeBase = &zone->timeBase;
 	_temp = &_thermistor.temp;
 	_pid.SetSampleTime(*_timeBase);
 	_pid.SetTunings(zone->Kp,
-					zone->Ki,
-					zone->Kd);
+	zone->Ki,
+	zone->Kd);
 
 	_pid.SetOutputLimits(zone->minDutyCycle,
-						zone->maxDutyCycle);
-	_pid.SetMode(AUTOMATIC);
+	zone->maxDutyCycle);
+	_pid.SetMode(MANUAL);
+	_dutyCycle = 0;
+	_heaterPin = &zone->heaterPin;
+	_activeCooling = &zone->activeCooling;
+	if (_activeCooling){
+		_coolerPin = &zone->coolerPin;
+		pinMode(*_coolerPin, OUTPUT);
+	}
 	_heaterPin = &zone->heaterPin;
 	pinMode(zone->heaterPin, OUTPUT);
 	_PWM = &zone->PWM;
@@ -48,39 +55,57 @@ _pid( &_thermistor.temp,
 
 void Heater::activate()
 {
-	
-	//variables
-	static unsigned long _now;
-	static unsigned long _durration;
-	static unsigned long _startTime;
 
 	//Get the time
 	_now = millis();
 	_thermistor.sampleTemp();//Always sample temp so that the PID gets a good input
-	
 
 	//If one timebase has passed start over. Get the new PID setting and turn the relay on.
-	if (_now >= *_timeBase + _startTime){
+	if (_now >= (*_timeBase + _startTime)){
 		_startTime = _now;
 		_temp = &_thermistor.temp;
 		_pid.Compute();
 		
-		if (!_PWM){//IE, PWM isn't being used so use the time base as the duty cycle period.
+		if (!*_PWM){//IE, PWM isn't being used so use the time base as the duty cycle period.
 			// Determine the length of time that the relay should be on
+
 			_durration = ((*_timeBase*_dutyCycle)/100L);
-			
-			if (_dutyCycle>1){ // Only turn on if duty cycle is greater than 1
+						
+			if (_dutyCycle>1.0){ // Only turn on if duty cycle is greater than 1
 				digitalWrite(*_heaterPin , HIGH);//Turn the heater on.
 			}
+			
+			} else {//Using PWM, so just set the PWM on the heater pin
+			if(*_activeCooling){
+									Serial.print("Here for tip. Duty Cycle = ");
+									Serial.println(_dutyCycle);
+				if (_dutyCycle >= 1){
+					analogWrite(*_heaterPin, _dutyCycle);
+					digitalWrite(*_coolerPin, LOW);
+				} else if (_dutyCycle <= -1){
+					if (_boostNeeded){
+						analogWrite(*_coolerPin,50);
+						_boostNeeded = false;
+						delay(100);
+					}
+					analogWrite(*_heaterPin, 0);
+					analogWrite(*_coolerPin, -_dutyCycle+10); //The extra 10 is because 10 is the minimum duty cycle that runs the fan.
+				} else if (_dutyCycle < 1 && _dutyCycle > -1){
+					analogWrite(*_heaterPin, 0);
+					digitalWrite(*_coolerPin, LOW);
+					_boostNeeded = true;
+				}
+			} else {
+					analogWrite(*_heaterPin, _dutyCycle);
+					Serial.print("Here for tip. Duty Cycle = ");
+					Serial.println(_dutyCycle);
+			}
 		}
-		
-		//If the relay should now be off, turn it off
-		//Should a condition be added where the relay isn't turned off unless the DutyCycle is more that 1 under the max?
-		if (_now >= _startTime + _durration){
-			digitalWrite(*_heaterPin, LOW);//Turn the heater off
-		}
-		} else {//Using PWM, so just set the PWM on the heater pin
-		analogWrite(*_heaterPin, _dutyCycle);
+	}
+
+	//If the relay should now be off, turn it off
+	if (!*_PWM && digitalRead(*_heaterPin) &&_now >= _startTime + _durration){
+		digitalWrite(*_heaterPin, LOW);//Turn the heater off
 	}
 }
 

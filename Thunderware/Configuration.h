@@ -65,8 +65,10 @@ class Configuration
       int thermistorSeriesResistor;
 	  int thermistorPin;
 	  int heaterPin;
+	  int coolerPin;
 	  double setTemp;
 	  boolean PWM;
+	  boolean activeCooling;
 	};
 
     /*The physicalConfig struct holds information describing *

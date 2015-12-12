@@ -210,7 +210,12 @@ void loop() {
 		break;
 	}
 	state_table[currentState]();
-
+	
+	//Activate the heaters for testing
+	zone1.activate();
+	zone2.activate();
+	zone3.activate();
+	
 	now = millis();
 	if (now >= refreshDisplayTime){
 		//update display variables

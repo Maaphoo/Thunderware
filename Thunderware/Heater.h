@@ -40,9 +40,15 @@ private:
   double           _dutyCycle;
   double*          _temp;
   int*			   _heaterPin;
+  int*			   _coolerPin;
   boolean*		   _PWM;
+  boolean*		   _activeCooling;
   double*		   _maxDutyCycle;
   double*		   _minDutyCycle;
+  unsigned long	   _now;
+  unsigned long   _durration;
+  unsigned long   _startTime;
+  boolean	      _boostNeeded;
 
 };
 

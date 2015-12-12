@@ -119,9 +119,10 @@ void Configuration::loadDefaultConfig()
 	physical.zone1.timeBase = 2000;
 	physical.zone1.setTemp = 0.0;
 	physical.zone1.PWM = false;
+	physical.zone1.activeCooling = false;
 
 	//Zone 2 heater
-	physical.zone2.heaterPin = 7; //should be changed
+	physical.zone2.heaterPin = 4; //should be changed
 	physical.zone2.Kd = 0.0;
 	physical.zone2.Ki = 0.15;
 	physical.zone2.Kp = 3.4;
@@ -135,22 +136,25 @@ void Configuration::loadDefaultConfig()
 	physical.zone2.timeBase = 2000;
 	physical.zone2.setTemp = 0.0;
 	physical.zone2.PWM = false;
+	physical.zone2.activeCooling = false;
 
 	//Zone 3 heater
 	physical.zone3.heaterPin = 5;
 	physical.zone3.Kd = 0.0;
 	physical.zone3.Ki = 0.15;
 	physical.zone3.Kp = 3.4;
-	physical.zone3.maxDutyCycle = 100;
-	physical.zone3.minDutyCycle = 0;
+	physical.zone3.maxDutyCycle = 255;
+	physical.zone3.minDutyCycle = -245;
 	physical.zone3.thermistorBCoefficient = 3950;
 	physical.zone3.thermistorNumSamples = 20;
 	physical.zone3.thermistorPin = 2;
+	physical.zone3.coolerPin = 3;//Check this
 	physical.zone3.thermistorRNom = 100000;
 	physical.zone3.thermistorSeriesResistor = 1000;
-	physical.zone3.timeBase = 0;
+	physical.zone3.timeBase = 2000;
 	physical.zone3.setTemp = 0.0;
 	physical.zone3.PWM = true;
+	physical.zone3.activeCooling = true;
 
 	//Diameter Sensor
 	physical.slope = 0.0005656 ;
