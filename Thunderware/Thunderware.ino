@@ -394,6 +394,8 @@ void skipPreheat() {
 void skipSoak() {
 	currentState = BEGIN_LOAD_FILAMENT;
 	activeMenu = &loadFilamentMenu;
+	currentState = BEGIN_EXTRUDE;
+	activeMenu = &extrudeMenu;
 	activeMenu->reset();
 }
 
@@ -575,5 +577,39 @@ void baseOutfeedRPMonGPM(){
 	outfeed.setRPM(revPerMin);
 }
 
+
+void toggleOutfeedState(){
+	if (outfeedState[1] == 'f'){
+		strcpy(outfeedState, "On");
+		outfeed.setRPM(outfeedRPM);
+		outfeed.enable();
+		}else{
+		strcpy(outfeedState,"Off");
+		outfeed.disable();
+	}
+	activeMenu->display();
+}
+
+void sendOneRevToOutfeed(){
+	outfeed.enable();
+	for (int i=0; i<200*16;i++){
+		digitalWrite(11, HIGH);
+		delayMicroseconds(1000);
+		digitalWrite(11,LOW);
+		delayMicroseconds(1000);
+	}
+	outfeed.disable();
+	activeMenu->display();
+}
+
+void setZone1Temp(){
+	configuration.physical.zone1.setTemp = configuration.profile.zone1SetTemp;
+}
+void setZone2Temp(){
+	configuration.physical.zone2.setTemp = configuration.profile.zone2SetTemp;
+}
+void setZone3Temp(){
+	configuration.physical.zone3.setTemp = configuration.profile.zone3SetTemp;
+}
 #include "test.h"
 

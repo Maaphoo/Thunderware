@@ -7,6 +7,10 @@
 static unsigned long preheatStartTime;
 
 void beginPreheat(){
+	setZone1Temp();
+	setZone2Temp();
+	setZone3Temp();
+	
   preheatStartTime = millis();
     //start from full power state
     zone1.setDutyCycle(90);
@@ -80,8 +84,8 @@ void soak(){
     Serial.println("");
     Serial.println(F("Finished Soaking"));
     Serial.println("");
-    currentState = BEGIN_LOAD_FILAMENT;
-    activeMenu = &loadFilamentMenu;
+    currentState = BEGIN_EXTRUDE;//Changed from begin load filament for testing purposes
+    activeMenu = &extrudeMenu;
     
     activeMenu->reset();  
     activeMenu->display();  

@@ -43,7 +43,7 @@ const char augerConfigStr[] PROGMEM = "Auger";
 const char heaterConfigStr[] PROGMEM = "Heater Config";
 const char outfeedConfigStr[] PROGMEM = "Outfeed";
 const char spoolerConfigStr[] PROGMEM = "Spooler";
-const char homeStarveFeederStr[] PROGMEM = "Test Starve Feeder";
+const char homeStarveFeederStr[] PROGMEM = "Home";
 const char dumpStr[] PROGMEM = "Dump";
 const char feedStr[] PROGMEM = "Feed Plastic";
 const char sendCyclesStr[] PROGMEM = "Send Cycles";
@@ -93,11 +93,13 @@ const char zone3MinDutyCycleStr[] PROGMEM = "Z3 Min DC";
 const char zone3KpStr[] PROGMEM = "Z3 Kp";
 const char zone3KiStr[] PROGMEM = "Z3 Ki";
 const char zone3KdStr[] PROGMEM = "Z3 Kd";
-const char testOutfeedStr[] PROGMEM = "Test Outfeed";
+const char runOutfeedStr[] PROGMEM = "Run Outfeed";
+const char RPMStr[] PROGMEM = "RPM";
+const char sendOneRevToOutfeedStr[] PROGMEM = "Send 1 Rev";
 const char outfeedPinSetStr[] PROGMEM = "Pin Set";
 const char outfeedStepModeStr[] PROGMEM = "Step Mode";
 const char outfeedDirectionStr[] PROGMEM = "Direction";
-const char outfeedEnableStr[] PROGMEM = "Enable";
+const char outfeedEnableLogicStr[] PROGMEM = "Enable Logic";
 const char outfeedRollerRadiusStr[] PROGMEM = "Roller Radius";
 const char outfeedMaxRPMStr[] PROGMEM = "Max RPM";
 const char outfeedMinRPMStr[] PROGMEM = "Min RPM";
@@ -128,12 +130,13 @@ const char extrudeRootStr[] PROGMEM = "Extruding. . .";
 const char filamentDiameterStr[] PROGMEM = "Diameter";
 const char gramsExtrudedStr[] PROGMEM = "Grams Extruded";
 
-
 //Variables for holding Menu values
 double zone1Temp;
 double zone2Temp;
 double zone3Temp;
 char heaterState[] = "Off";
+char outfeedState[] = "Off";
+float outfeedRPM =  0.0;
 char loadFilamentTimeRemaining[6];
 char starveFeederMode[4] = "Off";
 char soakTimeRemaining[6];
@@ -149,11 +152,16 @@ void testAuger();
 void testOutfeed();
 void testSpooler();
 void toggleHeaterState();
+void toggleOutfeedState();
+void setZone1Temp();
+void setZone2Temp();
+void setZone3Temp();
 /*void homeStarveFeederStr();*/
 void sendTimeToStarveFeeder();
 void sendCyclesToStarveFeeder();
 void stopStarveFeeder();
 void loadStarveFeederConfig();
+void sendOneRevToOutfeed();
 
 
 void measureFilament(){}
@@ -163,7 +171,7 @@ const Menu::MenuItem mainItems[] PROGMEM =
 {rootStr, -1, 1, NULL, 0, Menu::TITLE, NULL},
 {selectProfileStr, 0, 4, NULL, 0, Menu::TITLE, NULL},
 {calibrateStr, 0, 31, NULL, 0, Menu::TITLE, NULL},
-{auxiliaryStr, 0, 108, NULL, 0, Menu::TITLE, NULL},
+{auxiliaryStr, 0, 110, NULL, 0, Menu::TITLE, NULL},
 {profile0Str, 1, 15, &configuration.profileNames[0], 0, Menu::TITLE_STRING, &loadProfile0},
 {profile1Str, 1, 15, &configuration.profileNames[1], 0, Menu::TITLE_STRING, &loadProfile1},
 {profile2Str, 1, 15, &configuration.profileNames[2], 0, Menu::TITLE_STRING, &loadProfile2},
@@ -196,7 +204,7 @@ const Menu::MenuItem mainItems[] PROGMEM =
 {augerConfigStr, 2, 61, NULL, 0, Menu::TITLE, NULL},
 {heaterConfigStr, 2, 67, NULL, 0, Menu::TITLE, NULL},
 {outfeedConfigStr, 2, 91, NULL, 0, Menu::TITLE, NULL},
-{spoolerConfigStr, 2, 99, NULL, 0, Menu::TITLE, NULL},
+{spoolerConfigStr, 2, 101, NULL, 0, Menu::TITLE, NULL},
 {homeStarveFeederStr, 32, -1, NULL, 0, Menu::ACTION, &homeStarveFeeder},
 {dumpStr, 32, -1, NULL, 0, Menu::ACTION, &dump},
 {feedStr, 32, -1, &feedMode, 0, Menu::STRING_LOCKED, &feed},
@@ -204,7 +212,7 @@ const Menu::MenuItem mainItems[] PROGMEM =
 {cyclesToSendToStarveFeederStr, 32, -1, &cyclesToSendToStarveFeeder, 0, Menu::INT, NULL},
 {sendTimeStr, 32, -1, NULL, 0, Menu::ACTION, &sendTimeToStarveFeeder},
 {timeToSendToStarveFeederStr, 32, -1, &timeToSendToStarveFeeder, 0, Menu::INT, NULL},
-{gramsPerMinStr, 32, -1, &configuration.profile.gramsPerMin, 2, Menu::FLOAT, NULL},
+{gramsPerMinStr, 32, -1, &configuration.profile.gramsPerMin, 2, Menu::FLOAT, &loadStarveFeederConfig},
 {stopStr, 32, -1, NULL, 0, Menu::ACTION, &stopStarveFeeder},
 {starveFeederSlaveAddressStr, 32, -1, &configuration.physical.starveFeederSlaveAddress, 0, Menu::INT, NULL},
 {starveFeederLumpMassStr, 32, -1, &configuration.physical.starveFeederLumpMass, 2, Menu::FLOAT, NULL},
@@ -251,11 +259,13 @@ const Menu::MenuItem mainItems[] PROGMEM =
 {zone3KpStr, 34, -1, &configuration.physical.zone3.Kp, 2, Menu::DOUBLE, NULL},
 {zone3KiStr, 34, -1, &configuration.physical.zone3.Ki, 2, Menu::DOUBLE, NULL},
 {zone3KdStr, 34, -1, &configuration.physical.zone3.Kd, 2, Menu::DOUBLE, NULL},
-{testOutfeedStr, 35, -1, NULL, 0, Menu::ACTION, &testOutfeed},
+{runOutfeedStr, 35, -1, &outfeedState, 0, Menu::STRING_LOCKED, &toggleOutfeedState},
+{RPMStr, 35, -1, &outfeedRPM, 0, Menu::FLOAT, NULL},
+{sendOneRevToOutfeedStr, 35, -1, NULL, 0, Menu::ACTION, &sendOneRevToOutfeed},
 {outfeedPinSetStr, 35, -1, &configuration.physical.outfeedPinSet, 0, Menu::INT, NULL},
 {outfeedStepModeStr, 35, -1, &configuration.physical.outfeedStepMode, 0, Menu::INT, NULL},
 {outfeedDirectionStr, 35, -1, &configuration.physical.outfeedDirection, 0, Menu::BOOLEAN, NULL},
-{outfeedEnableStr, 35, -1, &configuration.physical.outfeedEnable, 0, Menu::BOOLEAN, NULL},
+{outfeedEnableLogicStr, 35, -1, &configuration.physical.outfeedEnable, 0, Menu::BOOLEAN, NULL},
 {outfeedRollerRadiusStr, 35, -1, &configuration.physical.outfeedRollerRadius, 2, Menu::FLOAT, NULL},
 {outfeedMaxRPMStr, 35, -1, &configuration.physical.outfeedMaxRPM, 2, Menu::DOUBLE, NULL},
 {outfeedMinRPMStr, 35, -1, &configuration.physical.outfeedMinRPM, 2, Menu::DOUBLE, NULL},
@@ -279,9 +289,9 @@ const Menu::MenuItem preheatItems[] PROGMEM =
 {zone1TempStr, 0, -1, &zone1Temp, 1, Menu::DOUBLE_LOCKED, NULL},
 {zone2TempStr, 0, -1, &zone2Temp, 1, Menu::DOUBLE_LOCKED, NULL},
 {zone3TempStr, 0, -1, &zone3Temp, 1, Menu::DOUBLE_LOCKED, NULL},
-{zone1SetTempStr, 0, -1, &configuration.profile.zone1SetTemp, 0, Menu::DOUBLE, NULL},
-{zone2SetTempStr, 0, -1, &configuration.profile.zone2SetTemp, 0, Menu::DOUBLE, NULL},
-{zone3SetTempStr, 0, -1, &configuration.profile.zone3SetTemp, 0, Menu::DOUBLE, NULL},
+{zone1SetTempStr, 0, -1, &configuration.profile.zone1SetTemp, 0, Menu::DOUBLE, &setZone1Temp},
+{zone2SetTempStr, 0, -1, &configuration.profile.zone2SetTemp, 0, Menu::DOUBLE, &setZone2Temp},
+{zone3SetTempStr, 0, -1, &configuration.profile.zone3SetTemp, 0, Menu::DOUBLE, &setZone3Temp},
 {skipPreheatStr, 0, -1, NULL, 0, Menu::ACTION, &skipPreheat},
 {profileNameStr, 0, -1, &configuration.profile.name, 0, Menu::STRING, NULL},
 {diaSetPointStr, 0, -1, &configuration.profile.diaSetPoint, 2, Menu::DOUBLE, NULL},
@@ -303,9 +313,9 @@ const Menu::MenuItem soakItems[] PROGMEM =
 {zone1TempStr, 0, -1, &zone1Temp, 1, Menu::DOUBLE_LOCKED, NULL},
 {zone2TempStr, 0, -1, &zone2Temp, 1, Menu::DOUBLE_LOCKED, NULL},
 {zone3TempStr, 0, -1, &zone3Temp, 1, Menu::DOUBLE_LOCKED, NULL},
-{zone1SetTempStr, 0, -1, &configuration.profile.zone1SetTemp, 0, Menu::DOUBLE, NULL},
-{zone2SetTempStr, 0, -1, &configuration.profile.zone2SetTemp, 0, Menu::DOUBLE, NULL},
-{zone3SetTempStr, 0, -1, &configuration.profile.zone3SetTemp, 0, Menu::DOUBLE, NULL},
+{zone1SetTempStr, 0, -1, &configuration.profile.zone1SetTemp, 0, Menu::DOUBLE, &setZone1Temp},
+{zone2SetTempStr, 0, -1, &configuration.profile.zone2SetTemp, 0, Menu::DOUBLE, &setZone2Temp},
+{zone3SetTempStr, 0, -1, &configuration.profile.zone3SetTemp, 0, Menu::DOUBLE, &setZone3Temp},
 {increaseSoakTimeStr, 0, -1, NULL, 0, Menu::ACTION, &increaseSoakTime},
 {decreaseSoakTimeStr, 0, -1, NULL, 0, Menu::ACTION, &decreaseSoakTime},
 {skipSoakStr, 0, -1, NULL, 0, Menu::ACTION, &skipSoak},
@@ -334,9 +344,9 @@ const Menu::MenuItem loadFilamentItems[] PROGMEM =
 {zone1TempStr, 0, -1, &zone1Temp, 1, Menu::DOUBLE_LOCKED, NULL},
 {zone2TempStr, 0, -1, &zone2Temp, 1, Menu::DOUBLE_LOCKED, NULL},
 {zone3TempStr, 0, -1, &zone3Temp, 1, Menu::DOUBLE_LOCKED, NULL},
-{zone1SetTempStr, 0, -1, &configuration.profile.zone1SetTemp, 0, Menu::DOUBLE, NULL},
-{zone2SetTempStr, 0, -1, &configuration.profile.zone2SetTemp, 0, Menu::DOUBLE, NULL},
-{zone3SetTempStr, 0, -1, &configuration.profile.zone3SetTemp, 0, Menu::DOUBLE, NULL},
+{zone1SetTempStr, 0, -1, &configuration.profile.zone1SetTemp, 0, Menu::DOUBLE, &setZone1Temp},
+{zone2SetTempStr, 0, -1, &configuration.profile.zone2SetTemp, 0, Menu::DOUBLE, &setZone2Temp},
+{zone3SetTempStr, 0, -1, &configuration.profile.zone3SetTemp, 0, Menu::DOUBLE, &setZone3Temp},
 {profileNameStr, 0, -1, &configuration.profile.name, 0, Menu::STRING, NULL},
 {diaSetPointStr, 0, -1, &configuration.profile.diaSetPoint, 2, Menu::DOUBLE, NULL},
 {toleranceStr, 0, -1, &configuration.profile.tolerance, 2, Menu::FLOAT, NULL},
@@ -359,9 +369,9 @@ const Menu::MenuItem extrudeItems[] PROGMEM =
 {zone1TempStr, 0, -1, &zone1Temp, 1, Menu::DOUBLE_LOCKED, NULL},
 {zone2TempStr, 0, -1, &zone2Temp, 1, Menu::DOUBLE_LOCKED, NULL},
 {zone3TempStr, 0, -1, &zone3Temp, 1, Menu::DOUBLE_LOCKED, NULL},
-{zone1SetTempStr, 0, -1, &configuration.profile.zone1SetTemp, 0, Menu::DOUBLE, NULL},
-{zone2SetTempStr, 0, -1, &configuration.profile.zone2SetTemp, 0, Menu::DOUBLE, NULL},
-{zone3SetTempStr, 0, -1, &configuration.profile.zone3SetTemp, 0, Menu::DOUBLE, NULL},
+{zone1SetTempStr, 0, -1, &configuration.profile.zone1SetTemp, 0, Menu::DOUBLE, &setZone1Temp},
+{zone2SetTempStr, 0, -1, &configuration.profile.zone2SetTemp, 0, Menu::DOUBLE, &setZone2Temp},
+{zone3SetTempStr, 0, -1, &configuration.profile.zone3SetTemp, 0, Menu::DOUBLE, &setZone3Temp},
 {augerRPMStr, 0, -1, &configuration.profile.augerRPM, 1, Menu::FLOAT, &setAugerRPM},
 {outfeedRPMStr, 0, -1, &configuration.profile.outfeedRPM, 1, Menu::DOUBLE, &setOutfeedRPM},
 {starveFeederModeStr, 0, -1, &starveFeederMode, 0, Menu::STRING_LOCKED, &starveFeederChangeMode},

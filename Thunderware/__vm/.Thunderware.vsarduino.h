@@ -62,6 +62,11 @@ void setAugerRPM();
 void setOutfeedRPM();
 void setOutfeedTunings();
 void baseOutfeedRPMonGPM();
+void toggleOutfeedState();
+void sendOneRevToOutfeed();
+void setZone1Temp();
+void setZone2Temp();
+void setZone3Temp();
 
 #include "C:\Program Files (x86)\Arduino\hardware\arduino\avr\variants\mega\pins_arduino.h" 
 #include "C:\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\arduino.h"

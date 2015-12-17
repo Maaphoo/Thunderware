@@ -65,7 +65,7 @@ void Heater::activate()
 		_startTime = _now;
 		_temp = &_thermistor.temp;
 		_pid.Compute();
-		
+
 		if (!*_PWM){//IE, PWM isn't being used so use the time base as the duty cycle period.
 			// Determine the length of time that the relay should be on
 
@@ -77,8 +77,6 @@ void Heater::activate()
 			
 			} else {//Using PWM, so just set the PWM on the heater pin
 			if(*_activeCooling){
-									Serial.print("Here for tip. Duty Cycle = ");
-									Serial.println(_dutyCycle);
 				if (_dutyCycle >= 1){
 					analogWrite(*_heaterPin, _dutyCycle);
 					digitalWrite(*_coolerPin, LOW);
@@ -97,8 +95,7 @@ void Heater::activate()
 				}
 			} else {
 					analogWrite(*_heaterPin, _dutyCycle);
-					Serial.print("Here for tip. Duty Cycle = ");
-					Serial.println(_dutyCycle);
+
 			}
 		}
 	}
@@ -132,7 +129,12 @@ double Heater::getDutyCycle(){return _dutyCycle;}
 
 void Heater::off()
 {
+	_pid.SetMode(MANUAL);
+	_dutyCycle = 0.0;
 	digitalWrite(*_heaterPin, LOW);//turn the relay off
+	if (_activeCooling){
+		digitalWrite(*_coolerPin, LOW);
+	}
 }
 
 void Heater::setMode(int mode)

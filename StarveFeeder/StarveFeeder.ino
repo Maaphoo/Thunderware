@@ -135,8 +135,8 @@ void setup() {
   _config.homePosition = 100;
   _config.dumpPosition = 1600;
   _config.stepDelay = 75;
-  _config.gramsPerMin = 10.0;
-  _config.lumpMass = 7.6;
+  _config.gramsPerMin = 4.0;
+  _config.lumpMass = 1.0;
   _config.minFillTime = 1000;
   _config.maxFillTime = 10000;
   _config.startupTime = 120;
@@ -145,7 +145,7 @@ void setup() {
   _config.vibDutyCycle = 85;
   _config.maxDutyCycle = 160;
   _config.startupDutyCycle = 120;
-  _config.dir = 0;
+  _config.dir = 1;
 
   currentState = STANDBY;
 }
@@ -164,6 +164,8 @@ void loop() {
       case '2':
         {
           startTime = millis();
+          mode = GRAMS_PER_MIN;
+          setGPMFlag = true;
           currentState = PREP_FILL_BUCKET;
         }
         break;
@@ -198,7 +200,11 @@ void loop() {
 
   if (setGPMFlag) {
     dumpInterval = _config.lumpMass / _config.gramsPerMin * 60L * 1000L;
+    Serial.println(dumpInterval);
+    Serial.print("Mode: ");
+    Serial.println(mode);
     setGPMFlag = false;
+    dumpTime = millis()+dumpInterval;
   }
 
   if (loadConfigFlag) {
@@ -476,6 +482,9 @@ void receiveEvent(int bytesRecieved)
         bytePtr++;
       }
       endRunTime = timeToRun+millis();
+      mode = GRAMS_PER_MIN;
+      setGPMFlag = true;      
+      currentState = PREP_FILL_BUCKET;
       runForSetTime = true;
   }
 
