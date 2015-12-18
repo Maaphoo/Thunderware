@@ -37,6 +37,7 @@ const char soakTimeStr[] PROGMEM = "Soak Time";
 const char zone1SetTempStr[] PROGMEM = "Zone 1 Set Temp";
 const char zone2SetTempStr[] PROGMEM = "Zone 2 Set Temp";
 const char zone3SetTempStr[] PROGMEM = "Zone 3 Set Temp";
+const char zone4SetTempStr[] PROGMEM = "Zone 4 Set Temp";
 const char saveConfigStr[] PROGMEM = "Save Configuration";
 const char starveFeederConfigStr[] PROGMEM = "StarveFeeder";
 const char augerConfigStr[] PROGMEM = "Auger";
@@ -71,11 +72,12 @@ const char augerPinSetStr[] PROGMEM = "Pin Set";
 const char augerStepModeStr[] PROGMEM = "Step Mode";
 const char augerDirectionStr[] PROGMEM = "Direction";
 const char augerEnableStr[] PROGMEM = "Enable";
-const char augerGearRatioStr[] PROGMEM = "Gear Ration";
+const char augerGearRatioStr[] PROGMEM = "Gear Ratio";
 const char heaterStateStr[] PROGMEM = "Activate Heaters";
 const char zone1TempStr[] PROGMEM = "Zone 1 Temp";
 const char zone2TempStr[] PROGMEM = "Zone 2 Temp";
 const char zone3TempStr[] PROGMEM = "Zone 3 Temp";
+const char zone4TempStr[] PROGMEM = "Zone 4 Temp";
 const char zone1TimeBaseStr[] PROGMEM = "Z1 Time base";
 const char zone1MaxDutyCycleStr[] PROGMEM = "Z1 Max DC";
 const char zone1MinDutyCycleStr[] PROGMEM = "Z1 Min DC";
@@ -93,6 +95,11 @@ const char zone3MinDutyCycleStr[] PROGMEM = "Z3 Min DC";
 const char zone3KpStr[] PROGMEM = "Z3 Kp";
 const char zone3KiStr[] PROGMEM = "Z3 Ki";
 const char zone3KdStr[] PROGMEM = "Z3 Kd";
+const char zone4MaxDutyCycleStr[] PROGMEM = "Z4 Max DC";
+const char zone4MinDutyCycleStr[] PROGMEM = "Z4 Min DC";
+const char zone4KpStr[] PROGMEM = "Z4 Kp";
+const char zone4KiStr[] PROGMEM = "Z4 Ki";
+const char zone4KdStr[] PROGMEM = "Z4 Kd";
 const char runOutfeedStr[] PROGMEM = "Run Outfeed";
 const char RPMStr[] PROGMEM = "RPM";
 const char sendOneRevToOutfeedStr[] PROGMEM = "Send 1 Rev";
@@ -134,6 +141,7 @@ const char gramsExtrudedStr[] PROGMEM = "Grams Extruded";
 double zone1Temp;
 double zone2Temp;
 double zone3Temp;
+double zone4Temp;
 char heaterState[] = "Off";
 char outfeedState[] = "Off";
 float outfeedRPM =  0.0;
@@ -156,6 +164,7 @@ void toggleOutfeedState();
 void setZone1Temp();
 void setZone2Temp();
 void setZone3Temp();
+void setZone4Temp();
 /*void homeStarveFeederStr();*/
 void sendTimeToStarveFeeder();
 void sendCyclesToStarveFeeder();
@@ -170,8 +179,8 @@ const Menu::MenuItem mainItems[] PROGMEM =
 {
 {rootStr, -1, 1, NULL, 0, Menu::TITLE, NULL},
 {selectProfileStr, 0, 4, NULL, 0, Menu::TITLE, NULL},
-{calibrateStr, 0, 31, NULL, 0, Menu::TITLE, NULL},
-{auxiliaryStr, 0, 110, NULL, 0, Menu::TITLE, NULL},
+{calibrateStr, 0, 32, NULL, 0, Menu::TITLE, NULL},
+{auxiliaryStr, 0, 118, NULL, 0, Menu::TITLE, NULL},
 {profile0Str, 1, 15, &configuration.profileNames[0], 0, Menu::TITLE_STRING, &loadProfile0},
 {profile1Str, 1, 15, &configuration.profileNames[1], 0, Menu::TITLE_STRING, &loadProfile1},
 {profile2Str, 1, 15, &configuration.profileNames[2], 0, Menu::TITLE_STRING, &loadProfile2},
@@ -199,85 +208,93 @@ const Menu::MenuItem mainItems[] PROGMEM =
 {zone1SetTempStr, 4, -1, &configuration.profile.zone1SetTemp, 0, Menu::DOUBLE, NULL},
 {zone2SetTempStr, 4, -1, &configuration.profile.zone2SetTemp, 0, Menu::DOUBLE, NULL},
 {zone3SetTempStr, 4, -1, &configuration.profile.zone3SetTemp, 0, Menu::DOUBLE, NULL},
+{zone4SetTempStr, 4, -1, &configuration.profile.zone4SetTemp, 0, Menu::DOUBLE, NULL},
 {saveConfigStr, 2, -1, NULL, 0, Menu::ACTION, &saveConfig},
-{starveFeederConfigStr, 2, 37, NULL, 0, Menu::TITLE, NULL},
-{augerConfigStr, 2, 61, NULL, 0, Menu::TITLE, NULL},
-{heaterConfigStr, 2, 67, NULL, 0, Menu::TITLE, NULL},
-{outfeedConfigStr, 2, 91, NULL, 0, Menu::TITLE, NULL},
-{spoolerConfigStr, 2, 101, NULL, 0, Menu::TITLE, NULL},
-{homeStarveFeederStr, 32, -1, NULL, 0, Menu::ACTION, &homeStarveFeeder},
-{dumpStr, 32, -1, NULL, 0, Menu::ACTION, &dump},
-{feedStr, 32, -1, &feedMode, 0, Menu::STRING_LOCKED, &feed},
-{sendCyclesStr, 32, -1, NULL, 0, Menu::ACTION, &sendCyclesToStarveFeeder},
-{cyclesToSendToStarveFeederStr, 32, -1, &cyclesToSendToStarveFeeder, 0, Menu::INT, NULL},
-{sendTimeStr, 32, -1, NULL, 0, Menu::ACTION, &sendTimeToStarveFeeder},
-{timeToSendToStarveFeederStr, 32, -1, &timeToSendToStarveFeeder, 0, Menu::INT, NULL},
-{gramsPerMinStr, 32, -1, &configuration.profile.gramsPerMin, 2, Menu::FLOAT, &loadStarveFeederConfig},
-{stopStr, 32, -1, NULL, 0, Menu::ACTION, &stopStarveFeeder},
-{starveFeederSlaveAddressStr, 32, -1, &configuration.physical.starveFeederSlaveAddress, 0, Menu::INT, NULL},
-{starveFeederLumpMassStr, 32, -1, &configuration.physical.starveFeederLumpMass, 2, Menu::FLOAT, NULL},
-{starveFeederHomePositionStr, 32, -1, &configuration.physical.starveFeederHomePosition, 0, Menu::INT, NULL},
-{starveFeederDumpPositionStr, 32, -1, &configuration.physical.starveFeederDumpPosition, 0, Menu::INT, NULL},
-{starveFeederStepDelayStr, 32, -1, &configuration.physical.starveFeederStepDelay, 0, Menu::INT, NULL},
-{starveFeederHomingStepDelayStr, 32, -1, &configuration.physical.starveFeederHomingStepDelay, 0, Menu::INT, NULL},
-{starveFeederOverRotationStr, 32, -1, &configuration.physical.starveFeederOverRotation, 0, Menu::INT, NULL},
-{starveFeederDirectionStr, 32, -1, &configuration.physical.starveFeederDirection, 0, Menu::BOOLEAN, NULL},
-{starveFeederVibDutyCycleStr, 32, -1, &configuration.physical.starveFeederVibDutyCycle, 0, Menu::INT, NULL},
-{starveFeederStartupDutyCycleStr, 32, -1, &configuration.physical.starveFeederStartupDutyCycle, 0, Menu::INT, NULL},
-{starveFeederMaxDutyCycleStr, 32, -1, &configuration.physical.starveFeederMaxDutyCycle, 0, Menu::INT, NULL},
-{starveFeederMinFillTimeStr, 32, -1, &configuration.physical.starveFeederMinFillTime, 0, Menu::INT, NULL},
-{starveFeederMaxFillTimeStr, 32, -1, &configuration.physical.starveFeederMaxFillTime, 0, Menu::INT, NULL},
-{starveFeederStartupTimeStr, 32, -1, &configuration.physical.starveFeederStartupTime, 0, Menu::INT, NULL},
-{starveFeederDebounceTimeStr, 32, -1, &configuration.physical.starveFeederDebounceTime, 0, Menu::INT, NULL},
-{testAugerStr, 33, -1, NULL, 0, Menu::ACTION, &testAuger},
-{augerPinSetStr, 33, -1, &configuration.physical.augerPinSet, 0, Menu::INT, NULL},
-{augerStepModeStr, 33, -1, &configuration.physical.augerStepMode, 0, Menu::INT, NULL},
-{augerDirectionStr, 33, -1, &configuration.physical.augerDirection, 0, Menu::BOOLEAN, NULL},
-{augerEnableStr, 33, -1, &configuration.physical.augerEnable, 0, Menu::BOOLEAN, NULL},
-{augerGearRatioStr, 33, -1, &configuration.physical.augerGearRatio, 2, Menu::FLOAT, NULL},
-{heaterStateStr, 34, -1, &heaterState, 0, Menu::STRING_LOCKED, &toggleHeaterState},
-{zone1TempStr, 34, -1, &zone1Temp, 1, Menu::DOUBLE_LOCKED, NULL},
-{zone2TempStr, 34, -1, &zone2Temp, 1, Menu::DOUBLE_LOCKED, NULL},
-{zone3TempStr, 34, -1, &zone3Temp, 1, Menu::DOUBLE_LOCKED, NULL},
-{zone1SetTempStr, 34, -1, &configuration.physical.zone1.setTemp, 0, Menu::DOUBLE, NULL},
-{zone2SetTempStr, 34, -1, &configuration.physical.zone2.setTemp, 0, Menu::DOUBLE, NULL},
-{zone3SetTempStr, 34, -1, &configuration.physical.zone3.setTemp, 0, Menu::DOUBLE, NULL},
-{zone1TimeBaseStr, 34, -1, &configuration.physical.zone1.timeBase, 0, Menu::INT, NULL},
-{zone1MaxDutyCycleStr, 34, -1, &configuration.physical.zone1.maxDutyCycle, 0, Menu::DOUBLE, NULL},
-{zone1MinDutyCycleStr, 34, -1, &configuration.physical.zone1.minDutyCycle, 0, Menu::DOUBLE, NULL},
-{zone1KpStr, 34, -1, &configuration.physical.zone1.Kp, 2, Menu::DOUBLE, NULL},
-{zone1KiStr, 34, -1, &configuration.physical.zone1.Ki, 2, Menu::DOUBLE, NULL},
-{zone1KdStr, 34, -1, &configuration.physical.zone1.Kd, 2, Menu::DOUBLE, NULL},
-{zone2TimeBaseStr, 34, -1, &configuration.physical.zone2.timeBase, 0, Menu::INT, NULL},
-{zone2MaxDutyCycleStr, 34, -1, &configuration.physical.zone2.maxDutyCycle, 0, Menu::DOUBLE, NULL},
-{zone2MinDutyCycleStr, 34, -1, &configuration.physical.zone2.minDutyCycle, 0, Menu::DOUBLE, NULL},
-{zone2KpStr, 34, -1, &configuration.physical.zone2.Kp, 2, Menu::DOUBLE, NULL},
-{zone2KiStr, 34, -1, &configuration.physical.zone2.Ki, 2, Menu::DOUBLE, NULL},
-{zone2KdStr, 34, -1, &configuration.physical.zone2.Kd, 2, Menu::DOUBLE, NULL},
-{zone3MaxDutyCycleStr, 34, -1, &configuration.physical.zone3.maxDutyCycle, 0, Menu::DOUBLE, NULL},
-{zone3MinDutyCycleStr, 34, -1, &configuration.physical.zone3.minDutyCycle, 0, Menu::DOUBLE, NULL},
-{zone3KpStr, 34, -1, &configuration.physical.zone3.Kp, 2, Menu::DOUBLE, NULL},
-{zone3KiStr, 34, -1, &configuration.physical.zone3.Ki, 2, Menu::DOUBLE, NULL},
-{zone3KdStr, 34, -1, &configuration.physical.zone3.Kd, 2, Menu::DOUBLE, NULL},
-{runOutfeedStr, 35, -1, &outfeedState, 0, Menu::STRING_LOCKED, &toggleOutfeedState},
-{RPMStr, 35, -1, &outfeedRPM, 0, Menu::FLOAT, NULL},
+{starveFeederConfigStr, 2, 38, NULL, 0, Menu::TITLE, NULL},
+{augerConfigStr, 2, 62, NULL, 0, Menu::TITLE, NULL},
+{heaterConfigStr, 2, 68, NULL, 0, Menu::TITLE, NULL},
+{outfeedConfigStr, 2, 99, NULL, 0, Menu::TITLE, NULL},
+{spoolerConfigStr, 2, 109, NULL, 0, Menu::TITLE, NULL},
+{homeStarveFeederStr, 33, -1, NULL, 0, Menu::ACTION, &homeStarveFeeder},
+{dumpStr, 33, -1, NULL, 0, Menu::ACTION, &dump},
+{feedStr, 33, -1, &feedMode, 0, Menu::STRING_LOCKED, &feed},
+{sendCyclesStr, 33, -1, NULL, 0, Menu::ACTION, &sendCyclesToStarveFeeder},
+{cyclesToSendToStarveFeederStr, 33, -1, &cyclesToSendToStarveFeeder, 0, Menu::INT, NULL},
+{sendTimeStr, 33, -1, NULL, 0, Menu::ACTION, &sendTimeToStarveFeeder},
+{timeToSendToStarveFeederStr, 33, -1, &timeToSendToStarveFeeder, 0, Menu::INT, NULL},
+{gramsPerMinStr, 33, -1, &configuration.profile.gramsPerMin, 2, Menu::FLOAT, NULL},
+{stopStr, 33, -1, NULL, 0, Menu::ACTION, &stopStarveFeeder},
+{starveFeederSlaveAddressStr, 33, -1, &configuration.physical.starveFeederSlaveAddress, 0, Menu::INT, NULL},
+{starveFeederLumpMassStr, 33, -1, &configuration.physical.starveFeederLumpMass, 2, Menu::FLOAT, NULL},
+{starveFeederHomePositionStr, 33, -1, &configuration.physical.starveFeederHomePosition, 0, Menu::INT, NULL},
+{starveFeederDumpPositionStr, 33, -1, &configuration.physical.starveFeederDumpPosition, 0, Menu::INT, NULL},
+{starveFeederStepDelayStr, 33, -1, &configuration.physical.starveFeederStepDelay, 0, Menu::INT, NULL},
+{starveFeederHomingStepDelayStr, 33, -1, &configuration.physical.starveFeederHomingStepDelay, 0, Menu::INT, NULL},
+{starveFeederOverRotationStr, 33, -1, &configuration.physical.starveFeederOverRotation, 0, Menu::INT, NULL},
+{starveFeederDirectionStr, 33, -1, &configuration.physical.starveFeederDirection, 0, Menu::BOOLEAN, NULL},
+{starveFeederVibDutyCycleStr, 33, -1, &configuration.physical.starveFeederVibDutyCycle, 0, Menu::INT, NULL},
+{starveFeederStartupDutyCycleStr, 33, -1, &configuration.physical.starveFeederStartupDutyCycle, 0, Menu::INT, NULL},
+{starveFeederMaxDutyCycleStr, 33, -1, &configuration.physical.starveFeederMaxDutyCycle, 0, Menu::INT, NULL},
+{starveFeederMinFillTimeStr, 33, -1, &configuration.physical.starveFeederMinFillTime, 0, Menu::INT, NULL},
+{starveFeederMaxFillTimeStr, 33, -1, &configuration.physical.starveFeederMaxFillTime, 0, Menu::INT, NULL},
+{starveFeederStartupTimeStr, 33, -1, &configuration.physical.starveFeederStartupTime, 0, Menu::INT, NULL},
+{starveFeederDebounceTimeStr, 33, -1, &configuration.physical.starveFeederDebounceTime, 0, Menu::INT, NULL},
+{testAugerStr, 34, -1, NULL, 0, Menu::ACTION, &testAuger},
+{augerPinSetStr, 34, -1, &configuration.physical.augerPinSet, 0, Menu::INT, NULL},
+{augerStepModeStr, 34, -1, &configuration.physical.augerStepMode, 0, Menu::INT, NULL},
+{augerDirectionStr, 34, -1, &configuration.physical.augerDirection, 0, Menu::BOOLEAN, NULL},
+{augerEnableStr, 34, -1, &configuration.physical.augerEnable, 0, Menu::BOOLEAN, NULL},
+{augerGearRatioStr, 34, -1, &configuration.physical.augerGearRatio, 2, Menu::FLOAT, NULL},
+{heaterStateStr, 35, -1, &heaterState, 0, Menu::STRING_LOCKED, &toggleHeaterState},
+{zone1TempStr, 35, -1, &zone1Temp, 1, Menu::DOUBLE_LOCKED, NULL},
+{zone2TempStr, 35, -1, &zone2Temp, 1, Menu::DOUBLE_LOCKED, NULL},
+{zone3TempStr, 35, -1, &zone3Temp, 1, Menu::DOUBLE_LOCKED, NULL},
+{zone4TempStr, 35, -1, &zone4Temp, 1, Menu::DOUBLE_LOCKED, NULL},
+{zone1SetTempStr, 35, -1, &configuration.physical.zone1.setTemp, 0, Menu::DOUBLE, NULL},
+{zone2SetTempStr, 35, -1, &configuration.physical.zone2.setTemp, 0, Menu::DOUBLE, NULL},
+{zone3SetTempStr, 35, -1, &configuration.physical.zone3.setTemp, 0, Menu::DOUBLE, NULL},
+{zone4SetTempStr, 35, -1, &configuration.physical.zone4.setTemp, 0, Menu::DOUBLE, NULL},
+{zone1TimeBaseStr, 35, -1, &configuration.physical.zone1.timeBase, 0, Menu::INT, NULL},
+{zone1MaxDutyCycleStr, 35, -1, &configuration.physical.zone1.maxDutyCycle, 0, Menu::DOUBLE, NULL},
+{zone1MinDutyCycleStr, 35, -1, &configuration.physical.zone1.minDutyCycle, 0, Menu::DOUBLE, NULL},
+{zone1KpStr, 35, -1, &configuration.physical.zone1.Kp, 2, Menu::DOUBLE, NULL},
+{zone1KiStr, 35, -1, &configuration.physical.zone1.Ki, 2, Menu::DOUBLE, NULL},
+{zone1KdStr, 35, -1, &configuration.physical.zone1.Kd, 2, Menu::DOUBLE, NULL},
+{zone2TimeBaseStr, 35, -1, &configuration.physical.zone2.timeBase, 0, Menu::INT, NULL},
+{zone2MaxDutyCycleStr, 35, -1, &configuration.physical.zone2.maxDutyCycle, 0, Menu::DOUBLE, NULL},
+{zone2MinDutyCycleStr, 35, -1, &configuration.physical.zone2.minDutyCycle, 0, Menu::DOUBLE, NULL},
+{zone2KpStr, 35, -1, &configuration.physical.zone2.Kp, 2, Menu::DOUBLE, NULL},
+{zone2KiStr, 35, -1, &configuration.physical.zone2.Ki, 2, Menu::DOUBLE, NULL},
+{zone2KdStr, 35, -1, &configuration.physical.zone2.Kd, 2, Menu::DOUBLE, NULL},
+{zone3MaxDutyCycleStr, 35, -1, &configuration.physical.zone3.maxDutyCycle, 0, Menu::DOUBLE, NULL},
+{zone3MinDutyCycleStr, 35, -1, &configuration.physical.zone3.minDutyCycle, 0, Menu::DOUBLE, NULL},
+{zone3KpStr, 35, -1, &configuration.physical.zone3.Kp, 2, Menu::DOUBLE, NULL},
+{zone3KiStr, 35, -1, &configuration.physical.zone3.Ki, 2, Menu::DOUBLE, NULL},
+{zone3KdStr, 35, -1, &configuration.physical.zone3.Kd, 2, Menu::DOUBLE, NULL},
+{zone4MaxDutyCycleStr, 35, -1, &configuration.physical.zone4.maxDutyCycle, 0, Menu::DOUBLE, NULL},
+{zone4MinDutyCycleStr, 35, -1, &configuration.physical.zone4.minDutyCycle, 0, Menu::DOUBLE, NULL},
+{zone4KpStr, 35, -1, &configuration.physical.zone4.Kp, 2, Menu::DOUBLE, NULL},
+{zone4KiStr, 35, -1, &configuration.physical.zone4.Ki, 2, Menu::DOUBLE, NULL},
+{zone4KdStr, 35, -1, &configuration.physical.zone4.Kd, 2, Menu::DOUBLE, NULL},
+{runOutfeedStr, 36, -1, &outfeedState, 0, Menu::STRING_LOCKED, &toggleOutfeedState},
+{RPMStr, 36, -1, &outfeedRPM, 0, Menu::FLOAT, NULL},
 {sendOneRevToOutfeedStr, 35, -1, NULL, 0, Menu::ACTION, &sendOneRevToOutfeed},
-{outfeedPinSetStr, 35, -1, &configuration.physical.outfeedPinSet, 0, Menu::INT, NULL},
-{outfeedStepModeStr, 35, -1, &configuration.physical.outfeedStepMode, 0, Menu::INT, NULL},
-{outfeedDirectionStr, 35, -1, &configuration.physical.outfeedDirection, 0, Menu::BOOLEAN, NULL},
-{outfeedEnableLogicStr, 35, -1, &configuration.physical.outfeedEnable, 0, Menu::BOOLEAN, NULL},
-{outfeedRollerRadiusStr, 35, -1, &configuration.physical.outfeedRollerRadius, 2, Menu::FLOAT, NULL},
-{outfeedMaxRPMStr, 35, -1, &configuration.physical.outfeedMaxRPM, 2, Menu::DOUBLE, NULL},
-{outfeedMinRPMStr, 35, -1, &configuration.physical.outfeedMinRPM, 2, Menu::DOUBLE, NULL},
-{testSpoolerStr, 36, -1, NULL, 0, Menu::ACTION, &testSpooler},
-{spoolerPinSetStr, 36, -1, &configuration.physical.spoolerPinSet, 0, Menu::INT, NULL},
-{spoolerStepModeStr, 36, -1, &configuration.physical.spoolerStepMode, 0, Menu::INT, NULL},
-{spoolerDirectionStr, 36, -1, &configuration.physical.spoolerDirection, 0, Menu::BOOLEAN, NULL},
-{spoolerEnableStr, 36, -1, &configuration.physical.spoolerEnable, 0, Menu::BOOLEAN, NULL},
-{spoolerDiskRadiusStr, 36, -1, &configuration.physical.spoolerDiskRadius, 2, Menu::FLOAT, NULL},
-{spoolerCoreRadiusStr, 36, -1, &configuration.physical.spoolerCoreRadius, 2, Menu::FLOAT, NULL},
-{spoolerTraverseLengthStr, 36, -1, &configuration.physical.spoolerTraverseLength, 2, Menu::FLOAT, NULL},
-{spoolerMotorRollerRadiusStr, 36, -1, &configuration.physical.spoolerMotorRollerRadius, 2, Menu::FLOAT, NULL},
+{outfeedPinSetStr, 36, -1, &configuration.physical.outfeedPinSet, 0, Menu::INT, NULL},
+{outfeedStepModeStr, 36, -1, &configuration.physical.outfeedStepMode, 0, Menu::INT, NULL},
+{outfeedDirectionStr, 36, -1, &configuration.physical.outfeedDirection, 0, Menu::BOOLEAN, NULL},
+{outfeedEnableLogicStr, 36, -1, &configuration.physical.outfeedEnable, 0, Menu::BOOLEAN, NULL},
+{outfeedRollerRadiusStr, 36, -1, &configuration.physical.outfeedRollerRadius, 2, Menu::FLOAT, NULL},
+{outfeedMaxRPMStr, 36, -1, &configuration.physical.outfeedMaxRPM, 2, Menu::DOUBLE, NULL},
+{outfeedMinRPMStr, 36, -1, &configuration.physical.outfeedMinRPM, 2, Menu::DOUBLE, NULL},
+{testSpoolerStr, 37, -1, NULL, 0, Menu::ACTION, &testSpooler},
+{spoolerPinSetStr, 37, -1, &configuration.physical.spoolerPinSet, 0, Menu::INT, NULL},
+{spoolerStepModeStr, 37, -1, &configuration.physical.spoolerStepMode, 0, Menu::INT, NULL},
+{spoolerDirectionStr, 37, -1, &configuration.physical.spoolerDirection, 0, Menu::BOOLEAN, NULL},
+{spoolerEnableStr, 37, -1, &configuration.physical.spoolerEnable, 0, Menu::BOOLEAN, NULL},
+{spoolerDiskRadiusStr, 37, -1, &configuration.physical.spoolerDiskRadius, 2, Menu::FLOAT, NULL},
+{spoolerCoreRadiusStr, 37, -1, &configuration.physical.spoolerCoreRadius, 2, Menu::FLOAT, NULL},
+{spoolerTraverseLengthStr, 37, -1, &configuration.physical.spoolerTraverseLength, 2, Menu::FLOAT, NULL},
+{spoolerMotorRollerRadiusStr, 37, -1, &configuration.physical.spoolerMotorRollerRadius, 2, Menu::FLOAT, NULL},
 {feedStr, 3, -1, &feedMode, 0, Menu::STRING_LOCKED, &feed},
 {measureFilametStr, 3, -1, NULL, -1, Menu::ACTION, &measureFilament},
 {resetEEPROMStr, 3, -1, NULL, 0, Menu::ACTION, &resetEEPROM}
@@ -289,9 +306,11 @@ const Menu::MenuItem preheatItems[] PROGMEM =
 {zone1TempStr, 0, -1, &zone1Temp, 1, Menu::DOUBLE_LOCKED, NULL},
 {zone2TempStr, 0, -1, &zone2Temp, 1, Menu::DOUBLE_LOCKED, NULL},
 {zone3TempStr, 0, -1, &zone3Temp, 1, Menu::DOUBLE_LOCKED, NULL},
+{zone4TempStr, 0, -1, &zone4Temp, 1, Menu::DOUBLE_LOCKED, NULL},
 {zone1SetTempStr, 0, -1, &configuration.profile.zone1SetTemp, 0, Menu::DOUBLE, &setZone1Temp},
 {zone2SetTempStr, 0, -1, &configuration.profile.zone2SetTemp, 0, Menu::DOUBLE, &setZone2Temp},
 {zone3SetTempStr, 0, -1, &configuration.profile.zone3SetTemp, 0, Menu::DOUBLE, &setZone3Temp},
+{zone4SetTempStr, 0, -1, &configuration.profile.zone4SetTemp, 0, Menu::DOUBLE, &setZone4Temp},
 {skipPreheatStr, 0, -1, NULL, 0, Menu::ACTION, &skipPreheat},
 {profileNameStr, 0, -1, &configuration.profile.name, 0, Menu::STRING, NULL},
 {diaSetPointStr, 0, -1, &configuration.profile.diaSetPoint, 2, Menu::DOUBLE, NULL},
@@ -313,9 +332,11 @@ const Menu::MenuItem soakItems[] PROGMEM =
 {zone1TempStr, 0, -1, &zone1Temp, 1, Menu::DOUBLE_LOCKED, NULL},
 {zone2TempStr, 0, -1, &zone2Temp, 1, Menu::DOUBLE_LOCKED, NULL},
 {zone3TempStr, 0, -1, &zone3Temp, 1, Menu::DOUBLE_LOCKED, NULL},
+{zone4TempStr, 0, -1, &zone4Temp, 1, Menu::DOUBLE_LOCKED, NULL},
 {zone1SetTempStr, 0, -1, &configuration.profile.zone1SetTemp, 0, Menu::DOUBLE, &setZone1Temp},
 {zone2SetTempStr, 0, -1, &configuration.profile.zone2SetTemp, 0, Menu::DOUBLE, &setZone2Temp},
 {zone3SetTempStr, 0, -1, &configuration.profile.zone3SetTemp, 0, Menu::DOUBLE, &setZone3Temp},
+{zone4SetTempStr, 0, -1, &configuration.profile.zone4SetTemp, 0, Menu::DOUBLE, &setZone4Temp},
 {increaseSoakTimeStr, 0, -1, NULL, 0, Menu::ACTION, &increaseSoakTime},
 {decreaseSoakTimeStr, 0, -1, NULL, 0, Menu::ACTION, &decreaseSoakTime},
 {skipSoakStr, 0, -1, NULL, 0, Menu::ACTION, &skipSoak},
@@ -344,9 +365,11 @@ const Menu::MenuItem loadFilamentItems[] PROGMEM =
 {zone1TempStr, 0, -1, &zone1Temp, 1, Menu::DOUBLE_LOCKED, NULL},
 {zone2TempStr, 0, -1, &zone2Temp, 1, Menu::DOUBLE_LOCKED, NULL},
 {zone3TempStr, 0, -1, &zone3Temp, 1, Menu::DOUBLE_LOCKED, NULL},
+{zone4TempStr, 0, -1, &zone4Temp, 1, Menu::DOUBLE_LOCKED, NULL},
 {zone1SetTempStr, 0, -1, &configuration.profile.zone1SetTemp, 0, Menu::DOUBLE, &setZone1Temp},
 {zone2SetTempStr, 0, -1, &configuration.profile.zone2SetTemp, 0, Menu::DOUBLE, &setZone2Temp},
 {zone3SetTempStr, 0, -1, &configuration.profile.zone3SetTemp, 0, Menu::DOUBLE, &setZone3Temp},
+{zone4SetTempStr, 0, -1, &configuration.profile.zone4SetTemp, 0, Menu::DOUBLE, &setZone4Temp},
 {profileNameStr, 0, -1, &configuration.profile.name, 0, Menu::STRING, NULL},
 {diaSetPointStr, 0, -1, &configuration.profile.diaSetPoint, 2, Menu::DOUBLE, NULL},
 {toleranceStr, 0, -1, &configuration.profile.tolerance, 2, Menu::FLOAT, NULL},
@@ -369,9 +392,11 @@ const Menu::MenuItem extrudeItems[] PROGMEM =
 {zone1TempStr, 0, -1, &zone1Temp, 1, Menu::DOUBLE_LOCKED, NULL},
 {zone2TempStr, 0, -1, &zone2Temp, 1, Menu::DOUBLE_LOCKED, NULL},
 {zone3TempStr, 0, -1, &zone3Temp, 1, Menu::DOUBLE_LOCKED, NULL},
+{zone4TempStr, 0, -1, &zone4Temp, 1, Menu::DOUBLE_LOCKED, NULL},
 {zone1SetTempStr, 0, -1, &configuration.profile.zone1SetTemp, 0, Menu::DOUBLE, &setZone1Temp},
 {zone2SetTempStr, 0, -1, &configuration.profile.zone2SetTemp, 0, Menu::DOUBLE, &setZone2Temp},
 {zone3SetTempStr, 0, -1, &configuration.profile.zone3SetTemp, 0, Menu::DOUBLE, &setZone3Temp},
+{zone4SetTempStr, 0, -1, &configuration.profile.zone4SetTemp, 0, Menu::DOUBLE, &setZone4Temp},
 {augerRPMStr, 0, -1, &configuration.profile.augerRPM, 1, Menu::FLOAT, &setAugerRPM},
 {outfeedRPMStr, 0, -1, &configuration.profile.outfeedRPM, 1, Menu::DOUBLE, &setOutfeedRPM},
 {starveFeederModeStr, 0, -1, &starveFeederMode, 0, Menu::STRING_LOCKED, &starveFeederChangeMode},

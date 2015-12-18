@@ -120,6 +120,7 @@ StarveFeeder starveFeeder(&configuration);
 Heater zone1(&configuration.physical.zone1);
 Heater zone2(&configuration.physical.zone2);
 Heater zone3(&configuration.physical.zone3);
+Heater zone4(&configuration.physical.zone4);
 
 
 StepperMotor auger(&configuration, configuration.physical.augerPinSet);
@@ -215,6 +216,7 @@ void loop() {
 	zone1.activate();
 	zone2.activate();
 	zone3.activate();
+	zone4.activate();
 	
 	now = millis();
 	if (now >= refreshDisplayTime){
@@ -223,6 +225,7 @@ void loop() {
 		zone1Temp = zone1.getTemp();
 		zone2Temp = zone2.getTemp();
 		zone3Temp = zone3.getTemp();
+		zone4Temp = zone4.getTemp();
 
 		//diameter
 		//diameter = outfeed.getDia();
@@ -445,6 +448,7 @@ void confirmStopExtruding() {
 			zone1.off();
 			zone2.off();
 			zone3.off();
+			zone4.off();
 			spooler.disable();
 
 			//change the state to standby
@@ -535,14 +539,17 @@ void toggleHeaterState(){
 		zone1.setMode(AUTOMATIC);
 		zone2.setMode(AUTOMATIC);
 		zone3.setMode(AUTOMATIC);
+		zone4.setMode(AUTOMATIC);
 		}else{
 		strcpy(heaterState,"Off");
 		zone1.setMode(MANUAL);
 		zone2.setMode(MANUAL);
 		zone3.setMode(MANUAL);
+		zone4.setMode(MANUAL);
 		zone1.setDutyCycle(0);
 		zone2.setDutyCycle(0);
 		zone3.setDutyCycle(0);
+		zone4.setDutyCycle(0);
 	}
 	activeMenu->display();
 }
@@ -610,6 +617,9 @@ void setZone2Temp(){
 }
 void setZone3Temp(){
 	configuration.physical.zone3.setTemp = configuration.profile.zone3SetTemp;
+}
+void setZone4Temp(){
+	configuration.physical.zone4.setTemp = configuration.profile.zone4SetTemp;
 }
 #include "test.h"
 

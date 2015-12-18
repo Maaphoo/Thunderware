@@ -45,6 +45,7 @@ void Configuration::loadDefaultProfile(){
 	profile.zone1SetTemp = 265.0;
 	profile.zone2SetTemp = 265.0;
 	profile.zone3SetTemp = 265.0;
+	profile.zone4SetTemp = 265.0;
 
 	//Safety parameters
 	profile.minExtrudeTemp = 180; //The minimum temp allowed for extrusion
@@ -144,17 +145,34 @@ void Configuration::loadDefaultConfig()
 	physical.zone3.Ki = 0.15;
 	physical.zone3.Kp = 3.4;
 	physical.zone3.maxDutyCycle = 255;
-	physical.zone3.minDutyCycle = -245;
+	physical.zone3.minDutyCycle = 0;
 	physical.zone3.thermistorBCoefficient = 3950;
 	physical.zone3.thermistorNumSamples = 20;
 	physical.zone3.thermistorPin = 2;
-	physical.zone3.coolerPin = 3;//Check this
+//	physical.zone3.coolerPin = 3;/// 
 	physical.zone3.thermistorRNom = 100000;
 	physical.zone3.thermistorSeriesResistor = 1000;
 	physical.zone3.timeBase = 2000;
 	physical.zone3.setTemp = 0.0;
 	physical.zone3.PWM = true;
-	physical.zone3.activeCooling = true;
+	physical.zone3.activeCooling = false;
+	
+		//Zone 4 heater
+		physical.zone4.heaterPin = 3;
+		physical.zone4.Kd = 0.0;
+		physical.zone4.Ki = 0.15;
+		physical.zone4.Kp = 3.4;
+		physical.zone4.maxDutyCycle = 255;
+		physical.zone4.minDutyCycle = 0;
+		physical.zone4.thermistorBCoefficient = 3950;
+		physical.zone4.thermistorNumSamples = 20;
+		physical.zone4.thermistorPin = 3;
+		physical.zone4.thermistorRNom = 100000;
+		physical.zone4.thermistorSeriesResistor = 1000;
+		physical.zone4.timeBase = 2000;
+		physical.zone4.setTemp = 0.0;
+		physical.zone4.PWM = true;
+		physical.zone4.activeCooling = false;
 
 	//Diameter Sensor
 	physical.slope = 0.0005656 ;

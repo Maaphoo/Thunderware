@@ -36,6 +36,7 @@ void beginLoadFilament() {
 		zone1.activate();
 		zone2.activate();
 		zone3.activate();
+		zone4.activate();
 
 		auger.setRPM(configuration.profile.augerRPM / 400.0 * (double)accInt);
 		accInt++;
@@ -76,6 +77,7 @@ void loadFilament() {
 	buzzer.activate();
 	zone1.activate();
 	zone2.activate();
+	zone3.activate();
 	zone3.activate();
 	outfeed.activate();
 
@@ -144,6 +146,7 @@ void stopExtruding() {
 	zone1.off();
 	zone2.off();
 	zone3.off();
+	zone4.off();
 	//  starveFeeder.disable();
 }
 

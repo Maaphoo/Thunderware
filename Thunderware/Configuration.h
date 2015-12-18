@@ -45,6 +45,7 @@ class Configuration
 	  double zone1SetTemp;
 	  double zone2SetTemp;
 	  double zone3SetTemp;	  
+	  double zone4SetTemp;
 
       //Safety parameters
       double minExtrudeTemp;
@@ -129,6 +130,7 @@ class Configuration
 	  HeatingZone zone1;
 	  HeatingZone zone2;
 	  HeatingZone zone3;
+	  HeatingZone zone4;
 
       //Diameter Sensor
       float slope;
