@@ -33,10 +33,10 @@ float Caliper::getRawADC()
 	int i=0;
 	while(Wire.available()){
 		_rawADC._byte[i] = Wire.read();
-		Serial.println(_rawADC._byte[i]);
+//		Serial.println(_rawADC._byte[i]);
 		i++;
 	}
-	Serial.println();
+//	Serial.println();
 	Wire.endTransmission();
 	
 	return _rawADC._float;

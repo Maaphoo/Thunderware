@@ -91,6 +91,8 @@ class Menu
 
     char*     _title[21];
     char      _text[21];//holds a line of text for the LCD
+	
+	boolean printToSerialMonitor = false;
       private:
 
 };

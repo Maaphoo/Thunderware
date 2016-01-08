@@ -229,7 +229,8 @@ void loop() {
 
 		//diameter
 		//diameter = outfeed.getDia();
-		
+		Serial.print("RAW ADC: ");
+		Serial.println(outfeed.getRawADC());
 		//soakTime remaining
 		if (currentState == SOAK){
 			makeTimeString(soakTimeRemaining,soakEndTime-millis());

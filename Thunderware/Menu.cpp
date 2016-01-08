@@ -292,12 +292,16 @@ void Menu::display()
 				_getValueStr(&_text[valueIndex], _displayed[i]);
 
 			}
-			Serial.println(_text);
+			if(printToSerialMonitor){
+				Serial.println(_text);
+			}
 			_lcd->setCursor(0, i);
 			_lcd->print(_text);
 		}
 	}
-	Serial.println("");
+	if(printToSerialMonitor){
+		Serial.println("");
+	}
 }
 
 
