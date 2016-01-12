@@ -171,9 +171,8 @@ void sendCyclesToStarveFeeder();
 void stopStarveFeeder();
 void loadStarveFeederConfig();
 void sendOneRevToOutfeed();
-
-
-void measureFilament(){}
+void measureFilament();
+void calibrateCalipers();
 
 const Menu::MenuItem mainItems[] PROGMEM =
 {
@@ -278,7 +277,7 @@ const Menu::MenuItem mainItems[] PROGMEM =
 {zone4KdStr, 35, -1, &configuration.physical.zone4.Kd, 2, Menu::DOUBLE, NULL},
 {runOutfeedStr, 36, -1, &outfeedState, 0, Menu::STRING_LOCKED, &toggleOutfeedState},
 {RPMStr, 36, -1, &outfeedRPM, 0, Menu::FLOAT, NULL},
-{sendOneRevToOutfeedStr, 35, -1, NULL, 0, Menu::ACTION, &sendOneRevToOutfeed},
+{sendOneRevToOutfeedStr, 36, -1, NULL, 0, Menu::ACTION, &calibrateCalipers}, //changed from sendOneRevToOutfeed for testing
 {outfeedPinSetStr, 36, -1, &configuration.physical.outfeedPinSet, 0, Menu::INT, NULL},
 {outfeedStepModeStr, 36, -1, &configuration.physical.outfeedStepMode, 0, Menu::INT, NULL},
 {outfeedDirectionStr, 36, -1, &configuration.physical.outfeedDirection, 0, Menu::BOOLEAN, NULL},

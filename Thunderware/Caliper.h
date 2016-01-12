@@ -17,15 +17,17 @@ class Caliper
 {
 public:
 
-  Caliper(Configuration* configuration);//constructor
+  Caliper(Configuration* configuration, int wireAddress);//constructor
   void update();
   float getRawADC();
   double dia;
-  void linReg(float* slope, float *yIntercept, float *xVals, float *yVals, int *n);
+  double rawADC;
+  void linReg(float slopeAndInt[], float *xVals, float *yVals, int *n);
   
 private:
   
   union RawADC {byte _byte[4]; float _float;} _rawADC;
+  int _wireAddress;
   int _pin;
   int*  _numSamplesToTake;
   float* _slope;

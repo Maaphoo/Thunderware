@@ -45,15 +45,16 @@ class Outfeed
     double getMPerMin();
     double getFtPerMin();
     double getDia();
-    double getRawADC();
-    void linReg(float *slope, float *yIntercept, float *xVals, float *yVals, int *n);
+    double getRawADC(int caliperNum);
+    void linReg(float slopeAndIntercept[], float *xVals, float *yVals, int *n);
     void activate();
 	void setDirection();
     
   private:
     Configuration* _configuration;
     StepperMotor   _motor;
-    Caliper        _caliper;
+    Caliper        _caliper2;
+    Caliper        _caliper1;
     PID            _pid;
     double _rpm;
     int* _computeInterval;

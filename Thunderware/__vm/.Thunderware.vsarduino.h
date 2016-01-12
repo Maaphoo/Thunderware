@@ -68,6 +68,7 @@ void setZone1Temp();
 void setZone2Temp();
 void setZone3Temp();
 void setZone4Temp();
+void measureFilament();
 
 #include "C:\Program Files (x86)\Arduino\hardware\arduino\avr\variants\mega\pins_arduino.h" 
 #include "C:\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\arduino.h"

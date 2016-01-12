@@ -1,5 +1,5 @@
 #include <Wire.h>
-int CalliperSlaveAddress = 3;
+int CalliperSlaveAddress = 4;
 
 int count=0;
 //Time Related Vars

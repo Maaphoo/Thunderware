@@ -281,7 +281,7 @@ double getNumber(char *title, char *subTitle){
 				}
 
 			}
-			else {//back space was pressed to exit Custom
+			else {//back space was pressed to exit 
 				//keep state as selectProfile
 				return -1;
 			}
@@ -365,7 +365,7 @@ void calibrateCalipers(){
 
 	double rawADC;
 	while(1){
-		rawADC = outfeed.getRawADC();
+		rawADC = outfeed.getRawADC(2);
 		lcd.setCursor(7,1);
 		
 		//Replace the following line with code that prints the double on the lcd screen.
@@ -388,7 +388,6 @@ void calibrateCalipers(){
 			break;
 		}
 		if (key == 'A'){
-			//      stateMachine.setState(StateMachine::SELECT_PROFILE);
 			return;
 		}
 	}
@@ -419,7 +418,7 @@ void calibrateCalipers(){
 		
 		lcd.setCursor(0,3);
 		lcd.write("Press 'C' when done");
-		Serial.println(F("Load sample then poress 'D'. Press 'C' when Done."));
+		Serial.println(F("Load sample then press 'D'. Press 'C' when Done."));
 		while (1){
 			key = kpd.getKey();
 
@@ -432,20 +431,18 @@ void calibrateCalipers(){
 				break;
 			}
 			if(key == 'C'){
-				if (i<2){
-					//          stateMachine.setState(StateMachine::SELECT_PROFILE);
+				if (i<2){ //abort. Finished but too few samples
 					return;
 				}
 				finished = true;
 				break;
 			}
-			if (key == 'A'){
-				//        stateMachine.setState(StateMachine::SELECT_PROFILE);
+			if (key == 'A'){//Abort
 				return;
 			}
 		}
 		if (finished){ break;}
-		sampleADCs[i] = outfeed.getRawADC();
+		sampleADCs[i] = outfeed.getRawADC(2);
 		lcd.clear();
 		Serial.println("sampleADCs[i]");
 		Serial.println(sampleADCs[i]);
@@ -454,31 +451,31 @@ void calibrateCalipers(){
 		lcd.clear();
 		sampleDias[i] = getNumber("Enter Diameter", "<enter> to exit");
 		if (sampleDias[i] == -1){
-			if (i<2){
-				//        stateMachine.setState(StateMachine::SELECT_PROFILE);
+			if (i<2){//Invalid number
 				return;
 			}
 			break;
 		}
 		i++;
 	}
-
-//	outfeed.linReg(&configuration.physical.slope, &configuration.physical.yIntercept, &sampleADCs[0], &sampleDias[0],&i);
+	float slopeAndInt[2];
+	outfeed.linReg(slopeAndInt, &sampleADCs[0], &sampleDias[0],&i);
+	configuration.physical.slope = slopeAndInt[0];
+	configuration.physical.yIntercept = slopeAndInt[1];
 	lcd.clear();
 	lcd.write("Calibration Complete");
 	lcd.setCursor(0,1);
 	lcd.write("Slope: ");
-	//  writeDouble(configuration.physical.slope,7,7,1);
+	lcd.print(configuration.physical.slope,6);
 	lcd.setCursor(0,2);
 	lcd.write("yInt: ");
-	//  writeDouble(configuration.physical.yIntercept,4,7,2);
+	lcd.print(configuration.physical.yIntercept,4);
 	lcd.setCursor(0,3);
 	lcd.write("Press <enter>");
-
+        configuration.saveConfig();
 	while (1){
 		key = kpd.getKey();
-		if(key){
-			//      stateMachine.setState(StateMachine::SELECT_PROFILE);
+		if(key){//Return to menu calibrateCalipers is finished
 			return;
 		}
 	}
@@ -787,307 +784,312 @@ void testStarveFeeder(){
 }
 
 void testSpooler(){
-	lcd.clear();
-	lcd.print(F("WARNING: The Spooler"));
-	lcd.setCursor(0,1);
-	lcd.print(F("must be free to move"));
-	lcd.setCursor(0,2);
-	lcd.print(F("to perform the"));
-	lcd.setCursor(0,3);
-	lcd.print(F("following tests."));
-	delay(5000);
-	lcd.clear();
-	lcd.print(F("Continue?"));
-	lcd.setCursor(0,1);
-	lcd.print(F("A) Yes"));
-	lcd.setCursor(0,2);
-	lcd.print(F("B) No"));
-	boolean waitForResponse = true;
-	while (waitForResponse) {
-		key = kpd.getKey();
-
-		//Allow for keyboard input as well
-		if (Serial.available() > 0) {
-			key = (char)Serial.read();
-		}
-
-		if (key == 'A') {
-			waitForResponse = false;
-		}
-
-		if (key == 'B') {
-			activeMenu->display();
-			return;
-			waitForResponse = false;
-		}
-	}
-	lcd.clear();
-	lcd.print(F("A) Enable/Disable"));
-	lcd.setCursor(0,1);
-	lcd.print(F("C) When Disabled"));
-	lcd.setCursor(0,2);
-	lcd.print(F("D) EXIT"));
-
-	waitForResponse = true;
-	boolean flag = true;
-	while (waitForResponse) {
-		key = kpd.getKey();
-
-		//Allow for keyboard input as well
-		if (Serial.available() > 0) {
-			key = (char)Serial.read();
-		}
-
-		switch (key){
-			case 'A':
-			if (flag){
-				spooler.enable();
-				flag = false;
-				} else {
-				spooler.disable();
-				flag = true;
-			}
-			break;
-
-			case 'C':
-
-			if (!flag){
-				configuration.physical.spoolerEnable = !configuration.physical.spoolerEnable;
-			}
-			waitForResponse = false;
-			break;
-
-			case 'D':
-			activeMenu->display();
-			return;
-			break;
-
-		}
-	}
-
-	//spooler Direction test
-	lcd.clear();
-	lcd.print(F("spooler Direction..."));
-	delay(5000);
-	lcd.clear();
-	lcd.print(F("Continue?"));
-	lcd.setCursor(0,1);
-	lcd.print(F("A) Yes"));
-	lcd.setCursor(0,2);
-	lcd.print(F("B) No"));
-	waitForResponse = true;
-	while (waitForResponse) {
-		key = kpd.getKey();
-
-		//Allow for keyboard input as well
-		if (Serial.available() > 0) {
-			key = (char)Serial.read();
-		}
-
-		if (key == 'A') {
-			waitForResponse = false;
-		}
-
-		if (key == 'B') {
-			activeMenu->display();
-			return;
-		}
-	}
-
+	spooler.setRPM(10);
 	spooler.enable();
-	spooler.setRPM(1);
-
-	lcd.clear();
-	lcd.print(F("spooler dir OK?"));
-	lcd.setCursor(0,1);
-	lcd.print(F("A) Yes"));
-	lcd.setCursor(0,2);
-	lcd.print(F("B) No"));
-	lcd.setCursor(0,3);
-	lcd.print(F("D) Exit"));
-	waitForResponse = true;
-	while (waitForResponse) {
-		key = kpd.getKey();
-
-		//Allow for keyboard input as well
-		if (Serial.available() > 0) {
-			key = (char)Serial.read();
-		}
-
-		switch (key){
-			case 'A':
-			if (flag){
-				spooler.disable();
-				waitForResponse = false;
-			}
-			break;
-
-			case 'B':
-			configuration.physical.spoolerDirection = !configuration.physical.spoolerDirection;
-			spooler.setDirection();
-
-			break;
-
-			case 'D':
-			spooler.disable();
-			activeMenu->display();
-			return;
-			break;
-
-		}
-	}
-
-	// MicroStepping test
-	lcd.clear();
-	lcd.print(F("Microsteping Test"));
-	delay(5000);
-	lcd.clear();
-	lcd.print(F("Mark the Roller. "));
-	lcd.setCursor(0,1);
-	lcd.print(F("Attempting 1 rev"));
-	lcd.setCursor(0,2);
-	lcd.print(F("A) Begin"));
-	lcd.setCursor(0,3);
-	lcd.print(F("B) Exit"));
-	waitForResponse = true;
-	while (waitForResponse) {
-		key = kpd.getKey();
-
-		//Allow for keyboard input as well
-		if (Serial.available() > 0) {
-			key = (char)Serial.read();
-		}
-
-		if (key == 'A') {
-			waitForResponse = false;
-		}
-
-		if (key == 'B') {
-			activeMenu->display();
-			return;
-		}
-	}
-	lcd.clear();
-	lcd.print(F("Rotating 1 rev..."));
-	spooler.enable();
-	pinMode(6,OUTPUT);
-
-	spooler.enable();
-	float rpm = 10.0;
-	spooler.setRPM(rpm);
-	delay(1000.0*60.0/rpm);
+	delay(6000);
 	spooler.disable();
-
-	lcd.clear();
-	lcd.print(F("If spooler didn't"));
-	lcd.setCursor(0,1);
-	lcd.print(F("make 1 rev, check"));
-	lcd.setCursor(0,2);
-	lcd.print(F("the wiring and"));
-	lcd.setCursor(0,3);
-	lcd.print(F("microstep settings"));
-	delay(5000);
-
-	//Test Roller/spool ratio diameter
-	lcd.clear();
-	lcd.print(F("Roller/Disk Test"));
-	delay(5000);
-	lcd.clear();
-	lcd.print(F("Place roller on Disk"));
-	lcd.setCursor(0,1);
-	lcd.print(F("press Stop at 1 rev."));
-	lcd.setCursor(0,2);
-	lcd.print(F("A) Begin"));
-	lcd.setCursor(0,3);
-	lcd.print(F("B) Exit"));
-	waitForResponse = true;
-	while (waitForResponse) {
-		key = kpd.getKey();
-
-		//Allow for keyboard input as well
-		if (Serial.available() > 0) {
-			key = (char)Serial.read();
-		}
-
-		if (key == 'A') {
-			waitForResponse = false;
-		}
-
-		if (key == 'B') {
-			activeMenu->display();
-			return;
-		}
-	}
-	spooler.enable();
-	rpm = 20.0;
-	spooler.setRPM(rpm);
-	unsigned long startTime = millis();
-	lcd.clear();
-	lcd.print(F("press Stop at 1 rev."));
-	lcd.setCursor(0,1);
-	lcd.print(F("A) Stop"));
-	lcd.setCursor(0,2);
-	lcd.print(F("B) Exit"));
-	waitForResponse = true;
-	while (waitForResponse) {
-		key = kpd.getKey();
-
-		//Allow for keyboard input as well
-		if (Serial.available() > 0) {
-			key = (char)Serial.read();
-		}
-
-		if (key == 'A') {
-			waitForResponse = false;
-		}
-
-		if (key == 'B') {
-			outfeed.disable();
-			activeMenu->display();
-			return;
-		}
-	}
-
-	spooler.disable();
-	unsigned long stopTime = millis();
-	configuration.physical.spoolerMotorRollerRadius = 1.0;
-	configuration.physical.spoolerDiskRadius = (rpm*(float)(stopTime-startTime))/(1000.0*60.0);
-
-	//Don't forget to check spool dimensions
-	lcd.clear();
-	lcd.print(F("Don't forget to set "));
-	lcd.setCursor(0,1);
-	lcd.print(F("the spool Dimensions"));
-	lcd.setCursor(0,2);
-	lcd.print(F("in the spooler menu"));
-	delay(5000);
-
-	//Save the settings
-	lcd.clear();
-	lcd.print(F("Save Settings?"));
-	lcd.setCursor(0,1);
-	lcd.print(F("A) Yes"));
-	lcd.setCursor(0,2);
-	lcd.print(F("B) No"));
-	waitForResponse = true;
-	while (waitForResponse) {
-		key = kpd.getKey();
-
-		//Allow for keyboard input as well
-		if (Serial.available() > 0) {
-			key = (char)Serial.read();
-		}
-
-		if (key == 'A') {
-			configuration.saveConfig();
-			waitForResponse = false;
-		}
-
-		if (key == 'B') {
-			waitForResponse = false;
-		}
-	}
 	activeMenu->display();
+// 	lcd.clear();
+// 	lcd.print(F("WARNING: The Spooler"));
+// 	lcd.setCursor(0,1);
+// 	lcd.print(F("must be free to move"));
+// 	lcd.setCursor(0,2);
+// 	lcd.print(F("to perform the"));
+// 	lcd.setCursor(0,3);
+// 	lcd.print(F("following tests."));
+// 	delay(5000);
+// 	lcd.clear();
+// 	lcd.print(F("Continue?"));
+// 	lcd.setCursor(0,1);
+// 	lcd.print(F("A) Yes"));
+// 	lcd.setCursor(0,2);
+// 	lcd.print(F("B) No"));
+// 	boolean waitForResponse = true;
+// 	while (waitForResponse) {
+// 		key = kpd.getKey();
+// 
+// 		//Allow for keyboard input as well
+// 		if (Serial.available() > 0) {
+// 			key = (char)Serial.read();
+// 		}
+// 
+// 		if (key == 'A') {
+// 			waitForResponse = false;
+// 		}
+// 
+// 		if (key == 'B') {
+// 			activeMenu->display();
+// 			return;
+// 			waitForResponse = false;
+// 		}
+// 	}
+// 	lcd.clear();
+// 	lcd.print(F("A) Enable/Disable"));
+// 	lcd.setCursor(0,1);
+// 	lcd.print(F("C) When Disabled"));
+// 	lcd.setCursor(0,2);
+// 	lcd.print(F("D) EXIT"));
+// 
+// 	waitForResponse = true;
+// 	boolean flag = true;
+// 	while (waitForResponse) {
+// 		key = kpd.getKey();
+// 
+// 		//Allow for keyboard input as well
+// 		if (Serial.available() > 0) {
+// 			key = (char)Serial.read();
+// 		}
+// 
+// 		switch (key){
+// 			case 'A':
+// 			if (flag){
+// 				spooler.enable();
+// 				flag = false;
+// 				} else {
+// 				spooler.disable();
+// 				flag = true;
+// 			}
+// 			break;
+// 
+// 			case 'C':
+// 
+// 			if (!flag){
+// 				configuration.physical.spoolerEnable = !configuration.physical.spoolerEnable;
+// 			}
+// 			waitForResponse = false;
+// 			break;
+// 
+// 			case 'D':
+// 			activeMenu->display();
+// 			return;
+// 			break;
+// 
+// 		}
+// 	}
+// 
+// 	//spooler Direction test
+// 	lcd.clear();
+// 	lcd.print(F("spooler Direction..."));
+// 	delay(5000);
+// 	lcd.clear();
+// 	lcd.print(F("Continue?"));
+// 	lcd.setCursor(0,1);
+// 	lcd.print(F("A) Yes"));
+// 	lcd.setCursor(0,2);
+// 	lcd.print(F("B) No"));
+// 	waitForResponse = true;
+// 	while (waitForResponse) {
+// 		key = kpd.getKey();
+// 
+// 		//Allow for keyboard input as well
+// 		if (Serial.available() > 0) {
+// 			key = (char)Serial.read();
+// 		}
+// 
+// 		if (key == 'A') {
+// 			waitForResponse = false;
+// 		}
+// 
+// 		if (key == 'B') {
+// 			activeMenu->display();
+// 			return;
+// 		}
+// 	}
+// 
+// 	spooler.enable();
+// 	spooler.setRPM(1);
+// 
+// 	lcd.clear();
+// 	lcd.print(F("spooler dir OK?"));
+// 	lcd.setCursor(0,1);
+// 	lcd.print(F("A) Yes"));
+// 	lcd.setCursor(0,2);
+// 	lcd.print(F("B) No"));
+// 	lcd.setCursor(0,3);
+// 	lcd.print(F("D) Exit"));
+// 	waitForResponse = true;
+// 	while (waitForResponse) {
+// 		key = kpd.getKey();
+// 
+// 		//Allow for keyboard input as well
+// 		if (Serial.available() > 0) {
+// 			key = (char)Serial.read();
+// 		}
+// 
+// 		switch (key){
+// 			case 'A':
+// 			if (flag){
+// 				spooler.disable();
+// 				waitForResponse = false;
+// 			}
+// 			break;
+// 
+// 			case 'B':
+// 			configuration.physical.spoolerDirection = !configuration.physical.spoolerDirection;
+// 			spooler.setDirection();
+// 
+// 			break;
+// 
+// 			case 'D':
+// 			spooler.disable();
+// 			activeMenu->display();
+// 			return;
+// 			break;
+// 
+// 		}
+// 	}
+// 
+// 	// MicroStepping test
+// 	lcd.clear();
+// 	lcd.print(F("Microsteping Test"));
+// 	delay(5000);
+// 	lcd.clear();
+// 	lcd.print(F("Mark the Roller. "));
+// 	lcd.setCursor(0,1);
+// 	lcd.print(F("Attempting 1 rev"));
+// 	lcd.setCursor(0,2);
+// 	lcd.print(F("A) Begin"));
+// 	lcd.setCursor(0,3);
+// 	lcd.print(F("B) Exit"));
+// 	waitForResponse = true;
+// 	while (waitForResponse) {
+// 		key = kpd.getKey();
+// 
+// 		//Allow for keyboard input as well
+// 		if (Serial.available() > 0) {
+// 			key = (char)Serial.read();
+// 		}
+// 
+// 		if (key == 'A') {
+// 			waitForResponse = false;
+// 		}
+// 
+// 		if (key == 'B') {
+// 			activeMenu->display();
+// 			return;
+// 		}
+// 	}
+// 	lcd.clear();
+// 	lcd.print(F("Rotating 1 rev..."));
+// 	spooler.enable();
+// 	pinMode(6,OUTPUT);
+// 
+// 	spooler.enable();
+// 	float rpm = 10.0;
+// 	spooler.setRPM(rpm);
+// 	delay(1000.0*60.0/rpm);
+// 	spooler.disable();
+// 
+// 	lcd.clear();
+// 	lcd.print(F("If spooler didn't"));
+// 	lcd.setCursor(0,1);
+// 	lcd.print(F("make 1 rev, check"));
+// 	lcd.setCursor(0,2);
+// 	lcd.print(F("the wiring and"));
+// 	lcd.setCursor(0,3);
+// 	lcd.print(F("microstep settings"));
+// 	delay(5000);
+// 
+// 	//Test Roller/spool ratio diameter
+// 	lcd.clear();
+// 	lcd.print(F("Roller/Disk Test"));
+// 	delay(5000);
+// 	lcd.clear();
+// 	lcd.print(F("Place roller on Disk"));
+// 	lcd.setCursor(0,1);
+// 	lcd.print(F("press Stop at 1 rev."));
+// 	lcd.setCursor(0,2);
+// 	lcd.print(F("A) Begin"));
+// 	lcd.setCursor(0,3);
+// 	lcd.print(F("B) Exit"));
+// 	waitForResponse = true;
+// 	while (waitForResponse) {
+// 		key = kpd.getKey();
+// 
+// 		//Allow for keyboard input as well
+// 		if (Serial.available() > 0) {
+// 			key = (char)Serial.read();
+// 		}
+// 
+// 		if (key == 'A') {
+// 			waitForResponse = false;
+// 		}
+// 
+// 		if (key == 'B') {
+// 			activeMenu->display();
+// 			return;
+// 		}
+// 	}
+// 	spooler.enable();
+// 	rpm = 20.0;
+// 	spooler.setRPM(rpm);
+// 	unsigned long startTime = millis();
+// 	lcd.clear();
+// 	lcd.print(F("press Stop at 1 rev."));
+// 	lcd.setCursor(0,1);
+// 	lcd.print(F("A) Stop"));
+// 	lcd.setCursor(0,2);
+// 	lcd.print(F("B) Exit"));
+// 	waitForResponse = true;
+// 	while (waitForResponse) {
+// 		key = kpd.getKey();
+// 
+// 		//Allow for keyboard input as well
+// 		if (Serial.available() > 0) {
+// 			key = (char)Serial.read();
+// 		}
+// 
+// 		if (key == 'A') {
+// 			waitForResponse = false;
+// 		}
+// 
+// 		if (key == 'B') {
+// 			outfeed.disable();
+// 			activeMenu->display();
+// 			return;
+// 		}
+// 	}
+// 
+// 	spooler.disable();
+// 	unsigned long stopTime = millis();
+// 	configuration.physical.spoolerMotorRollerRadius = 1.0;
+// 	configuration.physical.spoolerDiskRadius = (rpm*(float)(stopTime-startTime))/(1000.0*60.0);
+// 
+// 	//Don't forget to check spool dimensions
+// 	lcd.clear();
+// 	lcd.print(F("Don't forget to set "));
+// 	lcd.setCursor(0,1);
+// 	lcd.print(F("the spool Dimensions"));
+// 	lcd.setCursor(0,2);
+// 	lcd.print(F("in the spooler menu"));
+// 	delay(5000);
+// 
+// 	//Save the settings
+// 	lcd.clear();
+// 	lcd.print(F("Save Settings?"));
+// 	lcd.setCursor(0,1);
+// 	lcd.print(F("A) Yes"));
+// 	lcd.setCursor(0,2);
+// 	lcd.print(F("B) No"));
+// 	waitForResponse = true;
+// 	while (waitForResponse) {
+// 		key = kpd.getKey();
+// 
+// 		//Allow for keyboard input as well
+// 		if (Serial.available() > 0) {
+// 			key = (char)Serial.read();
+// 		}
+// 
+// 		if (key == 'A') {
+// 			configuration.saveConfig();
+// 			waitForResponse = false;
+// 		}
+// 
+// 		if (key == 'B') {
+// 			waitForResponse = false;
+// 		}
+// 	}
+// 	activeMenu->display();
 }
 
 

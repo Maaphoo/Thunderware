@@ -12,8 +12,9 @@ Released into the public domain.
 
 Outfeed::Outfeed(Configuration* configuration)
 :  _motor(configuration, configuration->physical.outfeedPinSet),
-_caliper(configuration),
-_pid(&_caliper.dia,
+_caliper2(configuration, 4),
+_caliper1(configuration, 3),
+_pid(&_caliper1.dia,
 &_motor._rpm,
 &configuration->profile.diaSetPoint,
 configuration->profile.outfeedKp,
@@ -30,13 +31,23 @@ REVERSE)
 //revise so that the outfeed reports mm/s
 float Outfeed::getRPM(){ return _motor.getRPM();}
 
-double Outfeed::getDia(){ return _caliper.dia;}
+double Outfeed::getDia(){ 
+  _caliper2.update();
+  return _caliper2.dia;
+}
 
-double Outfeed::getRawADC(){return _caliper.getRawADC();}
+double Outfeed::getRawADC(int sensorNum){
+	switch(sensorNum){
+		case 1:
+			return _caliper1.getRawADC();
+		case 2:
+			return _caliper2.getRawADC();
+	}	
+}
 
-void Outfeed::linReg(float *slope, float *yIntercept, float *xVals, float *yVals, int *n)
+void Outfeed::linReg(float slopeAndIntercept[], float *xVals, float *yVals, int *n)
 {
-	_caliper.linReg(slope, yIntercept, xVals, yVals, n);
+	_caliper2.linReg(slopeAndIntercept, xVals, yVals, n);
 }
 
 void Outfeed::setRPM(float rpm)

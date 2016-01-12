@@ -158,11 +158,14 @@ void setup()
 	buzzer.setMsg(Buzzer::POWER_ON);
 	currentState = STANDBY;
 	auger.disable(); // Why is this necessary. If not here, there is high frequency signal on the auger step pin.
-	//configuration.loadConfig();
+	configuration.loadConfig();
 	//starveFeeder.getMode(starveFeederMode);
 	//  activeMenu = &loadFilamentMenu;
 	activeMenu->reset();
-}
+        Serial.print("configuration.physical.slope: ");
+        Serial.println(configuration.physical.slope,6);
+        Serial.print("configuration.physical.yIntercept: ");
+        Serial.println(configuration.physical.yIntercept,4);}
 static unsigned long refreshDisplayTime;
 
 void loop() {
@@ -229,8 +232,8 @@ void loop() {
 
 		//diameter
 		//diameter = outfeed.getDia();
-		Serial.print("RAW ADC: ");
-		Serial.println(outfeed.getRawADC());
+	        Serial.println(outfeed.getRawADC(1));
+
 		//soakTime remaining
 		if (currentState == SOAK){
 			makeTimeString(soakTimeRemaining,soakEndTime-millis());
@@ -621,6 +624,39 @@ void setZone3Temp(){
 }
 void setZone4Temp(){
 	configuration.physical.zone4.setTemp = configuration.profile.zone4SetTemp;
+}
+
+void measureFilament(){
+	unsigned long now = millis();
+	unsigned long displayTime = millis();
+	lcd.clear();
+	outfeed.setRPM(10);
+	spooler.setRPM();
+	outfeed.enable();
+	spooler.enable();
+        outfeed.reset();
+        outfeed.setMode(MANUAL);
+	while (true){
+		if (Serial.available() > 0) {
+			outfeed.disable();
+			spooler.disable();
+                        activeMenu->display();
+			return;
+		}
+		now = millis();
+		if (now>=displayTime){
+                        
+			Serial.print(1024.0-outfeed.getRawADC(1));
+			Serial.print(", ");
+			Serial.print(outfeed.getRawADC(2));
+			Serial.print(", ");
+			Serial.println(outfeed.getDia());
+                        outfeed.activate();
+                        spooler.setRPM();
+			displayTime = now+1000;
+		}
+	}
+  
 }
 #include "test.h"
 
