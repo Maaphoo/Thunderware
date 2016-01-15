@@ -127,7 +127,7 @@ StepperMotor auger(&configuration, configuration.physical.augerPinSet);
 
 Outfeed outfeed(&configuration);
 
-Spooler spooler(&configuration, &outfeed);
+Spooler spooler(&configuration);
 
 Safety safety(&configuration);
 
@@ -232,7 +232,7 @@ void loop() {
 
 		//diameter
 		//diameter = outfeed.getDia();
-		Serial.println(outfeed.getRawADC(1));
+		Serial.println(spooler.getRawADC());
 
 		//soakTime remaining
 		if (currentState == SOAK){

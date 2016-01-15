@@ -55,7 +55,6 @@ void beginLoadFilament() {
 		outfeed.setRPM(configuration.profile.outfeedRPM);
 		outfeed.setMode(MANUAL);
 		outfeed.enable();
-		spooler.setConstatns();
 		spooler.setRPM();
 		spooler.enable();
 		/*	starveFeeder.dump();//Make sure that the sensor begins blocked*/
