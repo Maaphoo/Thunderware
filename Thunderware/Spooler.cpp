@@ -17,16 +17,18 @@
  _pid(&_rawADCInput,
  &_motorRPM,
  &_pidSetpoint,
- 0.01,
- 0.0,
+ 0.0005,
+ 0.0005,
  0.0,
  DIRECT)
 
  {
 	 _wireAddress = 5;
 	 _interval = 500;
+          _pidSetpoint = 512.0;
 	 _pid.SetSampleTime(_interval);
 	 _pid.SetMode(MANUAL);
+        _pid.SetOutputLimits(0, 350);
 
  }
 
@@ -74,6 +76,7 @@
 		 _pid.SetMode(MANUAL);
 	 }
 	 _motor.setRPM(rpm);
+         _motorRPM = rpm;
  }
 
  //Instead of using the following, should I have a public pointer to _motor and then use someting like spooler.motor->enable()?

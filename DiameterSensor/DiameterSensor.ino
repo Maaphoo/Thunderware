@@ -15,7 +15,7 @@ void setup()
 {
   Wire.begin(CalliperSlaveAddress);    // join i2c bus with address #3
   Wire.onRequest(requestEvent);        // register event
-//  Serial.begin(115200);                // start serial for debug output
+  Serial.begin(115200);                // start serial for debug output
 
 }
 
@@ -25,6 +25,7 @@ void loop()
   
   if (now>= measurementTime){
     avgADCVal = getMeasurement();
+    Serial.println(avgADCVal);
     measurementTime = now+interval;
   }
 }
