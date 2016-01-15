@@ -17,10 +17,10 @@ Spooler::Spooler(Configuration* configuration, Outfeed* outfeed) :   _motor(conf
 	_diaSetPoint = _configuration->profile.diaSetPoint;
 	_configuration = configuration;
 	c1 = (_configuration->physical.outfeedRollerRadius
-		*_configuration->physical.spoolerDiskRadius
-		*_configuration->physical.spoolerStepMode
-		/(_configuration->physical.spoolerMotorRollerRadius
-		*_configuration->physical.outfeedStepMode));
+	*_configuration->physical.spoolerDiskRadius
+	*_configuration->physical.spoolerStepMode
+	/(_configuration->physical.spoolerMotorRollerRadius
+	*_configuration->physical.outfeedStepMode));
 	c2 = (_configuration->profile.diaSetPoint/(PI*_configuration->physical.spoolerTraverseLength));
 	c3 = (_configuration->physical.spoolerCoreRadius*_configuration->physical.spoolerCoreRadius);
 	c4 = (PI*_configuration->physical.outfeedRollerRadius/((double)_configuration->physical.outfeedStepMode*100.0));
@@ -46,7 +46,12 @@ void Spooler::setRPM()
 	*_configuration->physical.spoolerDiskRadius
 	/(_filamentSurfaceRaduis*_configuration->physical.spoolerMotorRollerRadius)
 	*_outfeed->getRPM();
-	_motor.setRPM(_motorRPM);
+	
+	//only change RPM if more than a 1% change is required
+//	if ((_motorRPM-_prevRPM)/_prevRPM > 0.01){
+		_motor.setRPM(_motorRPM);
+//		_prevRPM = _motorRPM;
+//	}
 }
 
 float Spooler::getRPM(){return _motor.getRPM();}

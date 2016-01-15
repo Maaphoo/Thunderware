@@ -162,10 +162,10 @@ void setup()
 	//starveFeeder.getMode(starveFeederMode);
 	//  activeMenu = &loadFilamentMenu;
 	activeMenu->reset();
-        Serial.print("configuration.physical.slope: ");
-        Serial.println(configuration.physical.slope,6);
-        Serial.print("configuration.physical.yIntercept: ");
-        Serial.println(configuration.physical.yIntercept,4);}
+	Serial.print("configuration.physical.slope: ");
+	Serial.println(configuration.physical.slope,6);
+	Serial.print("configuration.physical.yIntercept: ");
+Serial.println(configuration.physical.yIntercept,4);}
 static unsigned long refreshDisplayTime;
 
 void loop() {
@@ -232,7 +232,7 @@ void loop() {
 
 		//diameter
 		//diameter = outfeed.getDia();
-	        Serial.println(outfeed.getRawADC(1));
+		Serial.println(outfeed.getRawADC(1));
 
 		//soakTime remaining
 		if (currentState == SOAK){
@@ -630,33 +630,52 @@ void measureFilament(){
 	unsigned long now = millis();
 	unsigned long displayTime = millis();
 	lcd.clear();
+        configuration.loadDefaultProfile();
+	outfeed.loadPIDSettings();
 	outfeed.setRPM(10);
 	spooler.setRPM();
 	outfeed.enable();
-	spooler.enable();
+//        Serial.print("outfeed RPM: ");
+//	Serial.println(outfeed.getRPM());
+//        delay(3000);
+//	outfeed.setRPM(5);
+//        Serial.print("outfeed RPM: ");
+//	Serial.println(outfeed.getRPM());
+//        delay(3000);
+//	outfeed.setRPM(10);
+        spooler.enable();
         outfeed.reset();
-        outfeed.setMode(MANUAL);
+	outfeed.setMode(AUTOMATIC);
+	
 	while (true){
+		
+		//Stop is there is any serial input
 		if (Serial.available() > 0) {
 			outfeed.disable();
 			spooler.disable();
-                        activeMenu->display();
+			activeMenu->display();
 			return;
 		}
+		
 		now = millis();
+		outfeed.activate();
+		spooler.setRPM();
 		if (now>=displayTime){
-                        
-			Serial.print(1024.0-outfeed.getRawADC(1));
+			
+			Serial.print(outfeed.getRawADC(1));
 			Serial.print(", ");
-			Serial.print(outfeed.getRawADC(2));
+			Serial.print(1024.0-outfeed.getRawADC(2));
 			Serial.print(", ");
-			Serial.println(outfeed.getDia());
-                        outfeed.activate();
-                        spooler.setRPM();
-			displayTime = now+1000;
+			Serial.print(outfeed.getDia());
+			Serial.print(", ");
+			Serial.print(outfeed.getRPM());
+			Serial.print(", ");
+			Serial.println(outfeed.getMPerMin());
+
+			displayTime = now+500;
 		}
 	}
-  
+	
 }
 #include "test.h"
 

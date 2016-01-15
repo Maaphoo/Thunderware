@@ -38,6 +38,7 @@ class Outfeed
     void setKi(double ki);
     double getKd();
     void setKd(double kd);
+	void loadPIDSettings();
     void disable();
     void enable();
     void reset();

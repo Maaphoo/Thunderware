@@ -14,13 +14,13 @@ Outfeed::Outfeed(Configuration* configuration)
 :  _motor(configuration, configuration->physical.outfeedPinSet),
 _caliper2(configuration, 4),
 _caliper1(configuration, 3),
-_pid(&_caliper1.dia,
+_pid(&_caliper1.rawADC,
 &_motor._rpm,
 &configuration->profile.diaSetPoint,
 configuration->profile.outfeedKp,
 configuration->profile.outfeedKi,
 configuration->profile.outfeedKd,
-REVERSE)
+DIRECT)
 
 {
 	_configuration = configuration;
@@ -53,6 +53,7 @@ void Outfeed::linReg(float slopeAndIntercept[], float *xVals, float *yVals, int 
 void Outfeed::setRPM(float rpm)
 {
 	/*activate();*/
+        _motor._rpm = rpm;
 	_motor.setRPM(rpm);
 }
 
@@ -77,6 +78,13 @@ void Outfeed::setKi(double ki){ _pid.SetTunings(_pid.GetKp(), ki, _pid.GetKd());
 double Outfeed::getKd(){return _pid.GetKd();}
 
 void Outfeed::setKd(double kd){ _pid.SetTunings(_pid.GetKp(), _pid.GetKi(), kd);}
+
+void Outfeed::loadPIDSettings(){ 
+	_pid.SetOutputLimits(_configuration->profile.outfeedMinRPM, _configuration->profile.outfeedMaxRPM);
+	_pid.SetTunings(_configuration->profile.outfeedKp, _configuration->profile.outfeedKi, _configuration->profile.outfeedKd);
+	_pid.SetControllerDirection(REVERSE);
+	_pid.SetSampleTime(_configuration->profile.outfeedComputeInterval);
+	}
 
 void Outfeed::disable(){  _motor.disable();}
 
@@ -108,10 +116,11 @@ void Outfeed::reset()
 void Outfeed::activate()
 {
 	_now = millis();
-	_mmExtruded += _configuration->physical.outfeedRollerRadius*_motor.getRPM()*2.0*PI/60.0*(_now-_previousTime)/1000.0;
 
 	if (_now >= _computeTime){
-		//_caliper.update();
+		_mmExtruded += _configuration->physical.outfeedRollerRadius*_motor.getRPM()*2.0*PI/60.0*(_now-_previousTime)/1000.0;
+		_caliper1.update();
+		_caliper2.update();
 		if (_pid.GetMode() == AUTOMATIC) {
 			_pid.Compute();
 			_motor.setRPM(_motor._rpm);

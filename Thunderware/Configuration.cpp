@@ -18,7 +18,7 @@ void Configuration::loadDefaultProfile() {
   //General
   profile.profileNumber = -1;
   strcpy(profile.name, "PET 1.85mm");
-  profile.diaSetPoint = 1.85;
+  profile.diaSetPoint = 430;
   profile.density = 1.38;
   profile.tolerance = 0.05;
 
@@ -30,12 +30,12 @@ void Configuration::loadDefaultProfile() {
 
   //Outfeed
   profile.outfeedRPM = 60;
-  profile.outfeedKp = 0.0;
-  profile.outfeedKi = 3.0;
+  profile.outfeedKp = 0.005;
+  profile.outfeedKi = 0.001;
   profile.outfeedKd = 0.0;
-  profile.outfeedMaxRPM = 200.0;
-  profile.outfeedMinRPM = 0.0;
-  profile.outfeedComputeInterval = 2000;
+  profile.outfeedMaxRPM = 15.0;
+  profile.outfeedMinRPM = 5.0;
+  profile.outfeedComputeInterval = 100;
 
 
   //Soak Time

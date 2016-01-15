@@ -41,6 +41,7 @@ class Spooler
     float c3;
     float c4;
     StepperMotor _motor;
+	float _prevRPM;
 
 
 };
