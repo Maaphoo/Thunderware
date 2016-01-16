@@ -30,6 +30,7 @@ class Spooler
 	void enable();
 	void disable();
 	void setDirection();
+	void setTunings(double kp, double ki, double kd);
 	Outfeed* _outfeed;
 	
 	private:

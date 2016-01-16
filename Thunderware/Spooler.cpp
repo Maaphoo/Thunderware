@@ -85,6 +85,7 @@
 
  void Spooler::setDirection(){ _motor.setDirection();}
 
+ void Spooler::setTunings(double kp, double ki, double kd){ _pid.SetTunings(kp, ki, kd);}
 
 
 

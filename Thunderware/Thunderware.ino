@@ -638,7 +638,6 @@ void measureFilament() {
   configuration.loadDefaultProfile();
   outfeed.loadPIDSettings();
   outfeed.setRPM(10);
-  spooler.setRPM();
   outfeed.enable();
   //        Serial.print("outfeed RPM: ");
   //	Serial.println(outfeed.getRPM());
@@ -648,11 +647,11 @@ void measureFilament() {
   //	Serial.println(outfeed.getRPM());
   //        delay(3000);
   outfeed.setRPM(10);
-  spooler.setRPM(180);
+  spooler.setRPM(120);
   spooler.enable();
   outfeed.reset();
   outfeed.setMode(MANUAL);
-    boolean flag = true;
+  boolean flag = true;
 
   while (true) {
 
@@ -667,10 +666,12 @@ void measureFilament() {
     now = millis();
     outfeed.activate();
     if (spooler.getRawADC() < 60 && flag) {
-      spooler.setRPM(200);
+      spooler.setTunings(0.3,0.1,0.0);
       while (spooler.getRawADC() < 60){
+		spooler.setRPM();
         delay(100);
       }
+      spooler.setTunings(0.001,0.001,0.0);
       flag = false;
     }
     spooler.setRPM();
