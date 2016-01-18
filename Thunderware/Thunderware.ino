@@ -666,12 +666,12 @@ void measureFilament() {
     now = millis();
     outfeed.activate();
     if (spooler.getRawADC() < 60 && flag) {
-      spooler.setTunings(0.3,0.1,0.0);
+      spooler.setTunings(0.5,0.01,0.0);
       while (spooler.getRawADC() < 60){
 		spooler.setRPM();
         delay(100);
       }
-      spooler.setTunings(0.001,0.001,0.0);
+      spooler.setTunings(0.01,0.01,0.0);
       flag = false;
     }
     spooler.setRPM();
