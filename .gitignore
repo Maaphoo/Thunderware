@@ -59,6 +59,9 @@ Thumbs.db
 *.lib
 *.sbr
 *.cppproj
+*.atsln
+
+
 Thunderware/.vs/Thunderware/v14/.atsuo
 Thunderware/Release/Buzzer.cpp.d
 Thunderware/Release/CDC.cpp.d
