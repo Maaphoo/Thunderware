@@ -614,9 +614,11 @@ void toggleSpoolerState() {
 	if (spoolerState[1] == 'f') {
 		strcpy(spoolerState, "On");
 		outfeed.reset();
+		spooler.setMode(AUTOMATIC);
 		spooler.setInitialRPM();
 		} else {
 		strcpy(spoolerState, "Off");
+		spooler.setMode(MANUAL);
 		spooler.setRPM(0);
 	}
 	activeMenu->display();

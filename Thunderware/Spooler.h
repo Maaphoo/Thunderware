@@ -25,6 +25,7 @@ class Spooler
 	Spooler(Configuration* configuration);//constructor
 	void setInitialRPM();
 	void setRPM();
+	void setMode(int mode);
 	float  getRPM();
 	void setRPM(float rpm);
 	float getRawADC();

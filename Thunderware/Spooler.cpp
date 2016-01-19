@@ -62,14 +62,13 @@ void Spooler::setInitialRPM(){
 		 }
 		 Wire.endTransmission();
 		 _rawADCInput = _rawADC._float;
-		 if (_pid.GetMode() == MANUAL){
-			 _pid.SetMode(AUTOMATIC);
-		 }
 		 _pid.Compute();
 		 _motor.setRPM(_motorRPM);
 		 _previousTime = _now+_interval;
 	 }
  }
+ 
+ void Spooler::setMode(int mode){ _pid.SetMode(mode);}
 
  float Spooler::getRPM(){return _motor.getRPM();}
  
@@ -89,9 +88,6 @@ void Spooler::setInitialRPM(){
 
  void Spooler::setRPM(float rpm)
  {
-	 if (_pid.GetMode() == AUTOMATIC){
-		 _pid.SetMode(MANUAL);
-	 }
 	 _motor.setRPM(rpm);
          _motorRPM = rpm;
  }
