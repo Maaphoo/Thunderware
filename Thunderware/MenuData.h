@@ -136,6 +136,9 @@ const char starveFeederModeStr[] PROGMEM = "Starve Feeder";
 const char extrudeRootStr[] PROGMEM = "Extruding. . .";
 const char filamentDiameterStr[] PROGMEM = "Diameter";
 const char gramsExtrudedStr[] PROGMEM = "Grams Extruded";
+const char outfeedModeStr[] PROGMEM = "Outfeed Mode";
+const char spoolerStateStr[] PROGMEM = "Spooler State";
+
 
 //Variables for holding Menu values
 double zone1Temp;
@@ -144,15 +147,18 @@ double zone3Temp;
 double zone4Temp;
 char heaterState[] = "Off";
 char outfeedState[] = "Off";
+char outfeedMode[] = "MAN";
 float outfeedRPM =  0.0;
+char spoolerState[] = "off";
 char loadFilamentTimeRemaining[6];
-char starveFeederMode[4] = "Off";
+char starveFeederMode[] = "Off";
 char soakTimeRemaining[6];
 int gramsExtruded;
 float diameter = 1.75;
 int cyclesToSendToStarveFeeder = 10;
 int timeToSendToStarveFeeder = 4;
 char feedMode[4] = "Off";//starve feeder feeding plastic or not
+unsigned long extrudeStartTime;
 
 //Menu Action methods
 void activateHeaters();
@@ -161,6 +167,8 @@ void testOutfeed();
 void testSpooler();
 void toggleHeaterState();
 void toggleOutfeedState();
+void changeOutfeedMode();
+void toggleSpoolerState();
 void setZone1Temp();
 void setZone2Temp();
 void setZone3Temp();
@@ -392,6 +400,8 @@ const Menu::MenuItem extrudeItems[] PROGMEM =
 {zone2TempStr, 0, -1, &zone2Temp, 1, Menu::DOUBLE_LOCKED, NULL},
 {zone3TempStr, 0, -1, &zone3Temp, 1, Menu::DOUBLE_LOCKED, NULL},
 {zone4TempStr, 0, -1, &zone4Temp, 1, Menu::DOUBLE_LOCKED, NULL},
+{outfeedModeStr, 0, -1, &outfeedMode, 0, Menu::STRING_LOCKED, &changeOutfeedMode},
+{spoolerStateStr, 0, -1, &spoolerState, 0, Menu::STRING_LOCKED, &toggleSpoolerState},
 {zone1SetTempStr, 0, -1, &configuration.profile.zone1SetTemp, 0, Menu::DOUBLE, &setZone1Temp},
 {zone2SetTempStr, 0, -1, &configuration.profile.zone2SetTemp, 0, Menu::DOUBLE, &setZone2Temp},
 {zone3SetTempStr, 0, -1, &configuration.profile.zone3SetTemp, 0, Menu::DOUBLE, &setZone3Temp},
@@ -407,6 +417,7 @@ const Menu::MenuItem extrudeItems[] PROGMEM =
 {outfeedKiStr, 0, -1, &configuration.profile.outfeedKi, 2, Menu::DOUBLE, &setOutfeedTunings},
 {outfeedKdStr, 0, -1, &configuration.profile.outfeedKd, 2, Menu::DOUBLE, &setOutfeedTunings},
 {soakTimeStr, 0, -1, &configuration.profile.soakTime, 0, Menu::DOUBLE, NULL}
+
 };
 
 #endif

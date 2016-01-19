@@ -89,7 +89,7 @@ void loadFilament() {
 	}
 }
 
-unsigned long extrudeStartTime;
+
 
 //setup for extruding
 void beginExtrude() {
@@ -98,7 +98,9 @@ void beginExtrude() {
 	outfeed.setRPM(configuration.profile.outfeedRPM);
 	outfeed.setMode(MANUAL);
 	outfeed.enable();
-
+	spooler.setRPM(0.0);
+	spooler.enable();
+	
 	// If there is any message stop it
 	buzzer.reset();
 
@@ -118,20 +120,18 @@ void beginExtrude() {
 
 //Extrude function
 void extrude() {
-	static unsigned long spoolerAdjustTime;
-
+	
 	buzzer.activate();
 
-	//activate the heaters and outfeed
+	//activate the heaters, outfeed and spooler
 	zone1.activate();
 	zone2.activate();
 	zone3.activate();
+	zone4.activate();
 	outfeed.activate();
 
-	//report sensor data
-	if (millis() >= spoolerAdjustTime) {
+	if (spoolerState[1] == 'n'){
 		spooler.setRPM();
-		spoolerAdjustTime += 1000;
 	}
 
 }
@@ -146,7 +146,7 @@ void stopExtruding() {
 	zone2.off();
 	zone3.off();
 	zone4.off();
-	//  starveFeeder.disable();
+	starveFeeder.off();
 }
 
 

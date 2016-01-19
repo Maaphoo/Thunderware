@@ -23,6 +23,7 @@ class Spooler
 	public:
 
 	Spooler(Configuration* configuration);//constructor
+	void setInitialRPM();
 	void setRPM();
 	float  getRPM();
 	void setRPM(float rpm);

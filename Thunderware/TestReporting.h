@@ -6,32 +6,38 @@
 void reportCurrentMeasurementTitles(){
 
   Serial.println(F("Time(s), "
+                 "ADCVal, "
                  "Dia(mm), "
                  "outfeedRPM, "
-                 "starveFeederRPM,  "
                  "augerRPM, "
                  "Mode, "
-                 "outfeedKp, "
-                 "outfeedKi, "
-                 "outfeedKd, "
+                 "Zone1 Temp(c), "
+                 "Zone2 Temp(c), "
+                 "Zone3 Temp(c), "
+                 "Zone4 Temp(c), "
+                 "starveFeederGPM,  "
                  "feedRate(m/min), "
-                 "metersExtruded"));
+                 "metersExtruded(m), "
+				 "outfeedKp, "
+				 "outfeedKi, "
+				 "outfeedKd"));
 
 }
 
 void reportCurrentMeasurements(){
 
   //Serial.println("Barrel_Temp Nozzle_Temp Duty_Cycle Diameter");
-//   Serial.print((millis()-stateMachine.getExtrudeStartTime())/1000L);
+   Serial.print((millis()-extrudeStartTime)/1000L);
 
+   Serial.print(F(", "));
+   Serial.print(outfeed.getRawADC(1),3);
+   
    Serial.print(F(", "));
    Serial.print(outfeed.getDia(),3);
 
    Serial.print(F(", "));
    Serial.print(outfeed.getRPM());
-   
-//   Serial.print(F(", "));
-//   Serial.print(starveFeeder.getRPM());
+
  
    Serial.print(F(", "));
    Serial.print(auger.getRPM());
@@ -39,19 +45,28 @@ void reportCurrentMeasurements(){
    
    Serial.print(F(", "));
    Serial.print(outfeed.getMode());
-
-//    Serial.print(F(", "));
-//    Serial.print(barrel.getTemp(),2);
-// 
-//    Serial.print(F(", "));
-//    Serial.print(barrel.getDutyCycle());
-// 
-//    Serial.print(F(", "));
-//    Serial.print(nozzle.getTemp(),2);
-// 
-//    Serial.print(F(", "));
-//    Serial.print(nozzle.getDutyCycle());
- 
+   
+   Serial.print(F(", "));
+   Serial.print(zone1.getTemp());   
+   
+   Serial.print(F(", "));
+   Serial.print(zone2.getTemp());
+   
+   Serial.print(F(", "));
+   Serial.print(zone3.getTemp());
+   
+   Serial.print(F(", "));
+   Serial.print(zone4.getTemp());
+         
+   Serial.print(F(", "));
+   Serial.print(configuration.profile.gramsPerMin);
+		    
+   Serial.print(F(", "));
+   Serial.print(outfeed.getMPerMin());
+      
+   Serial.print(F(", "));
+   Serial.print(outfeed.getMmExtruded()*0.001);
+    
    Serial.print(", ");
    Serial.print(outfeed.getKp());  
  
@@ -60,12 +75,6 @@ void reportCurrentMeasurements(){
   
    Serial.print(F(", "));
    Serial.print(outfeed.getKd()); 
-
-   Serial.print(F(", "));
-   Serial.print(outfeed.getMPerMin());
-   
-   Serial.print(F(", "));
-   Serial.print(outfeed.getMmExtruded()*0.001);
 
    Serial.println();
 }

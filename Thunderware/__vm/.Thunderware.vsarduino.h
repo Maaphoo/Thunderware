@@ -63,6 +63,8 @@ void setOutfeedRPM();
 void setOutfeedTunings();
 void baseOutfeedRPMonGPM();
 void toggleOutfeedState();
+void changeOutfeedMode();
+void toggleSpoolerState();
 void sendOneRevToOutfeed();
 void setZone1Temp();
 void setZone2Temp();

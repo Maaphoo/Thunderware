@@ -32,6 +32,23 @@
 
  }
 
+void Spooler::setInitialRPM(){
+	c1 = (_configuration->physical.outfeedRollerRadius
+	*_configuration->physical.spoolerDiskRadius
+	*_configuration->physical.spoolerStepMode
+	/(_configuration->physical.spoolerMotorRollerRadius
+	*_configuration->physical.outfeedStepMode));
+	c2 = (_configuration->profile.diaSetPoint/(PI*_configuration->physical.spoolerTraverseLength));
+	c3 = (_configuration->physical.spoolerCoreRadius*_configuration->physical.spoolerCoreRadius);
+	c4 = (PI*_configuration->physical.outfeedRollerRadius/((double)_configuration->physical.outfeedStepMode*100.0));
+
+	_filamentSurfaceRaduis = pow(c2*c2*_outfeed->getMmExtruded()+c3,0.5);
+	_motorRPM = _configuration->physical.outfeedRollerRadius
+	*_configuration->physical.spoolerDiskRadius
+	/(_filamentSurfaceRaduis*_configuration->physical.spoolerMotorRollerRadius)
+	*_outfeed->getRPM();
+	_motor.setRPM(_motorRPM);
+}
 
  void Spooler::setRPM() // Call every 1000ms to update the speed of the spooler based on the PID output
  {

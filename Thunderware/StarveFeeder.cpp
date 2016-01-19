@@ -77,7 +77,7 @@ void StarveFeeder::feed() {
 void StarveFeeder::setGPM(double gpm)
 {
 	_config.gramsPerMin = gpm;
-/*	_mainConfig->profile.gramsPerMin = gpm;*/
+	_mainConfig->profile.gramsPerMin = gpm;
 	Wire.beginTransmission(_mainConfig->physical.starveFeederSlaveAddress); // transmit to slave
 	Wire.write((byte) StarveFeeder::SET_GPM);
 	byte* bytePtr;

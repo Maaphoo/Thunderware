@@ -58,7 +58,7 @@ void loadFilament();
 void beginExtrude();
 void extrude();
 
-//Pointers to State functios
+//Pointers to State functions
 void (*state_table[])() = {
   standby,
   beginPreheat,
@@ -109,10 +109,6 @@ Keypad kpd = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 char key;//The key that is pressed
 
 //Initialize objects
-//StateMachine stateMachine;
-
-
-
 Buzzer buzzer;
 
 StarveFeeder starveFeeder(&configuration);
@@ -121,7 +117,6 @@ Heater zone1(&configuration.physical.zone1);
 Heater zone2(&configuration.physical.zone2);
 Heater zone3(&configuration.physical.zone3);
 Heater zone4(&configuration.physical.zone4);
-
 
 StepperMotor auger(&configuration, configuration.physical.augerPinSet);
 
@@ -159,20 +154,14 @@ void setup()
   currentState = STANDBY;
   auger.disable(); // Why is this necessary. If not here, there is high frequency signal on the auger step pin.
   configuration.loadConfig();
-  //starveFeeder.getMode(starveFeederMode);
-  //  activeMenu = &loadFilamentMenu;
   activeMenu->reset();
-  Serial.print("configuration.physical.slope: ");
-  Serial.println(configuration.physical.slope, 6);
-  Serial.print("configuration.physical.yIntercept: ");
-  Serial.println(configuration.physical.yIntercept, 4);
 }
 static unsigned long refreshDisplayTime;
 
 void loop() {
   static unsigned long now;
 
-  //Allow for keyboard input as well
+  //Allow for keyboard input
   key = kpd.getKey();
   if (Serial.available() > 0) {
     key = (char)Serial.read();
@@ -209,18 +198,18 @@ void loop() {
       activeMenu->decrease();
       break;
 
-    case '*':
+    case '*'://reset LCD. Use when lcd goes crazy
       lcd.begin(20, 4);
       activeMenu->display();
       break;
   }
   state_table[currentState]();
 
-  //Activate the heaters for testing
-  zone1.activate();
-  zone2.activate();
-  zone3.activate();
-  zone4.activate();
+  ////Activate the heaters for testing
+  //zone1.activate();
+  //zone2.activate();
+  //zone3.activate();
+  //zone4.activate();
 
   now = millis();
   if (now >= refreshDisplayTime) {
@@ -232,12 +221,12 @@ void loop() {
     zone4Temp = zone4.getTemp();
 
     //diameter
-    //diameter = outfeed.getDia();
-    Serial.print(outfeed.getRawADC(1));
-    Serial.print(", ");
-    Serial.print(1024.0 - outfeed.getRawADC(2));
-    Serial.print(", ");
-    Serial.println(spooler.getRawADC());
+    ////diameter = outfeed.getDia();
+    //Serial.print(outfeed.getRawADC(1));
+    //Serial.print(", ");
+    //Serial.print(1024.0 - outfeed.getRawADC(2));
+    //Serial.print(", ");
+    //Serial.println(spooler.getRawADC());
 
     //soakTime remaining
     if (currentState == SOAK) {
@@ -248,11 +237,15 @@ void loop() {
     if (currentState == LOAD_FILAMENT) {
       makeTimeString(loadFilamentTimeRemaining, loadFilamentEndTime - millis());
     }
+	
+	//Display extrusion data
+	if (currentState == EXTRUDE) {
+		reportCurrentMeasurements();
+	}
     refreshDisplayTime = millis() + 1000L;
 
     activeMenu->display();
-    //output all data on serial monitor
-    //   reportCurrentMeasurements();
+
   }
 }
 
@@ -604,6 +597,29 @@ void toggleOutfeedState() {
     outfeed.disable();
   }
   activeMenu->display();
+}
+
+void changeOutfeedMode() {
+	if (outfeedMode[0] == 'M') {
+		strcpy(outfeedState, "AUT");
+		outfeed.setMode(AUTOMATIC);
+		} else {
+		strcpy(outfeedState, "MAN");
+		outfeed.setMode(MANUAL);
+	}
+	activeMenu->display();
+}
+
+void toggleSpoolerState() {
+	if (spoolerState[1] == 'f') {
+		strcpy(spoolerState, "On");
+		outfeed.reset();
+		spooler.setInitialRPM();
+		} else {
+		strcpy(spoolerState, "Off");
+		spooler.setRPM(0);
+	}
+	activeMenu->display();
 }
 
 void sendOneRevToOutfeed() {
