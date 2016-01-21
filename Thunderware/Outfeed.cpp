@@ -20,7 +20,7 @@ _pid(&_caliper1.rawADC,
 configuration->profile.outfeedKp,
 configuration->profile.outfeedKi,
 configuration->profile.outfeedKd,
-DIRECT)
+REVERSE)
 
 {
 	_configuration = configuration;

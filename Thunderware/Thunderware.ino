@@ -155,6 +155,11 @@ void setup()
   auger.disable(); // Why is this necessary. If not here, there is high frequency signal on the auger step pin.
   configuration.loadConfig();
   activeMenu->reset();
+  //  outfeed.setRPM(10);
+  //  outfeed.enable();
+  spooler.disable();
+
+
 }
 static unsigned long refreshDisplayTime;
 
@@ -206,10 +211,10 @@ void loop() {
   state_table[currentState]();
 
   ////Activate the heaters for testing
-  //zone1.activate();
-  //zone2.activate();
-  //zone3.activate();
-  //zone4.activate();
+  zone1.activate();
+  zone2.activate();
+  zone3.activate();
+  zone4.activate();
 
   now = millis();
   if (now >= refreshDisplayTime) {
@@ -221,12 +226,12 @@ void loop() {
     zone4Temp = zone4.getTemp();
 
     //diameter
-    ////diameter = outfeed.getDia();
-    //Serial.print(outfeed.getRawADC(1));
-    //Serial.print(", ");
-    //Serial.print(1024.0 - outfeed.getRawADC(2));
-    //Serial.print(", ");
-    //Serial.println(spooler.getRawADC());
+    diameter = outfeed.getDia();
+    Serial.print(outfeed.getRawADC(1));
+    Serial.print(", ");
+    Serial.print(1024.0 - outfeed.getRawADC(2));
+    Serial.print(", ");
+    Serial.println(spooler.getRawADC());
 
     //soakTime remaining
     if (currentState == SOAK) {
@@ -237,16 +242,17 @@ void loop() {
     if (currentState == LOAD_FILAMENT) {
       makeTimeString(loadFilamentTimeRemaining, loadFilamentEndTime - millis());
     }
-	
-	//Display extrusion data
-	if (currentState == EXTRUDE) {
-		reportCurrentMeasurements();
-	}
+
+    //Display extrusion data
+    if (currentState == EXTRUDE) {
+      reportCurrentMeasurements();
+    }
     refreshDisplayTime = millis() + 1000L;
 
     activeMenu->display();
 
   }
+
 }
 
 
@@ -600,28 +606,26 @@ void toggleOutfeedState() {
 }
 
 void changeOutfeedMode() {
-	if (outfeedMode[0] == 'M') {
-		strcpy(outfeedState, "AUT");
-		outfeed.setMode(AUTOMATIC);
-		} else {
-		strcpy(outfeedState, "MAN");
-		outfeed.setMode(MANUAL);
-	}
-	activeMenu->display();
+  if (outfeedMode[0] == 'M') {
+    strcpy(outfeedState, "AUT");
+    outfeed.setMode(AUTOMATIC);
+  } else {
+    strcpy(outfeedState, "MAN");
+    outfeed.setMode(MANUAL);
+  }
+  activeMenu->display();
 }
 
 void toggleSpoolerState() {
-	if (spoolerState[1] == 'f') {
-		strcpy(spoolerState, "On");
-		outfeed.reset();
-		spooler.setMode(AUTOMATIC);
-		spooler.setInitialRPM();
-		} else {
-		strcpy(spoolerState, "Off");
-		spooler.setMode(MANUAL);
-		spooler.setRPM(0);
-	}
-	activeMenu->display();
+  if (spoolerState[1] == 'f') {
+    strcpy(spoolerState, "On");
+    outfeed.reset();
+    spooler.on();
+  } else {
+    strcpy(spoolerState, "Off");
+    spooler.off();
+  }
+  activeMenu->display();
 }
 
 void sendOneRevToOutfeed() {
@@ -665,33 +669,23 @@ void measureFilament() {
   //	Serial.println(outfeed.getRPM());
   //        delay(3000);
   outfeed.setRPM(10);
-  spooler.setRPM(120);
-  spooler.enable();
+  spooler.on();
   outfeed.reset();
   outfeed.setMode(MANUAL);
-  boolean flag = true;
 
   while (true) {
 
     //Stop is there is any serial input
     if (Serial.available() > 0) {
       outfeed.disable();
-      spooler.disable();
+      spooler.off();
       activeMenu->display();
       return;
     }
 
     now = millis();
+
     outfeed.activate();
-    if (spooler.getRawADC() < 60 && flag) {
-      spooler.setTunings(0.5,0.01,0.0);
-      while (spooler.getRawADC() < 60){
-		spooler.setRPM();
-        delay(100);
-      }
-      spooler.setTunings(0.01,0.01,0.0);
-      flag = false;
-    }
     spooler.setRPM();
 
     if (now >= displayTime) {
@@ -708,7 +702,9 @@ void measureFilament() {
       Serial.print(", ");
       Serial.print(spooler.getRawADC());
       Serial.print(", ");
-      Serial.println(spooler.getRPM());
+      Serial.print(spooler.getRPM());
+      Serial.print(", ");
+      Serial.println(spooler.getMode());
 
       displayTime = now + 500;
     }

@@ -18,7 +18,7 @@ void Configuration::loadDefaultProfile() {
   //General
   profile.profileNumber = -1;
   strcpy(profile.name, "PET 1.85mm");
-  profile.diaSetPoint = 430;
+  profile.diaSetPoint = 460;
   profile.density = 1.38;
   profile.tolerance = 0.05;
 

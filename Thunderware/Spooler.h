@@ -34,6 +34,9 @@ class Spooler
 	void setDirection();
 	void setTunings(double kp, double ki, double kd);
 	Outfeed* _outfeed;
+        int getMode();
+        void on();
+        void off();
 	
 	private:
 	PID _pid;
@@ -54,6 +57,7 @@ class Spooler
 	unsigned long _now;
 	unsigned long _previousTime;
 	unsigned long _interval;
+        boolean _startFlag;
 
 
 };
