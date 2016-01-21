@@ -134,8 +134,10 @@ void StepperMotor::enable() {
        //Spool Stepper pin 9
        //disable Spool stepper by setting the enable pin HIGH
       if (_configuration->physical.spoolerEnable){
+//          digitalWrite(9, HIGH);
         PORTH |= B01000000;
       }else{
+//          digitalWrite(9, LOW);
         PORTH &= B10111111;
       }
       break;

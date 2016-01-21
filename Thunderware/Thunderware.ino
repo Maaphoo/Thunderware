@@ -1,3 +1,4 @@
+
 /*
 Thunder Head Filament Extruder Firmware
 
@@ -28,6 +29,8 @@ Released into the public domain.
 #include "Caliper.h"
 #include "Safety.h"
 #include "Menu.h"
+#include <MemoryFree.h>
+
 
 Configuration configuration;
 #include "menuData.h"
@@ -155,8 +158,8 @@ void setup()
   auger.disable(); // Why is this necessary. If not here, there is high frequency signal on the auger step pin.
   configuration.loadConfig();
   activeMenu->reset();
-  //  outfeed.setRPM(10);
-  //  outfeed.enable();
+//  outfeed.setRPM(10);
+//  outfeed.enable();
   spooler.disable();
 
 
@@ -172,10 +175,11 @@ void loop() {
     key = (char)Serial.read();
   }
 
-  //  if (key) {
-  //    Serial.print("freeMemory()=");
-  //    Serial.println(freeMemory());
-  //  }
+if (key) {
+//Serial.print("freeMemory()=");
+//Serial.println(freeMemory());
+Serial.println(key);
+}
 
   switch (key) {
     case 'A':
@@ -210,11 +214,11 @@ void loop() {
   }
   state_table[currentState]();
 
-  ////Activate the heaters for testing
-  zone1.activate();
-  zone2.activate();
-  zone3.activate();
-  zone4.activate();
+//  ////Activate the heaters for testing
+//  zone1.activate();
+//  zone2.activate();
+//  zone3.activate();
+//  zone4.activate();
 
   now = millis();
   if (now >= refreshDisplayTime) {
@@ -224,14 +228,14 @@ void loop() {
     zone2Temp = zone2.getTemp();
     zone3Temp = zone3.getTemp();
     zone4Temp = zone4.getTemp();
-
-    //diameter
-    diameter = outfeed.getDia();
-    Serial.print(outfeed.getRawADC(1));
-    Serial.print(", ");
-    Serial.print(1024.0 - outfeed.getRawADC(2));
-    Serial.print(", ");
-    Serial.println(spooler.getRawADC());
+//
+//    //diameter
+//    diameter = outfeed.getDia();
+//    Serial.print(outfeed.getRawADC(1));
+//    Serial.print(", ");
+//    Serial.print(1024.0 - outfeed.getRawADC(2));
+//    Serial.print(", ");
+//    Serial.println(spooler.getRawADC());
 
     //soakTime remaining
     if (currentState == SOAK) {
@@ -245,7 +249,44 @@ void loop() {
 
     //Display extrusion data
     if (currentState == EXTRUDE) {
-      reportCurrentMeasurements();
+//      reportCurrentMeasurements();
+      Serial.print(outfeed.getRawADC(1));
+      
+      Serial.print(", ");
+      Serial.print(1024.0 - outfeed.getRawADC(2));
+      
+      Serial.print(", ");
+      Serial.print(outfeed.getDia());
+      
+      Serial.print(", ");
+      Serial.print(outfeed.getRPM());
+      
+      Serial.print(", ");
+      Serial.print(outfeed.getMPerMin());
+      
+      Serial.print(", ");
+      Serial.print(spooler.getRawADC());
+      
+      Serial.print(", ");
+      Serial.print(spooler.getRPM());
+      
+      Serial.print(", ");
+      Serial.print(spooler.getMode());
+
+      Serial.print(F(", "));
+      Serial.print(zone1.getTemp());
+    
+      Serial.print(F(", "));
+      Serial.print(zone2.getTemp());
+    
+      Serial.print(F(", "));
+      Serial.print(zone3.getTemp());
+    
+      Serial.print(F(", "));
+      Serial.print(zone4.getTemp());
+      
+      Serial.println();
+      
     }
     refreshDisplayTime = millis() + 1000L;
 

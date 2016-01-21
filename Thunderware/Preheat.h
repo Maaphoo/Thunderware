@@ -24,9 +24,6 @@ void beginPreheat(){
     zone2.setMode(AUTOMATIC);
     zone3.setMode(AUTOMATIC);
     zone4.setMode(AUTOMATIC);
-    
-    //Print the titles for the data output to the serial monitor
-    reportCurrentMeasurementTitles();
 
     currentState = PREHEAT;
 }

@@ -93,12 +93,12 @@ void loadFilament() {
 
 //setup for extruding
 void beginExtrude() {
-	auger.enable();
-	auger.setRPM(configuration.profile.augerRPM);
+//	auger.enable();
+//	auger.setRPM(configuration.profile.augerRPM);
 	outfeed.setRPM(configuration.profile.outfeedRPM);
 	outfeed.setMode(MANUAL);
 	outfeed.enable();
-	spooler.setRPM(0.0);
+	spooler.setRPM(60.0);
 	spooler.enable();
 	
 	// If there is any message stop it
