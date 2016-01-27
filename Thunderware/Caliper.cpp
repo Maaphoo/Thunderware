@@ -21,7 +21,7 @@ Caliper::Caliper(Configuration* configuration, int wireAddress)
 }
 
 void Caliper::update(){
-	dia = *_slope * (getRawADC()) + *_yIntercept;
+	dia = *_slope * (1024.0-getRawADC()) + *_yIntercept;
 }
 
 /*

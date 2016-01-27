@@ -20,7 +20,7 @@ class Configuration
       int profileNumber;
       char name[20];
       double diaSetPoint;//mm
-	  float density; //g/cm3
+      float density; //g/cm3
       float tolerance;//mm
 
       //Starve Feeder
@@ -31,6 +31,7 @@ class Configuration
       float augerRPM;
 
       //Outfeed
+      double outfeedInitialRPM;
       double outfeedRPM;
       double outfeedKi;
       double outfeedKp;
@@ -38,14 +39,19 @@ class Configuration
       double outfeedMaxRPM;
       double outfeedMinRPM;
       int outfeedComputeInterval;
-	  
+
       double soakTime;
-      
-	  //heating Zones
-	  double zone1SetTemp;
-	  double zone2SetTemp;
-	  double zone3SetTemp;	  
-	  double zone4SetTemp;
+
+      //heating Zones
+      double zone1InitialSetTemp;
+      double zone2InitialSetTemp;
+      double zone3InitialSetTemp;
+      double zone4InitialSetTemp;
+
+      double zone1SetTemp;
+      double zone2SetTemp;
+      double zone3SetTemp;
+      double zone4SetTemp;
 
       //Safety parameters
       double minExtrudeTemp;
@@ -53,8 +59,8 @@ class Configuration
       unsigned long maxPreheatTime;
     } profile, tempProfile;
 
-	//Heating zone
-	struct HeatingZone{
+    //Heating zone
+    struct HeatingZone {
       int timeBase;//Time base in milliseconds if zero standard PWM will be used
       double maxDutyCycle;//The max dutyCycle for the barrel
       double minDutyCycle;//The min dutyCycle for the barrel
@@ -64,13 +70,13 @@ class Configuration
       int thermistorNumSamples;
       int thermistorBCoefficient;
       int thermistorSeriesResistor;
-	  int thermistorPin;
-	  int heaterPin;
-	  int coolerPin;
-	  double setTemp;
-	  boolean PWM;
-	  boolean activeCooling;
-	};
+      int thermistorPin;
+      int heaterPin;
+      int coolerPin;
+      double setTemp;
+      boolean PWM;
+      boolean activeCooling;
+    };
 
     /*The physicalConfig struct holds information describing *
      *the physical setup of the extruder.                    */
@@ -126,11 +132,11 @@ class Configuration
       float spoolerTraverseLength;
       float spoolerMotorRollerRadius;
 
-	  //Heating Zones
-	  HeatingZone zone1;
-	  HeatingZone zone2;
-	  HeatingZone zone3;
-	  HeatingZone zone4;
+      //Heating Zones
+      HeatingZone zone1;
+      HeatingZone zone2;
+      HeatingZone zone3;
+      HeatingZone zone4;
 
       //Diameter Sensor
       float slope;

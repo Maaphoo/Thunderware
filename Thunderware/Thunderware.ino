@@ -137,7 +137,7 @@ Menu extrudeMenu(extrudeItems, sizeof(extrudeItems) / sizeof(extrudeItems[0]), &
 Menu* activeMenu;
 
 
-
+//Include state functions
 #include "Extrude.h"
 #include "FSM.h"
 #include "Preheat.h"
@@ -214,11 +214,11 @@ Serial.println(key);
   }
   state_table[currentState]();
 
-//  ////Activate the heaters for testing
-//  zone1.activate();
-//  zone2.activate();
-//  zone3.activate();
-//  zone4.activate();
+  ////Activate the heaters for testing
+  zone1.activate();
+  zone2.activate();
+  zone3.activate();
+  zone4.activate();
 
   now = millis();
   if (now >= refreshDisplayTime) {
@@ -230,12 +230,14 @@ Serial.println(key);
     zone4Temp = zone4.getTemp();
 //
 //    //diameter
-//    diameter = outfeed.getDia();
-//    Serial.print(outfeed.getRawADC(1));
-//    Serial.print(", ");
-//    Serial.print(1024.0 - outfeed.getRawADC(2));
-//    Serial.print(", ");
-//    Serial.println(spooler.getRawADC());
+    diameter = outfeed.getDia();
+    Serial.print(outfeed.getRawADC(1));
+    Serial.print(", ");
+    Serial.print(1024.0 - outfeed.getRawADC(2));
+    Serial.print(", ");
+    Serial.print(diameter);
+//    Serial.print(spooler.getRawADC());
+    Serial.println();
 
     //soakTime remaining
     if (currentState == SOAK) {
@@ -259,7 +261,7 @@ Serial.println(key);
       Serial.print(outfeed.getDia());
       
       Serial.print(", ");
-      Serial.print(outfeed.getRPM());
+      Serial.print(outfeed.getRPM(), 6);
       
       Serial.print(", ");
       Serial.print(outfeed.getMPerMin());
@@ -333,6 +335,13 @@ void saveConfig() {
 
 void loadProfile0() {
   configuration.loadProfile(0);
+Serial.print("kp: ");
+Serial.println(configuration.profile.outfeedKp,6);
+Serial.print("ki: ");
+Serial.println(configuration.profile.outfeedKi,6);
+Serial.print("kd: ");
+Serial.println(configuration.profile.outfeedKd,6);
+
 }
 void loadProfile1() {
   configuration.loadProfile(1);
@@ -648,10 +657,10 @@ void toggleOutfeedState() {
 
 void changeOutfeedMode() {
   if (outfeedMode[0] == 'M') {
-    strcpy(outfeedState, "AUT");
+    strcpy(outfeedMode, "AUT");
     outfeed.setMode(AUTOMATIC);
   } else {
-    strcpy(outfeedState, "MAN");
+    strcpy(outfeedMode, "MAN");
     outfeed.setMode(MANUAL);
   }
   activeMenu->display();
@@ -692,6 +701,15 @@ void setZone3Temp() {
 }
 void setZone4Temp() {
   configuration.physical.zone4.setTemp = configuration.profile.zone4SetTemp;
+}
+
+void reduceOutfeedSpeed(){
+    outfeed.reduceSpeed();
+  if (outfeedReduceSpeed[1] == 'f'){
+    strcpy(outfeedReduceSpeed, "On");
+  } else {
+    strcpy(outfeedReduceSpeed, "Off");
+  }
 }
 
 void measureFilament() {
