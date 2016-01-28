@@ -96,8 +96,8 @@ void beginExtrude() {
   //Set the temperatures of the heating zones to their extrusion temperatures.
   configuration.physical.zone1.setTemp = configuration.profile.zone1SetTemp;
   configuration.physical.zone2.setTemp = configuration.profile.zone2SetTemp;
-  configuration.physical.zone2.setTemp = configuration.profile.zone3SetTemp;
-  configuration.physical.zone3.setTemp = configuration.profile.zone4SetTemp;
+  configuration.physical.zone3.setTemp = configuration.profile.zone3SetTemp;
+  configuration.physical.zone4.setTemp = configuration.profile.zone4SetTemp;
   
   //Set motor RPMs and enable motors
   auger.enable();

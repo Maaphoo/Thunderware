@@ -9,8 +9,8 @@ static unsigned long preheatStartTime;
 void beginPreheat() {
   configuration.physical.zone1.setTemp = configuration.profile.zone1InitialSetTemp;
   configuration.physical.zone2.setTemp = configuration.profile.zone2InitialSetTemp;
-  configuration.physical.zone2.setTemp = configuration.profile.zone3InitialSetTemp;
-  configuration.physical.zone3.setTemp = configuration.profile.zone4InitialSetTemp;
+  configuration.physical.zone3.setTemp = configuration.profile.zone3InitialSetTemp;
+  configuration.physical.zone4.setTemp = configuration.profile.zone4InitialSetTemp;
 //  setZone1Temp();
 //  setZone2Temp();
 //  setZone3Temp();

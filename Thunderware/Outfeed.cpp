@@ -144,13 +144,11 @@ void Outfeed::activate()
     _caliper1.update();
     _caliper2.update();
     if (_pid.GetMode() == AUTOMATIC) {
-      Serial.print("here in Activate: ");
       _pid.Compute();
-      Serial.println(_motor._rpm);
       _motor.setRPM(_motor._rpm);
     } else if (reduceSpeedFlag && _now >= reduceSpeedTime) {
       reduceSpeedTime += 1000;
-      _motor.setRPM(_motor._rpm - (_motor._rpm - _configuration->profile.outfeedRPM) / 60);
+      _motor.setRPM(_motor._rpm - (_configuration->profile.outfeedInitialRPM - _configuration->profile.outfeedRPM) / 60);
       if (_motor._rpm <  61.0 / 60.0 * _configuration->profile.outfeedRPM) {
         _motor.setRPM (_configuration->profile.outfeedRPM);
         reduceSpeedFlag = false;

@@ -23,7 +23,7 @@ void Configuration::loadDefaultProfile() {
   profile.tolerance = 0.05;
 
   //Starve Feeder
-  profile.gramsPerMin = 5.0;
+  profile.gramsPerMin = 8.0;
 
   //Auger
   profile.augerRPM = 40.0;

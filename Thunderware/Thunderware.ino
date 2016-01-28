@@ -162,9 +162,9 @@ void setup()
 	//  outfeed.enable();
 	spooler.disable();
 	Serial.print("slope: ");
-	Serial.print(configuration.physical.slope);
+	Serial.print(configuration.physical.slope,5);
 	Serial.print("intercept: ");
-	Serial.println(configuration.physical.yIntercept);
+	Serial.println(configuration.physical.yIntercept,5);
 
 }
 static unsigned long refreshDisplayTime;
@@ -233,15 +233,15 @@ void loop() {
 		zone4Temp = zone4.getTemp();
 		
 		//diameter
-		diameter = outfeed.getDia();
-		Serial.print(outfeed.getRawADC(1));
-		Serial.print(", ");
-		Serial.print(1024.0 - outfeed.getRawADC(2));
-		Serial.print(", ");
-		Serial.print(diameter);
-		Serial.print(", ");
-		Serial.print(spooler.getRawADC());
-		Serial.println();
+//		diameter = outfeed.getDia();
+//		Serial.print(outfeed.getRawADC(1));
+//		Serial.print(", ");
+//		Serial.print(1024.0 - outfeed.getRawADC(2));
+//		Serial.print(", ");
+//		Serial.print(diameter);
+//		Serial.print(", ");
+//		Serial.print(spooler.getRawADC());
+//		Serial.println();
 
 		//soakTime remaining
 		if (currentState == SOAK) {
