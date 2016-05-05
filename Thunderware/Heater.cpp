@@ -26,7 +26,6 @@ zone->Ki,
 zone->Kd,
 DIRECT)
 {
-
 	_timeBase = &zone->timeBase;
 	_temp = &_thermistor.temp;
 	_pid.SetSampleTime(*_timeBase);

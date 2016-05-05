@@ -15,6 +15,7 @@ void reportCurrentMeasurementTitles() {
                    "Zone2 Temp(c), "
                    "Zone3 Temp(c), "
                    "Zone4 Temp(c), "
+                   "Zone5 Temp(c), "
                    "starveFeederGPM,  "
                    "feedRate(m/min), "
                    "metersExtruded(m), "
@@ -57,6 +58,9 @@ void reportCurrentMeasurements() {
 //
 //  Serial.print(F(", "));
 //  Serial.print(zone4.getTemp());
+//
+//  Serial.print(F(", "));
+//  Serial.print(zone5.getTemp());
 //
 //  Serial.print(F(", "));
 //  Serial.print(configuration.profile.gramsPerMin);

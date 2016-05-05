@@ -120,6 +120,7 @@ Heater zone1(&configuration.physical.zone1);
 Heater zone2(&configuration.physical.zone2);
 Heater zone3(&configuration.physical.zone3);
 Heater zone4(&configuration.physical.zone4);
+Heater zone5(&configuration.physical.zone5);
 
 StepperMotor auger(&configuration, configuration.physical.augerPinSet);
 
@@ -161,10 +162,10 @@ void setup()
 	//  outfeed.setRPM(10);
 	//  outfeed.enable();
 	spooler.disable();
-	Serial.print("slope: ");
-	Serial.print(configuration.physical.slope,5);
-	Serial.print("intercept: ");
-	Serial.println(configuration.physical.yIntercept,5);
+	//Serial.print("slope: ");
+	//Serial.print(configuration.physical.slope,5);
+	//Serial.print("intercept: ");
+	//Serial.println(configuration.physical.yIntercept,5);
 
 }
 static unsigned long refreshDisplayTime;
@@ -215,6 +216,7 @@ void loop() {
 		activeMenu->display();
 		break;
 	}
+	
 	state_table[currentState]();
 
 	////Activate the heaters for testing
@@ -222,6 +224,7 @@ void loop() {
 	zone2.activate();
 	zone3.activate();
 	zone4.activate();
+	zone5.activate();
 
 	now = millis();
 	if (now >= refreshDisplayTime) {
@@ -231,6 +234,7 @@ void loop() {
 		zone2Temp = zone2.getTemp();
 		zone3Temp = zone3.getTemp();
 		zone4Temp = zone4.getTemp();
+		zone5Temp = zone5.getTemp();
 		
 		//diameter
 //		diameter = outfeed.getDia();
@@ -290,6 +294,9 @@ void loop() {
 			
 			Serial.print(F(", "));
 			Serial.print(zone4.getTemp());
+			
+			Serial.print(F(", "));
+			Serial.print(zone5.getTemp());			
 			
 			Serial.println();
 			
@@ -457,8 +464,8 @@ void skipPreheat() {
 	activeMenu->reset();
 }
 void skipSoak() {
-	currentState = BEGIN_LOAD_FILAMENT;
-	activeMenu = &loadFilamentMenu;
+//	currentState = BEGIN_LOAD_FILAMENT;
+//	activeMenu = &loadFilamentMenu;
 	currentState = BEGIN_EXTRUDE;
 	activeMenu = &extrudeMenu;
 	activeMenu->reset();
@@ -467,9 +474,11 @@ void skipSoak() {
 void exitExtrude() {
 	confirmStopExtruding();
 }
+
 void exitPreheat() {
 	confirmStopExtruding();
 }
+
 void exitSoak() {
 	confirmStopExtruding();
 }
@@ -511,6 +520,7 @@ void confirmStopExtruding() {
 			zone2.off();
 			zone3.off();
 			zone4.off();
+			zone5.off();
 			spooler.disable();
 
 			//change the state to standby
@@ -602,16 +612,19 @@ void toggleHeaterState() {
 		zone2.setMode(AUTOMATIC);
 		zone3.setMode(AUTOMATIC);
 		zone4.setMode(AUTOMATIC);
+		zone5.setMode(AUTOMATIC);
 		} else {
 		strcpy(heaterState, "Off");
 		zone1.setMode(MANUAL);
 		zone2.setMode(MANUAL);
 		zone3.setMode(MANUAL);
 		zone4.setMode(MANUAL);
+		zone5.setMode(MANUAL);
 		zone1.setDutyCycle(0);
 		zone2.setDutyCycle(0);
 		zone3.setDutyCycle(0);
 		zone4.setDutyCycle(0);
+		zone5.setDutyCycle(0);
 	}
 	activeMenu->display();
 }
@@ -722,7 +735,13 @@ void setZone4Temp() {
 		configuration.physical.zone4.setTemp = configuration.profile.zone4SetTemp;
 	}
 }
-
+void setZone5Temp() {
+	if (currentState == PREHEAT || currentState == SOAK){
+		configuration.physical.zone5.setTemp = configuration.profile.zone5InitialSetTemp;
+		} else {
+		configuration.physical.zone5.setTemp = configuration.profile.zone5SetTemp;
+	}
+}
 void reduceOutfeedSpeed(){
 	outfeed.reduceSpeed();
 	if (outfeedReduceSpeed[1] == 'f'){

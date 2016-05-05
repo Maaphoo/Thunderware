@@ -28,7 +28,7 @@ Spooler::Spooler(Configuration* configuration)
   _pidSetpoint = 512.0;
   _pid.SetSampleTime(_interval);
   _pid.SetMode(MANUAL);
-  _pid.SetOutputLimits(0, 200);
+  _pid.SetOutputLimits(0, 350);
 
 }
 

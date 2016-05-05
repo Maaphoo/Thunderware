@@ -11,10 +11,14 @@ void beginPreheat() {
   configuration.physical.zone2.setTemp = configuration.profile.zone2InitialSetTemp;
   configuration.physical.zone3.setTemp = configuration.profile.zone3InitialSetTemp;
   configuration.physical.zone4.setTemp = configuration.profile.zone4InitialSetTemp;
+  configuration.physical.zone5.setTemp = configuration.profile.zone5InitialSetTemp;
+  
+ 
 //  setZone1Temp();
 //  setZone2Temp();
 //  setZone3Temp();
 //  setZone4Temp();
+//  setZone5Temp();
 
   preheatStartTime = millis();
   //start from full power state
@@ -22,12 +26,14 @@ void beginPreheat() {
   zone2.setDutyCycle(90);
   zone3.setDutyCycle(255);
   zone4.setDutyCycle(255);
+  zone5.setDutyCycle(255);
 
   //Then set heater PIDs to automatic
   zone1.setMode(AUTOMATIC);
   zone2.setMode(AUTOMATIC);
   zone3.setMode(AUTOMATIC);
   zone4.setMode(AUTOMATIC);
+  zone5.setMode(AUTOMATIC);
 
   currentState = PREHEAT;
 }
@@ -39,11 +45,13 @@ void preheat() {
   zone2.activate();
   zone3.activate();
   zone4.activate();
+  zone5.activate();
 
   if (zone1.getTemp() > configuration.profile.zone1InitialSetTemp - 3 &&
       zone2.getTemp() > configuration.profile.zone2InitialSetTemp - 3 &&
       zone3.getTemp() > configuration.profile.zone3InitialSetTemp - 3 &&
-      zone4.getTemp() > configuration.profile.zone4InitialSetTemp - 3) {
+      zone4.getTemp() > configuration.profile.zone4InitialSetTemp - 3 &&
+      zone5.getTemp() > configuration.profile.zone5InitialSetTemp - 3) {
     buzzer.setMsg(Buzzer::PREHEAT_FINISHED);
     currentState = BEGIN_SOAK;
     activeMenu = &soakMenu;
@@ -79,6 +87,7 @@ void soak() {
   zone2.activate();
   zone3.activate();
   zone4.activate();
+  zone5.activate();
 
   //  safety.check();
 

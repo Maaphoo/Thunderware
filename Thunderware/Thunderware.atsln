@@ -1,7 +1,9 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
+Microsoft Visual Studio Solution File, Format Version 12.00
 # Atmel Studio Solution File, Format Version 11.00
-Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "Thunderware", "Thunderware.cppproj", "{07B459B4-8D76-4638-BC6D-A459BA2D616B}"
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "Thunderware", "Thunderware.cppproj", "{A8992A58-A840-4C9C-92E3-950006058A2A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,10 +11,10 @@ Global
 		Release|AVR = Release|AVR
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{07B459B4-8D76-4638-BC6D-A459BA2D616B}.Debug|AVR.ActiveCfg = Debug|AVR
-		{07B459B4-8D76-4638-BC6D-A459BA2D616B}.Debug|AVR.Build.0 = Debug|AVR
-		{07B459B4-8D76-4638-BC6D-A459BA2D616B}.Release|AVR.ActiveCfg = Release|AVR
-		{07B459B4-8D76-4638-BC6D-A459BA2D616B}.Release|AVR.Build.0 = Release|AVR
+		{A8992A58-A840-4C9C-92E3-950006058A2A}.Debug|AVR.ActiveCfg = Debug|AVR
+		{A8992A58-A840-4C9C-92E3-950006058A2A}.Debug|AVR.Build.0 = Debug|AVR
+		{A8992A58-A840-4C9C-92E3-950006058A2A}.Release|AVR.ActiveCfg = Release|AVR
+		{A8992A58-A840-4C9C-92E3-950006058A2A}.Release|AVR.Build.0 = Release|AVR
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

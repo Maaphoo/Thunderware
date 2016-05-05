@@ -13,7 +13,7 @@ long analogMeasurement;
 float measurement;
 void setup()
 {
-  Wire.begin(CalliperSlaveAddress);    // join i2c bus with address #3
+  Wire.begin(CalliperSlaveAddress);    // join i2c bus 
   Wire.onRequest(requestEvent);        // register event
   Serial.begin(115200);                // start serial for debug output
 

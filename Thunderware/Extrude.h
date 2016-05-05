@@ -37,6 +37,7 @@ void beginLoadFilament() {
     zone2.activate();
     zone3.activate();
     zone4.activate();
+    zone5.activate();
 
     auger.setRPM(configuration.profile.augerRPM / 400.0 * (double)accInt);
     accInt++;
@@ -77,7 +78,8 @@ void loadFilament() {
   zone1.activate();
   zone2.activate();
   zone3.activate();
-  zone3.activate();
+  zone4.activate();
+  zone5.activate();
   outfeed.activate();
 
   if (millis() > loadFilamentEndTime - 30L * 1000L) {
@@ -98,6 +100,7 @@ void beginExtrude() {
   configuration.physical.zone2.setTemp = configuration.profile.zone2SetTemp;
   configuration.physical.zone3.setTemp = configuration.profile.zone3SetTemp;
   configuration.physical.zone4.setTemp = configuration.profile.zone4SetTemp;
+  configuration.physical.zone5.setTemp = configuration.profile.zone5SetTemp;
   
   //Set motor RPMs and enable motors
   auger.enable();
@@ -105,6 +108,8 @@ void beginExtrude() {
   outfeed.setRPM(configuration.profile.outfeedInitialRPM);
   outfeed.setMode(MANUAL);
   outfeed.enable();
+  
+  //Is this necessary?
   spooler.setRPM(60.0);
   spooler.enable();
 
@@ -135,9 +140,11 @@ void extrude() {
   zone2.activate();
   zone3.activate();
   zone4.activate();
+  zone5.activate();
   outfeed.activate();
 
-  if (spoolerState[1] == 'n') {
+  //Is this necessary?
+  if (spoolerState[1] == 'n') {// if the spooler state is on.
     spooler.setRPM();
   }
 
@@ -153,6 +160,7 @@ void stopExtruding() {
   zone2.off();
   zone3.off();
   zone4.off();
+  zone5.off();
   starveFeeder.off();
 }
 

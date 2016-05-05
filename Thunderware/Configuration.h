@@ -7,6 +7,8 @@
  Created by Matthew P. Rogge, Februrary 12, 2014.
  Released into the public domain.
  */
+
+
 #ifndef Configuration_h
 #define Configuration_h
 
@@ -47,11 +49,13 @@ class Configuration
       double zone2InitialSetTemp;
       double zone3InitialSetTemp;
       double zone4InitialSetTemp;
+      double zone5InitialSetTemp;
 
       double zone1SetTemp;
       double zone2SetTemp;
       double zone3SetTemp;
       double zone4SetTemp;
+      double zone5SetTemp;
 
       //Safety parameters
       double minExtrudeTemp;
@@ -137,6 +141,7 @@ class Configuration
       HeatingZone zone2;
       HeatingZone zone3;
       HeatingZone zone4;
+      HeatingZone zone5;
 
       //Diameter Sensor
       float slope;

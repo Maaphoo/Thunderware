@@ -24,7 +24,6 @@ StepperMotor::StepperMotor(Configuration* configuration, int pinSet) : _timer(pi
   switch (_pinSet){
     case 0://SET_8_14_6
       _ratio = _configuration->physical.augerStepMode*_configuration->physical.augerGearRatio;
-
       DDRJ |= B00000010; //Direction, Pin 14 to output
       DDRH |= B00001000; // Step pin 6 to output
       DDRH |= B00100000;//Enable pin 8 to output
