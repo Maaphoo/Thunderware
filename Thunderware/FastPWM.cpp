@@ -34,7 +34,9 @@ FastPWM::FastPWM(int pinSet)
 //and activates it. 
 void FastPWM::setFrequency(float frequency)
 {
+  //Store frequency in private variable
   _frequency = frequency;
+  
   //Define Modes
   byte outModeA = 1; //Fast PWM toggles pin OC1A
   byte outModeB = 0 ;//Normal pin operation on OC1B

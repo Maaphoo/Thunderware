@@ -166,6 +166,8 @@ void setup()
 	//Serial.print(configuration.physical.slope,5);
 	//Serial.print("intercept: ");
 	//Serial.println(configuration.physical.yIntercept,5);
+        pinMode(1,OUTPUT);
+        digitalWrite(1,LOW);
 
 }
 static unsigned long refreshDisplayTime;

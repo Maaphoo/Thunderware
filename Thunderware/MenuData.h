@@ -200,6 +200,41 @@ void measureFilament();
 void calibrateCalipers();
 void reduceOutfeedSpeed();
 
+//forward declarations (didn't seem to be needed before)
+void loadProfile0();
+void loadProfile1();
+void loadProfile2();
+void loadProfile3();
+void loadProfile4();
+void loadProfile5();
+void loadProfile6();
+void loadProfile7();
+void loadProfile8();
+void loadProfile9();
+void loadDefaultProfile();
+void actionExtrude();
+void saveCurrentProfile();
+void saveConfig();
+void homeStarveFeeder();
+void dump();
+void feed();
+void resetEEPROM();
+void exitPreheat();
+void skipPreheat();
+void exitSoak();
+void increaseSoakTime();
+void decreaseSoakTime();
+void skipSoak();
+void exitLoadFilament();
+void filamentLoaded();
+void loadFilamentAddTime();
+void starveFeederChangeMode();
+void setGramsPerMin();
+void setAugerRPM();
+void setOutfeedRPM();
+void setOutfeedTunings();
+void exitExtrude();
+
 const Menu::MenuItem mainItems[] PROGMEM =
 {
 {rootStr, -1, 1, NULL, 0, Menu::TITLE, NULL},
@@ -457,7 +492,8 @@ const Menu::MenuItem extrudeItems[] PROGMEM =
 {outfeedKpStr, 0, -1, &configuration.profile.outfeedKp, 2, Menu::DOUBLE, &setOutfeedTunings},
 {outfeedKiStr, 0, -1, &configuration.profile.outfeedKi, 2, Menu::DOUBLE, &setOutfeedTunings},
 {outfeedKdStr, 0, -1, &configuration.profile.outfeedKd, 2, Menu::DOUBLE, &setOutfeedTunings},
-{soakTimeStr, 0, -1, &configuration.profile.soakTime, 0, Menu::DOUBLE, NULL}
+{soakTimeStr, 0, -1, &configuration.profile.soakTime, 0, Menu::DOUBLE, NULL},
+{spoolerDiskRadiusStr, 0, -1, &configuration.physical.spoolerDiskRadius, 2, Menu::FLOAT, &setOutfeedRPM}
 };
 
 #endif

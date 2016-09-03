@@ -108,7 +108,7 @@ void Configuration::loadDefaultConfig()
   physical.spoolerStepMode = 16;
   physical.spoolerDirection = 0;
   physical.spoolerEnable = 0;
-  physical.spoolerDiskRadius = 280/2; //Radius of wooden disk relative to motor roller radius
+  physical.spoolerDiskRadius = 20.53; //Estimated radius of big wheel roller//Radius of wooden disk relative to motor roller radius
   physical.spoolerCoreRadius = 30.0; //Radius of spool core
   physical.spoolerTraverseLength = 75.00;
   physical.spoolerMotorRollerRadius = 20.34/2;//relative to wooden disk radius
@@ -122,7 +122,7 @@ void Configuration::loadDefaultConfig()
   physical.zone1.minDutyCycle = 0;
   physical.zone1.thermistorBCoefficient = 3950;
   physical.zone1.thermistorNumSamples = 20;
-  physical.zone1.thermistorPin = 0;
+  physical.zone1.thermistorPin = 1;
   physical.zone1.thermistorRNom = 100000;
   physical.zone1.thermistorSeriesResistor = 1000;
   physical.zone1.timeBase = 2000;
@@ -131,7 +131,7 @@ void Configuration::loadDefaultConfig()
   physical.zone1.activeCooling = false;
 
   //Zone 2 heater
-  physical.zone2.heaterPin = 4; //should be changed
+  physical.zone2.heaterPin = 2; //should be changed
   physical.zone2.Kd = 0.0;
   physical.zone2.Ki = 0.15;
   physical.zone2.Kp = 3.4;
@@ -139,7 +139,7 @@ void Configuration::loadDefaultConfig()
   physical.zone2.minDutyCycle = 0;
   physical.zone2.thermistorBCoefficient = 3950;
   physical.zone2.thermistorNumSamples = 20;
-  physical.zone2.thermistorPin = 1;
+  physical.zone2.thermistorPin = 2;
   physical.zone2.thermistorRNom = 100000;
   physical.zone2.thermistorSeriesResistor = 1000;
   physical.zone2.timeBase = 2000;
@@ -156,7 +156,7 @@ void Configuration::loadDefaultConfig()
   physical.zone3.minDutyCycle = 0;
   physical.zone3.thermistorBCoefficient = 3950;
   physical.zone3.thermistorNumSamples = 20;
-  physical.zone3.thermistorPin = 2;
+  physical.zone3.thermistorPin = 3;
   //	physical.zone3.coolerPin = 3;///
   physical.zone3.thermistorRNom = 100000;
   physical.zone3.thermistorSeriesResistor = 1000;
@@ -166,12 +166,12 @@ void Configuration::loadDefaultConfig()
   physical.zone3.activeCooling = false;
 
   //Zone 4 heater
-  physical.zone4.heaterPin = 2;
+  physical.zone4.heaterPin = 4;
   physical.zone4.Kd = 0.0;
   physical.zone4.Ki = 0.15;
   physical.zone4.Kp = 3.4;
   physical.zone4.maxDutyCycle = 255;
-  physical.zone4.minDutyCycle = 0;
+  physical.zone4.minDutyCycle = 4;
   physical.zone4.thermistorBCoefficient = 3950;
   physical.zone4.thermistorNumSamples = 20;
   physical.zone4.thermistorPin = 3;
@@ -191,7 +191,7 @@ void Configuration::loadDefaultConfig()
   physical.zone5.minDutyCycle = 0;
   physical.zone5.thermistorBCoefficient = 3950;
   physical.zone5.thermistorNumSamples = 20;
-  physical.zone5.thermistorPin = 4;
+  physical.zone5.thermistorPin = 5;
   physical.zone5.thermistorRNom = 100000;
   physical.zone5.thermistorSeriesResistor = 1000;
   physical.zone5.timeBase = 2000;

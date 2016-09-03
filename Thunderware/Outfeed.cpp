@@ -12,6 +12,7 @@ Released into the public domain.
 
 Outfeed::Outfeed(Configuration* configuration)
   :  _motor(configuration, configuration->physical.outfeedPinSet),
+     _bigWheelMotor(configuration, 2),
      _caliper2(configuration, 4),
      _caliper1(configuration, 3),
      _pid(&_caliper1.rawADC,
@@ -56,6 +57,9 @@ void Outfeed::setRPM(float rpm)
 {
   _motor._rpm = rpm;
   _motor.setRPM(rpm);
+  float outfeedDia = 72.28;
+//  float bigWheelRollerDia = 20.25; 
+  _bigWheelMotor.setRPM(rpm*outfeedDia/_configuration->physical.spoolerDiskRadius);
 }
 
 void Outfeed::setMode(int mode) {
@@ -106,10 +110,12 @@ void Outfeed::loadPIDSettings() {
 
 void Outfeed::disable() {
   _motor.disable();
+  _bigWheelMotor.disable();
 }
 
 void Outfeed::enable() {
   _motor.enable();
+  _bigWheelMotor.enable();
 }
 
 float Outfeed::getMmExtruded()

@@ -57,10 +57,12 @@ class Outfeed
   private:
     Configuration* _configuration;
     StepperMotor   _motor;
+    StepperMotor   _bigWheelMotor;
     Caliper        _caliper2;
     Caliper        _caliper1;
     PID            _pid;
     double _rpm;
+    double _bigWheelRpm;
     int* _computeInterval;
     unsigned long _computeTime;
     float _mmExtruded;

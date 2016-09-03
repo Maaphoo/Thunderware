@@ -95,7 +95,7 @@ float StepperMotor::getFrequency(){
 void StepperMotor::setRPM(double RPM){
   _rpm = RPM;
   float freq = RPM/60.0*200.0*(float)_ratio;
-  _timer.setFrequency(freq);
+ _timer.setFrequency(freq);
 }
 
 float StepperMotor::getRPM(){return _rpm;}
